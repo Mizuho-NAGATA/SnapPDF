@@ -1,9 +1,9 @@
 # coding: shift-jis
----------
+# -------------------------------------------------------------
 # This program "SnapPDF" was developed with the assistance of ChatGPT. このプログラム「SnapPDF」は、ChatGPTの助力によって開発された。
 # Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂. Institute of Laser Engineering, Osaka University.
 # 2406 写真15枚。タイトルと画像をpdf出力する。ページ番号表示。複数フォルダから画像選択。
----------
+# -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
 from reportlab.lib import colors
