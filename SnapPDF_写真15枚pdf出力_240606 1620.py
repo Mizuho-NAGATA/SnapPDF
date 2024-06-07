@@ -2,7 +2,7 @@
 # -------------------------------------------------------------
 # This program "SnapPDF" was developed with the assistance of ChatGPT. このプログラム「SnapPDF」は、ChatGPTの助力によって開発された。
 # Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂. Institute of Laser Engineering, Osaka University.
-# 240606 1ページに写真15枚をpdf表示。複数フォルダから画像選択することができます。
+# 240606 1ページに写真15枚をpdf出力。複数フォルダから画像選択することができます。
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
