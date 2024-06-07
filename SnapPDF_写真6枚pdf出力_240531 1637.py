@@ -1,9 +1,9 @@
 # coding: shift-jis
-# ‚±‚ÌƒvƒƒOƒ‰ƒ€uSnapPDFv‚ÍAChatGPT‚Ì•—Í‚É‚æ‚Á‚ÄŠJ”­‚³‚ê‚Ü‚µ‚½B
-# Copyright (c) 2023 NAGATA Mizuho, ‰i“c ‚İ‚¸•ä. Institute of Laser Engineering, Osaka University.
-# 240531 Ê^6–‡Bƒ^ƒCƒgƒ‹‚Æ‰æ‘œ‚ğpdfo—Í‚·‚éBƒy[ƒW”Ô†•\¦B
-# •¡”ƒtƒHƒ‹ƒ_‚©‚ç‰æ‘œ‘I‘ğ
-
+# -------------------------------------------------------------
+# This program "SnapPDF" was developed with the assistance of ChatGPT. ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã€ŒSnapPDFã€ã¯ã€ChatGPTã®åŠ©åŠ›ã«ã‚ˆã£ã¦é–‹ç™ºã•ã‚ŒãŸã€‚
+# Copyright (c) 2023 NAGATA Mizuho, æ°¸ç”° ã¿ãšç©‚. Institute of Laser Engineering, Osaka University.
+# 240531 å†™çœŸ6æšã€‚ã‚¿ã‚¤ãƒˆãƒ«ã¨ç”»åƒã‚’pdfå‡ºåŠ›ã™ã‚‹ã€‚ãƒšãƒ¼ã‚¸ç•ªå·è¡¨ç¤ºã€‚è¤‡æ•°ãƒ•ã‚©ãƒ«ãƒ€ã‹ã‚‰ç”»åƒé¸æŠã€‚
+# -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
 from reportlab.lib import colors
@@ -19,7 +19,7 @@ from tkinter import Tk, Label, Frame, filedialog, messagebox
 import os
 import subprocess
 
-# PDFƒtƒ@ƒCƒ‹‚Ìİ’è
+# PDFãƒ•ã‚¡ã‚¤ãƒ«ã®è¨­å®š
 pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
 font_name = 'BIZ-UDGothicR'
 styles = getSampleStyleSheet()
@@ -28,13 +28,13 @@ styles['Normal'].fontSize = 10
 styles['Title'].fontName = font_name
 styles['Title'].fontSize = 16
 
-image_paths = []  # ‰æ‘œƒpƒX‚ÌƒŠƒXƒg
+image_paths = []  # ç”»åƒãƒ‘ã‚¹ã®ãƒªã‚¹ãƒˆ
 
 def select_images():
     new_image_paths = list(filedialog.askopenfilenames(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]))
     if new_image_paths:
         image_paths.extend(new_image_paths)
-        messagebox.showinfo("‰æ‘œ‘I‘ğ", f"‘I‘ğ‚³‚ê‚½‰æ‘œ”: {len(new_image_paths)}")
+        messagebox.showinfo("ç”»åƒé¸æŠ", f"é¸æŠã•ã‚ŒãŸç”»åƒæ•°: {len(new_image_paths)}")
         display_thumbnails()
 
 def display_thumbnails():
@@ -61,7 +61,7 @@ def create_pdf():
     pdf_file_path = timestamp + ".pdf"
 
     if not image_paths:
-        messagebox.showerror("ƒGƒ‰[", "‰æ‘œ‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢")
+        messagebox.showerror("ã‚¨ãƒ©ãƒ¼", "ç”»åƒã‚’é¸æŠã—ã¦ãã ã•ã„")
         return
 
     doc = SimpleDocTemplate(pdf_file_path, pagesize=landscape(A4), topMargin=1.5 * inch, bottomMargin=0.1 * inch)
@@ -87,9 +87,9 @@ def create_pdf():
         remarks.wrapOn(canvas, A4[1], A4[0])
         remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
 
-    # ‰æ‘œ‚ÌƒTƒCƒY‚ğÅ‘å‰»‚·‚é‚½‚ß‚ÌŒvZ
+    # ç”»åƒã®ã‚µã‚¤ã‚ºã‚’æœ€å¤§åŒ–ã™ã‚‹ãŸã‚ã®è¨ˆç®—
     available_width = A4[1] - 2 * inch
-    available_height = A4[0] - 2.5 * inch - 0.5 * inch  # ƒ^ƒCƒgƒ‹A”õlAƒy[ƒW”Ô†‚ÌƒXƒy[ƒX‚ğl—¶
+    available_height = A4[0] - 2.5 * inch - 0.5 * inch  # ã‚¿ã‚¤ãƒˆãƒ«ã€å‚™è€ƒã€ãƒšãƒ¼ã‚¸ç•ªå·ã®ã‚¹ãƒšãƒ¼ã‚¹ã‚’è€ƒæ…®
 
     image_table_data = []
     file_name_table_data = []
@@ -99,24 +99,24 @@ def create_pdf():
         original_width, original_height = image.size
 
         image_ratio = original_width / original_height
-        new_width = available_width / 3 - 10  # 3—ñ‚Å•\¦AŠÔ‚ÉƒXƒy[ƒX
+        new_width = available_width / 3 - 10  # 3åˆ—ã§è¡¨ç¤ºã€é–“ã«ã‚¹ãƒšãƒ¼ã‚¹
         new_height = new_width / image_ratio
 
-        # ‰æ‘œ‚ªƒy[ƒW‚Éû‚Ü‚é‚©‚Ç‚¤‚©‚ğŠm”F
-        if new_height > available_height / 2 - 10:  # 2s‚Å•\¦AŠÔ‚ÉƒXƒy[ƒX
-            new_height = available_height / 2 - 10  # 2s‚Å•\¦AŠÔ‚ÉƒXƒy[ƒX
+        # ç”»åƒãŒãƒšãƒ¼ã‚¸ã«åã¾ã‚‹ã‹ã©ã†ã‹ã‚’ç¢ºèª
+        if new_height > available_height / 2 - 10:  # 2è¡Œã§è¡¨ç¤ºã€é–“ã«ã‚¹ãƒšãƒ¼ã‚¹
+            new_height = available_height / 2 - 10  # 2è¡Œã§è¡¨ç¤ºã€é–“ã«ã‚¹ãƒšãƒ¼ã‚¹
             new_width = new_height * image_ratio
 
         image_table_data.append(PlatypusImage(file_path, width=new_width, height=new_height))
         file_name_table_data.append(Paragraph(os.path.basename(file_path), styles['Normal']))
 
-        # 6–‡‚Ì‰æ‘œ‚ªW‚Ü‚Á‚½‚çAƒe[ƒuƒ‹‚ğì¬‚µ‚Äcontent‚É’Ç‰Á
+        # 6æšã®ç”»åƒãŒé›†ã¾ã£ãŸã‚‰ã€ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ä½œæˆã—ã¦contentã«è¿½åŠ 
         if len(image_table_data) == 6:
-            content.append(Table([image_table_data[:3], file_name_table_data[:3]], colWidths=[available_width / 3] * 3))  # ‰æ‘œ‚Æƒtƒ@ƒCƒ‹–¼‚Ìƒe[ƒuƒ‹‚ğ’Ç‰Á
-            content.append(Spacer(1, 0.1))  # ‰æ‘œ‚Æƒtƒ@ƒCƒ‹–¼‚ÌŠÔ‚ÉÅ¬ŒÀ‚ÌƒXƒy[ƒX‚ğ’Ç‰Á
-            content.append(Table([image_table_data[3:], file_name_table_data[3:]], colWidths=[available_width / 3] * 3))  # ‰æ‘œ‚Æƒtƒ@ƒCƒ‹–¼‚Ìƒe[ƒuƒ‹‚ğ’Ç‰Á
-            content.append(Spacer(1, 0.1))  # sŠÔ‚ÉƒXƒy[ƒX‚ğ’Ç‰Á
-            # ƒŠƒXƒg‚ğƒNƒŠƒA
+            content.append(Table([image_table_data[:3], file_name_table_data[:3]], colWidths=[available_width / 3] * 3))  # ç”»åƒã¨ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’è¿½åŠ 
+            content.append(Spacer(1, 0.1))  # ç”»åƒã¨ãƒ•ã‚¡ã‚¤ãƒ«åã®é–“ã«æœ€å°é™ã®ã‚¹ãƒšãƒ¼ã‚¹ã‚’è¿½åŠ 
+            content.append(Table([image_table_data[3:], file_name_table_data[3:]], colWidths=[available_width / 3] * 3))  # ç”»åƒã¨ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’è¿½åŠ 
+            content.append(Spacer(1, 0.1))  # è¡Œé–“ã«ã‚¹ãƒšãƒ¼ã‚¹ã‚’è¿½åŠ 
+            # ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
             image_table_data = []
             file_name_table_data = []
 
@@ -131,7 +131,7 @@ def create_pdf():
     else:
         subprocess.Popen(["open", pdf_file_path])
 
-    messagebox.showinfo("Š®—¹", "PDF‚Ìì¬‚ªŠ®—¹‚µ‚Ü‚µ‚½")
+    messagebox.showinfo("å®Œäº†", "PDFã®ä½œæˆãŒå®Œäº†ã—ã¾ã—ãŸ")
 
 root = tk.Tk()
 root.title("Snap PDF")
@@ -139,7 +139,7 @@ root.title("Snap PDF")
 input_frame = tk.Frame(root)
 input_frame.pack(padx=10, pady=10)
 
-fields = ["Title ƒ^ƒCƒgƒ‹", "Remarks ”õl"]
+fields = ["Title ã‚¿ã‚¤ãƒˆãƒ«", "Remarks å‚™è€ƒ"]
 entries = []
 
 for field in fields:
@@ -154,10 +154,10 @@ for field in fields:
 
     entries.append(entry)
 
-select_button = tk.Button(root, text="Select Images\n‰æ‘œ‚ğ‘I‘ğ", command=select_images, font=("BIZ-UDGothicR", 14))
+select_button = tk.Button(root, text="Select Images\nç”»åƒã‚’é¸æŠ", command=select_images, font=("BIZ-UDGothicR", 14))
 select_button.pack(pady=10)
 
-export_button = tk.Button(root, text="Output to pdf\nPDFo—Í", command=create_pdf, font=("BIZ-UDGothicR", 14))
+export_button = tk.Button(root, text="Output to pdf\nPDFå‡ºåŠ›", command=create_pdf, font=("BIZ-UDGothicR", 14))
 export_button.pack(pady=10)
 
 thumbnail_frame = Frame(root)
