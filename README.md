@@ -100,4 +100,5 @@ Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂 - Institute of Laser Engineer
 ## 謝辞
 - このプログラムは、ChatGPTの助力によって開発されました。感謝申し上げます。
 - 本開発は文部科学省先端研究基盤共用促進事業（先端研究設備プラットフォームプログラム） JPMXS0450300021で共用された機器を利用した成果です。
+- This program "SnapPDF" was developed with the assistance of ChatGPT.
 - This work was the result of using research equipment shared in MEXT Project for promoting public utilization of advanced research infrastructure（Program for advanced research equipment platforms）Grant Number JPMXS0450300021.
