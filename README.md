@@ -1,4 +1,5 @@
-This program "SnapPDF" was developed with the assistance of ChatGPT. このプログラム「SnapPDF」は、ChatGPTの助力によって開発されました。
+This program "SnapPDF" was developed with the assistance of ChatGPT. 
+このプログラム「SnapPDF」は、ChatGPTの助力によって開発されました。
 Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂. Institute of Laser Engineering, Osaka University.
 
 # SnapPDF
@@ -12,6 +13,7 @@ Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂. Institute of Laser Engineeri
 python SnapPDF15.py
 
 これでプログラムが起動し、指示に従って複数の画像ファイルを一つのPDFファイルにまとめることができます。
+他のファイルも同様に実行することができます。
 
 ## 必要条件
 - Python 3.x がシステムにインストールされていること
