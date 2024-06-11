@@ -100,13 +100,16 @@ pip install PyPDF2
 ## 著者
 Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂 - Institute of Laser Engineering, Osaka University
 
-## ライセンス
+## ライセンス License
 このプロジェクトはMITライセンスの下で公開されています。ライセンスの全文については、[LICENSE](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/LICENSE) をご覧ください。
+This project is released under the MIT License. For the full text of the license, please see the LICENSE file.
 
-## 謝辞
-- このプログラムは、ChatGPTの助力によって開発されました。感謝申し上げます。
+## 謝辞 Acknowledgments
+- このプログラムは、ChatGPTの助力によって開発されました。また、ChatGPTを紹介してくれた私の家族に感謝します。
 - このREADEMEファイルは、Copilotの協力によって作成されました。
-- 本開発は文部科学省先端研究基盤共用促進事業（先端研究設備プラットフォームプログラム） JPMXS0450300021で共用された機器を利用した成果です。
-- This program "SnapPDF" was developed with the assistance of ChatGPT.
+- 本開発は文部科学省先端研究基盤共用促進事業（先端研究設備プラットフォームプログラム） JPMXS0450300021である「パワーレーザーDXプラットフォーム」で共用された機器を利用した成果です。
+- このプログラムは、第2回身近な研究DXコンテスト2023 の受賞作品です。
+- This program was developed with the assistance of ChatGPT. I would like to express my gratitude to my family for introducing me to ChatGPT.
 - This READEME file was created with the help of Copilot.
-- This work was the result of using research equipment shared in MEXT Project for promoting public utilization of advanced research infrastructure（Program for advanced research equipment platforms）Grant Number JPMXS0450300021.
+- This work was the result of using research equipment shared by the “Power Laser DX Platform,” which is MEXT Project for promoting public utilization of advanced research infrastructure（Program for advanced research equipment platforms）Grant Number JPMXS0450300021.
+- This program is the winner of the 2nd Familiar Research DX Contest 2023.
