@@ -12,7 +12,8 @@ SnapPDF is a simple and powerful tool that combines multiple images into a singl
 
 ## 使い方
 1. GitHubリポジトリから適切な`.py`ファイルをダウンロードしてください。
-2. コマンドプロンプトまたはターミナルを開き、以下のコマンドを実行します：
+2. ダウンロードしたファイルを保存したディレクトリに移動します。
+3. コマンドプロンプトまたはターミナルを開き、以下のコマンドを実行します：
 
 例: 
 ```bash
