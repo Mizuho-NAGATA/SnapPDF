@@ -100,6 +100,9 @@ pip install PyPDF2
 ## 著者
 Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂 - Institute of Laser Engineering, Osaka University
 
+## ライセンス
+このプロジェクトはMITライセンスの下で公開されています。ライセンスの全文については、[LICENSE](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/LICENSE) をご覧ください。
+
 ## 謝辞
 - このプログラムは、ChatGPTの助力によって開発されました。感謝申し上げます。
 - このREADEMEファイルは、Copilotの協力によって作成されました。
