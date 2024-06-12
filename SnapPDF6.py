@@ -120,6 +120,15 @@ def create_pdf():
             image_table_data = []
             file_name_table_data = []
 
+    # 残りの画像がある場合、それらを処理する
+    if image_table_data:
+        # 残りの画像とファイル名のテーブルを追加
+        content.append(Table([image_table_data[:3], file_name_table_data[:3]], colWidths=[available_width / 3] * 3))
+        content.append(Spacer(1, 0.1))  # 画像とファイル名の間にスペースを追加
+        if len(image_table_data) > 3:
+            content.append(Table([image_table_data[3:], file_name_table_data[3:]], colWidths=[available_width / 3] * 3))
+            content.append(Spacer(1, 0.1))  # 行間にスペースを追加
+    
     title_text = entries[0].get()
     remarks_text = entries[1].get()
 
