@@ -1,8 +1,7 @@
-# coding: shift-jis
 # -------------------------------------------------------------
-# This program "SnapPDF" was developed with the assistance of ChatGPT. このプログラム「SnapPDF」は、ChatGPTの助力によって開発された。
-# Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂. Institute of Laser Engineering, Osaka University.
-# 240531 1ページに写真4枚をpdf出力。複数フォルダから画像選択することができます。
+# This program "SnapPDF" was developed with the assistance of ChatGPT.
+# Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
+# 240613 Outputs 4 photos per page to pdf. You can select images from multiple folders.
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -19,7 +18,7 @@ from tkinter import Tk, Label, Frame, filedialog, messagebox
 import os
 import subprocess
 
-# PDFファイルの設定
+# PDF file settings
 pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
 font_name = 'BIZ-UDGothicR'
 styles = getSampleStyleSheet()
@@ -28,16 +27,20 @@ styles['Normal'].fontSize = 10
 styles['Title'].fontName = font_name
 styles['Title'].fontSize = 16
 
-image_paths = []  # 画像パスのリスト
+image_paths = []  # List of image paths
 
 def select_images():
     new_image_paths = list(filedialog.askopenfilenames(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]))
     if new_image_paths:
         image_paths.extend(new_image_paths)
-        messagebox.showinfo("画像選択", f"選択された画像数: {len(new_image_paths)}")
+        messagebox.showinfo("Image Selection", f"Number of selected images: {len(new_image_paths)}")
         display_thumbnails()
 
+# Create a list to store the PhotoImage objects
+photo_images = []
+
 def display_thumbnails():
+    global photo_images  # Declare the list as global
     if image_paths:
         if thumbnail_frame.winfo_children():
             for widget in thumbnail_frame.winfo_children():
@@ -51,8 +54,8 @@ def display_thumbnails():
             image = Image.open(file_path)
             image.thumbnail((100, 100))
             photo = ImageTk.PhotoImage(image=image)
-            label = Label(thumbnail_frame, image=photo)
-            label.image = photo
+            photo_images.append(photo)  # Add the PhotoImage object to the list
+            label = Label(thumbnail_frame, image=photo_images[-1])  # Use the last added PhotoImage object
             label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
 
 def create_pdf():
@@ -61,7 +64,7 @@ def create_pdf():
     pdf_file_path = timestamp + ".pdf"
 
     if not image_paths:
-        messagebox.showerror("エラー", "画像を選択してください")
+        messagebox.showerror("Error", "Please select an image")
         return
 
     doc = SimpleDocTemplate(pdf_file_path, pagesize=landscape(A4), topMargin=1.5 * inch, bottomMargin=0.1 * inch)
@@ -87,9 +90,9 @@ def create_pdf():
         remarks.wrapOn(canvas, A4[1], A4[0])
         remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
 
-    # 画像のサイズを最大化するための計算
+    # Calculate to maximize the size of the image
     available_width = A4[1] - 2 * inch
-    available_height = A4[0] - 2.5 * inch - 0.5 * inch  # タイトル、備考、ページ番号のスペースを考慮
+    available_height = A4[0] - 2.5 * inch - 0.5 * inch  # Consider the space for title, remarks, and page number
 
     image_table_data = []
     file_name_table_data = []
@@ -99,24 +102,24 @@ def create_pdf():
         original_width, original_height = image.size
 
         image_ratio = original_width / original_height
-        new_width = available_width / 2 - 10  # 2列で表示、間にスペース
+        new_width = available_width / 2 - 10  # Display in 2 columns, with space in between
         new_height = new_width / image_ratio
 
-        # 画像がページに収まるかどうかを確認
-        if new_height > available_height / 2 - 10:  # 2行で表示、間にスペース
-            new_height = available_height / 2 - 10  # 2行で表示、間にスペース
+        # Check if the image fits on the page
+        if new_height > available_height / 2 - 10:  # Display in 2 rows, with space in between
+            new_height = available_height / 2 - 10  # Display in 2 rows, with space in between
             new_width = new_height * image_ratio
 
         image_table_data.append(PlatypusImage(file_path, width=new_width, height=new_height))
         file_name_table_data.append(Paragraph(os.path.basename(file_path), styles['Normal']))
 
-        # 2枚の画像が集まったら、テーブルを作成してcontentに追加
+        # When 2 images are gathered, create a table and add it to content
         if len(image_table_data) == 2:
-            content.append(Table([image_table_data], colWidths=[available_width / 2] * 2))  # 画像テーブルを追加
-            content.append(Spacer(1, 0.1))  # 画像とファイル名の間に最小限のスペースを追加
-            content.append(Table([file_name_table_data], colWidths=[available_width / 2] * 2))  # ファイル名テーブルを追加
-            content.append(Spacer(1, 0.1))  # 行間にスペースを追加
-            # リストをクリア
+            content.append(Table([image_table_data], colWidths=[available_width / 2] * 2))  # Add image table
+            content.append(Spacer(1, 0.1))  # Add minimal space between image and file name
+            content.append(Table([file_name_table_data], colWidths=[available_width / 2] * 2))  # Add file name table
+            content.append(Spacer(1, 0.1))  # Add space between lines
+            # Clear the list
             image_table_data = []
             file_name_table_data = []
 
@@ -131,7 +134,7 @@ def create_pdf():
     else:
         subprocess.Popen(["open", pdf_file_path])
 
-    messagebox.showinfo("完了", "PDFの作成が完了しました")
+    messagebox.showinfo("Completed", "PDF creation is complete")
 
 root = tk.Tk()
 root.title("Snap PDF")
@@ -139,7 +142,7 @@ root.title("Snap PDF")
 input_frame = tk.Frame(root)
 input_frame.pack(padx=10, pady=10)
 
-fields = ["Title タイトル", "Remarks 備考"]
+fields = ["Title", "Remarks"]
 entries = []
 
 for field in fields:
@@ -154,10 +157,10 @@ for field in fields:
 
     entries.append(entry)
 
-select_button = tk.Button(root, text="Select Images\n画像を選択", command=select_images, font=("BIZ-UDGothicR", 14))
+select_button = tk.Button(root, text="Select Images", command=select_images, font=("BIZ-UDGothicR", 14))
 select_button.pack(pady=10)
 
-export_button = tk.Button(root, text="Output to pdf\nPDF出力", command=create_pdf, font=("BIZ-UDGothicR", 14))
+export_button = tk.Button(root, text="Output to pdf", command=create_pdf, font=("BIZ-UDGothicR", 14))
 export_button.pack(pady=10)
 
 thumbnail_frame = Frame(root)
