@@ -1,7 +1,7 @@
 # ---------
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
-# 240606 Outputs 15 photos per page to pdf. You can select images from multiple folders.
+# 240613 Outputs 15 photos per page to pdf. You can select images from multiple folders.
 # ---------
 from datetime import datetime
 from PIL import Image, ImageTk
