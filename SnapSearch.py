@@ -96,7 +96,7 @@ window.title('PDF Text Search Snap Search')
 window.geometry("400x200")  # Width 400 pixels, height 200 pixels
 
 # Keyword input field
-keyword_label = tk.Label(window, text='Search keywords \n (separate with space):', font=("Helvetica", 14))
+keyword_label = tk.Label(window, text='Search keywords \n (separate with space, \n supports Japanese):', font=("Helvetica", 14))
 keyword_label.pack()
 keyword_entry = tk.Entry(window, font=("Helvetica", 14))
 keyword_entry.pack()
