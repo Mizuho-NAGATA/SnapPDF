@@ -6,6 +6,7 @@ SnapPDFは、複数の画像を一つのPDFファイルにまとめるシンプ�
 SnapPDF is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.
 
 ## 特徴
+- エクセルファイルと複数の画像を一つのPDFに統合
 - 複数の画像を一つのPDFに統合
 - A4横のページに2, 4, 6, 15枚の写真を配置
 - インストール不要で、Pythonスクリプトを直接実行
