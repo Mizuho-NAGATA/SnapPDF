@@ -4,7 +4,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-14
+# Last updated on: 2024-06-17
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -17,7 +17,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import tkinter as tk
-from tkinter import Tk, Label, Canvas, Frame, filedialog, messagebox
+from tkinter import filedialog, messagebox
 import os
 import subprocess
 import pandas as pd
@@ -32,12 +32,12 @@ styles['Title'].fontName = 'BIZ-UDGothicR'
 styles['Title'].fontSize = 16
 styles['Title'].alignment = 1  # 1 represents center alignment for the title style.
 
-image_paths = [] # List of image paths
-excel_data = [] # List to store data from the Excel file
-excel_headers = [] # List to store headers from the Excel file
+image_paths = []  # List of image paths
+excel_data = []  # List to store data from the Excel file
+excel_headers = []  # List to store headers from the Excel file
 
 def select_excel_file():
-    global data, excel_data, excel_headers
+    global excel_data, excel_headers
     file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx *.xls")], title="Select Excel File")
     if file_path:
         try:
@@ -45,12 +45,10 @@ def select_excel_file():
             df = pd.read_excel(file_path)
             df = df.fillna('')  # Convert missing values to empty strings
             data = df.values.tolist()  # Convert data to a 2D list
-            print(data)
             messagebox.showinfo("Excel File Selected", f"Data loading completed. Number of rows: {len(data)}")
 
-            # Add data from the Excel file to `data`
-            for row in data:
-                excel_data.append(row)
+            # Add data from the Excel file to `excel_data`
+            excel_data = data
 
             # Add headers to a separate list
             excel_headers = df.columns.tolist()
@@ -62,34 +60,42 @@ def select_images():
     global image_paths
     new_image_paths = list(filedialog.askopenfilenames(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]))
     if new_image_paths:
-        if not image_paths:
-            image_paths = new_image_paths
-        else:
-            image_paths.extend(new_image_paths)
+        image_paths.extend(new_image_paths)
         messagebox.showinfo("Images Selected", f"Number of selected images: {len(new_image_paths)}")
         # Display thumbnails
         display_thumbnails()
 
+def generate_thumbnail(image_path):
+    try:
+        image = Image.open(image_path)
+        image.thumbnail((100, 100))  # Thumbnail size
+        photo = ImageTk.PhotoImage(image=image)
+        return photo
+    except Exception as e:
+        print(f"Error processing image {image_path}: {str(e)}")
+        return None
+
 def display_thumbnails():
+    global image_paths
     if image_paths:
-        if thumbnail_frame.winfo_children():
-            for widget in thumbnail_frame.winfo_children():
-                widget.destroy()
+        for widget in thumbnail_frame.winfo_children():
+            widget.destroy()
 
-        num_images = len(image_paths)
-        num_columns = 10  # Initialize the number of columns
-        num_rows = (num_images + num_columns - 1) // num_columns
+        thumbnails = []
+        for path in image_paths:
+            thumbnail = generate_thumbnail(path)
+            if thumbnail:
+                thumbnails.append(thumbnail)
 
-        for i, file_path in enumerate(image_paths):
-            image = Image.open(file_path)
-            image.thumbnail((100, 100))  # Set the thumbnail size
-            photo = ImageTk.PhotoImage(image=image)
-            label = Label(thumbnail_frame, image=photo)
-            label.image = photo
+        num_images = len(thumbnails)
+        num_columns = 10  # Number of columns
+        for i, photo in enumerate(thumbnails):
+            label = tk.Label(thumbnail_frame, image=photo)
+            label.image = photo  # Keep a reference to avoid garbage collection
             label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
 
 def create_pdf():
-    global image_paths, data
+    global image_paths, excel_data, excel_headers
 
     now = datetime.now()  # Get the current date and time
     timestamp = now.strftime("%y%m%d_%H%M%S")  # Create a file name based on the format
@@ -131,10 +137,10 @@ def create_pdf():
     # Add Excel file data to the PDF if headers are present
     if excel_headers:
         # Add headers from the Excel file to the top of the `data` list
-        data.insert(0, excel_headers)
+        excel_data.insert(0, excel_headers)
 
         # Create a table to add data to the PDF
-        data_table = Table(data, colWidths=None)  # Set colWidths to None for auto-adjustment
+        data_table = Table(excel_data, colWidths=None)  # Set colWidths to None for auto-adjustment
 
         # Adjust table width to fit the page
         data_table._width = A4[0] - doc.leftMargin - doc.rightMargin
@@ -145,7 +151,6 @@ def create_pdf():
             ('GRID', (0, 0), (-1, -1), 0.5, colors.black),      # Set grid lines
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),               # Center alignment
             ('FONT', (0, 0), (-1, -1), 'BIZ-UDGothicR', 10),    # Font settings
-            ('AUTO', (0, 0), (-1, -1), 1),                      # Auto-adjust
         ]
 
         # Add background color to even rows
@@ -194,9 +199,9 @@ def create_pdf():
         if len(image_table_data) == images_per_page:
             # Add space to the left and right of images
             row_data_with_spacing = []
-            for image in image_table_data:
+            for img in image_table_data:
                 row_data_with_spacing.append(Spacer(1, image_spacing))  # Left space
-                row_data_with_spacing.append(image)  # Image
+                row_data_with_spacing.append(img)  # Image
                 row_data_with_spacing.append(Spacer(1, image_spacing))  # Right space
 
             content.append(Table([row_data_with_spacing], colWidths=[image_spacing, image_width, image_spacing] * images_per_page))
@@ -207,9 +212,9 @@ def create_pdf():
     if image_table_data:
         # Add space to the left and right of images
         row_data_with_spacing = []
-        for image in image_table_data:
+        for img in image_table_data:
             row_data_with_spacing.append(Spacer(1, image_spacing))  # Left space
-            row_data_with_spacing.append(image)  # Image
+            row_data_with_spacing.append(img)  # Image
             row_data_with_spacing.append(Spacer(1, image_spacing))  # Right space
 
         content.append(Table([row_data_with_spacing], colWidths=[image_spacing, image_width, image_spacing] * len(image_table_data)))
@@ -257,7 +262,7 @@ export_button = tk.Button(root, text="Output to PDF", command=create_pdf, font=(
 export_button.pack(pady=10)
 
 # Create frame for thumbnail display
-thumbnail_frame = Frame(root)
+thumbnail_frame = tk.Frame(root)
 thumbnail_frame.pack(padx=10, pady=10)
 
 root.mainloop()
