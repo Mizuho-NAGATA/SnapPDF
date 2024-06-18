@@ -3,10 +3,10 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-13
+# Last updated on: 2024-06-18
 # ---------
 from datetime import datetime
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageOps
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import landscape, A4
 from reportlab.lib.units import inch
@@ -16,9 +16,12 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import tkinter as tk
-from tkinter import Tk, Label, Canvas, Frame, filedialog, messagebox
+from tkinter import Tk, Label, Frame, filedialog, messagebox
 import os
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
+from functools import lru_cache
 
 # PDF file settings
 pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
@@ -30,19 +33,23 @@ styles['Title'].fontName = font_name
 styles['Title'].fontSize = 16
 
 image_paths = []  # List of image paths
+photo_images = []  # List to store the PhotoImage objects
 
 def select_images():
     new_image_paths = list(filedialog.askopenfilenames(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]))
     if new_image_paths:
         image_paths.extend(new_image_paths)
         messagebox.showinfo("Image Selection", f"Number of selected images: {len(new_image_paths)}")
-        display_thumbnails()
+        threading.Thread(target=display_thumbnails).start()  # Start thumbnail generation in a separate thread
 
-# Create a list to store the PhotoImage objects
-photo_images = []
+@lru_cache(maxsize=None)
+def generate_thumbnail(file_path):
+    image = Image.open(file_path)
+    image.thumbnail((100, 100))
+    return ImageTk.PhotoImage(image=image)
 
 def display_thumbnails():
-    global photo_images  # Declare the list as global
+    global photo_images
     if image_paths:
         if thumbnail_frame.winfo_children():
             for widget in thumbnail_frame.winfo_children():
@@ -50,15 +57,38 @@ def display_thumbnails():
 
         num_images = len(image_paths)
         num_columns = 10
-        num_rows = (num_images + num_columns - 1) // num_columns
 
-        for i, file_path in enumerate(image_paths):
-            image = Image.open(file_path)
-            image.thumbnail((100, 100))
-            photo = ImageTk.PhotoImage(image=image)
-            photo_images.append(photo)  # Add the PhotoImage object to the list
-            label = Label(thumbnail_frame, image=photo_images[-1])  # Use the last added PhotoImage object
-            label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+        photo_images.clear()  # Clear previous thumbnails
+
+        def update_thumbnails(start, end):
+            for i in range(start, end):
+                if i >= num_images:
+                    return
+                photo = generate_thumbnail(image_paths[i])
+                photo_images.append(photo)
+                label = Label(thumbnail_frame, image=photo)
+                label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+                thumbnail_frame.update_idletasks()
+
+        with ThreadPoolExecutor() as executor:
+            batch_size = 10
+            for start in range(0, num_images, batch_size):
+                executor.submit(update_thumbnails, start, start + batch_size)
+
+def process_image_for_pdf(file_path):
+    image = Image.open(file_path)
+    original_width, original_height = image.size
+    image.thumbnail((200, 200), Image.LANCZOS)
+
+    image_ratio = original_width / original_height
+    if image_ratio > 1:
+        new_width = 150
+        new_height = int(new_width / image_ratio)
+    else:
+        new_height = 150
+        new_width = int(new_height * image_ratio)
+
+    return (PlatypusImage(file_path, width=new_width, height=new_height), Paragraph(os.path.basename(file_path), styles['Normal']))
 
 def create_pdf():
     now = datetime.now()
@@ -70,7 +100,6 @@ def create_pdf():
         return
 
     doc = SimpleDocTemplate(pdf_file_path, pagesize=landscape(A4), topMargin=1.5 * inch, bottomMargin=0.1 * inch)
-
     content = []
 
     def add_title_and_page_number(canvas, doc, title_text, remarks_text):
@@ -92,49 +121,34 @@ def create_pdf():
         remarks.wrapOn(canvas, A4[1], A4[0])
         remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
 
-    # Define the size of the space for setting the column width of the image table
-    image_spacing = 10  # 10-point space
-    # Calculate the column width of the image table (image width + space)
-    col_widths = [150 + image_spacing] * 5  # Here '5' is the number of images per page
+    image_spacing = 10
+    col_widths = [150 + image_spacing] * 5
+
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(process_image_for_pdf, file_path) for file_path in image_paths]
+        results = [future.result() for future in as_completed(futures)]
 
     image_table_data = []
     file_name_table_data = []
 
-    for i, file_path in enumerate(image_paths):
-        image = Image.open(file_path)
-        original_width, original_height = image.size
+    for image, name in results:
+        image_table_data.append(image)
+        file_name_table_data.append(name)
 
-        image.thumbnail((200, 200), Image.LANCZOS)
-
-        image_ratio = original_width / original_height
-        if image_ratio > 1:
-            new_width = 150
-            new_height = int(new_width / image_ratio)
-        else:
-            new_height = 150
-            new_width = int(new_height * image_ratio)
-
-        image_table_data.append(PlatypusImage(file_path, width=new_width, height=new_height))
-        file_name_table_data.append(Paragraph(os.path.basename(file_path), styles['Normal']))
-
-        # When 5 images are gathered, create a table and add it to content
         if len(image_table_data) == 5:
-            content.append(Table([image_table_data], colWidths=col_widths)) # Add image table
-            content.append(Spacer(1, 0.1)) # Add minimal space between image and file name
-            content.append(Table([file_name_table_data], colWidths=col_widths))  # Add file name table
-            content.append(Spacer(1, 0.1)) # Add space between lines
-            # Clear the list
+            content.append(Table([image_table_data], colWidths=col_widths))
+            content.append(Spacer(1, 0.1))
+            content.append(Table([file_name_table_data], colWidths=col_widths))
+            content.append(Spacer(1, 0.1))
             image_table_data = []
             file_name_table_data = []
 
-    # If there are remaining images, add them to the table as well
     if image_table_data:
-        # Adjust column width according to the number of images in the last row
         last_row_col_widths = [150 + image_spacing] * len(image_table_data)
         content.append(Table([image_table_data], colWidths=last_row_col_widths))
-        content.append(Spacer(1, 12))  # Add space between image and file name
+        content.append(Spacer(1, 12))
         content.append(Table([file_name_table_data], colWidths=last_row_col_widths))
-        content.append(Spacer(1, 20))  # Add space between lines
+        content.append(Spacer(1, 20))
 
     title_text = entries[0].get()
     remarks_text = entries[1].get()
