@@ -1,33 +1,48 @@
-# 1. SnapPDF
-***DEMO:***
+# SnapPDF
+
+***DEMO:***  
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
 
- 「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。このプログラムは、特定の枚数の写真をA4横のページに配置し、プレゼンテーションやアーカイブ用のPDFを瞬時に作成します。  
- また、同梱の「SnapSearch」によって、保存したPDF本文を検索することができます。  
-”SnapPDF" is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.  
-The included "SnapSearch" allows users to search saved PDF text.
+SnapPDFは、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。このプログラムは、特定の枚数の写真をA4横のページに配置し、プレゼンテーションやアーカイブ用のPDFを瞬時に作成します。
+
+SnapPDF is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.
 
 ## 目次 / Table of Contents
-1-1. [特徴 / Features](#特徴--features)  
-1-2. [使い方 / Usage](#使い方--usage)  
-1-3. [必要条件 / Requirements](#必要条件--requirements)  
-1-4. [各バージョンの説明 / Versions](#各バージョンの説明--versions)  
-1-5. [バージョンの選択 / Version Selection](#バージョンの選択--version-selection)  
-2. [SnapSearch ~ PDF本文検索 ~](#snapsearch)  
-* [インストールガイド / Installation Guide](#インストールガイド--installation-guide)
-* [依存関係 / Dependencies](#依存関係--dependencies)
-* [著者 / Author](#著者--author)
-* [ライセンス / License](#ライセンス--license)
-* [謝辞 / Acknowledgments](#謝辞--acknowledgments)
+1. [SnapPDF](#snappdf)
+    1. [特徴 / Features](#特徴--features)
+    2. [使い方 / Usage](#使い方--usage)
+    3. [各バージョンの説明 / Versions](#各バージョンの説明--versions)
+    4. [バージョンの選択 / Version Selection](#バージョンの選択--version-selection)
+2. [SnapSearch](#snapsearch)
+    1. [特徴 / Features](#snapsearch-特徴--features)
+    2. [使い方 / Usage](#snapsearch-使い方--usage)
+    3. [特記事項 / Notes](#snapsearch-特記事項--notes)
+3. [インストールガイド / Installation Guide](#インストールガイド--installation-guide)
+4. [依存関係 / Dependencies](#依存関係--dependencies)
+5. [著者 / Author](#著者--author)
+6. [ライセンス / License](#ライセンス--license)
+7. [謝辞 / Acknowledgments](#謝辞--acknowledgments)
 
+# SnapPDF
 
-## 1-1. 特徴
+## 特徴 / Features
+- 複数の画像を一つのPDFに統合
+- A4横のページに2, 4, 6, 15枚の写真を配置
+- インストール不要で、Pythonスクリプトを直接実行
+- エクセルファイルのデータと複数の画像を一つのPDFファイルに統合する「SnapPDF」が追加されました
+
+## 使い方 / Usage
+1. GitHubリポジトリから適切な`.py`ファイルをダウンロードしてください。
+2. ダウンロードしたファイルを保存したディレクトリに移動します。
+3. コマンドプロンプトまたはターミナルを開き、以下のコマンドを実行します：
+
+## 特徴
 - 複数の画像を一つのPDFに統合
 - A4横のページに2, 4, 6, 15枚の写真を配置
 - インストール不要で、Pythonスクリプトを直接実行
 - エクセルファイルのデータと複数の画像を一つのPDFファイルに統合する「SnapPDF」が追加されました
   
-## 1-2. 使い方
+## 使い方
 1. GitHubリポジトリから適切な`.py`ファイルをダウンロードしてください。
 2. ダウンロードしたファイルを保存したディレクトリに移動します。
 3. コマンドプロンプトまたはターミナルを開き、以下のコマンドを実行します：
@@ -37,17 +52,17 @@ The included "SnapSearch" allows users to search saved PDF text.
 python SnapPDF15.py
 ```
 
-## 1-3. 必要条件
+## 必要条件
 - Python 3.x がシステムにインストールされていること
 
-## 1-4. 各バージョンの説明
+## 各バージョンの説明
 - `SnapPDF.py`: A4横1ページにエクセルファイルと写真をPDF出力します。エクセルファイルを選択しない場合は、写真のみを出力します。
 - `SnapPDF2.py`: A4横1ページに2枚の写真をPDF出力します。
 - `SnapPDF4.py`: A4横1ページに4枚の写真をPDF出力します。
 - `SnapPDF6.py`: A4横1ページに6枚の写真をPDF出力します。
 - `SnapPDF15.py`: A4横1ページに15枚の写真をPDF出力します。
 
-## 1-5. バージョンの選択
+## バージョンの選択
 SnapPDFは、ユーザーのニーズに合わせて写真の表示サイズを調整できるように、異なるバージョンを提供しています。写真を大きく表示したい場合は、写真の枚数が少ないバージョンを選択してください。一方、小さいサイズで多くの写真を一つのページに表示させたい場合は、15枚の写真を配置するバージョンが最適です。
 
 - `SnapPDF2.py`: 写真を大きく、詳細に表示したい場合に適しています。
@@ -56,19 +71,19 @@ SnapPDFは、ユーザーのニーズに合わせて写真の表示サイズを�
 
 この柔軟性により、プレゼンテーションやアーカイブ、イベントの記録など、さまざまな用途に合わせてPDFをカスタマイズすることができます。
 
-# 2. SnapSearch
+# SnapSearch
 
 SnapSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出す強力なツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
 SnapSearch is a powerful tool that searches the contents of PDF files by keywords to find files with matching contents. It performs AND searches on PDF files in a specified directory using entered keywords and outputs the search results to a CSV file. Japanese can also be searched.
 
-## 2-1. 特徴
+## SnapSearch 特徴 / Features
 - 複数キーワードによるAND検索機能
 - 指定ディレクトリ内のPDFファイルを対象とした検索
 - 検索結果のCSV出力機能
 - 日本語キーワード検索に対応
 - シンプルなGUIによる直感的な操作性
 
-## 2-2. 使い方
+## SnapSearch 使い方 / Usage
 1. `SnapSearch.py`をダウンロードし、実行したいディレクトリに配置します。
 2. コマンドプロンプトまたはターミナルを開き、以下のコマンドを実行します：
 ```bash
@@ -76,10 +91,10 @@ python SnapSearch.py
 ```
 4. GUIから検索したいディレクトリとキーワードを入力し、検索を開始します。
 
-## 2-3. 特記事項
+## SnapSearch 特記事項 / Notes
 日本語環境の場合、`PdfReadWarning: Advanced encoding /UniJIS-UCS2-H not implemented yet`という警告メッセージが表示されることがあります。これは、使用しているPDF処理ライブラリが特定の日本語エンコーディングを完全にサポートしていないことを示しています。しかし、この警告はプログラムの実行を停止させるものではなく、検索は引き続き行われます。したがって、このメッセージが表示されても心配する必要はありません。検索が完了するまでしばらくお待ちください。
 
-## 2-4. 必要条件
+## SnapSearch  必要条件
 - Python 3.x
 - PyPDF2ライブラリ
 
