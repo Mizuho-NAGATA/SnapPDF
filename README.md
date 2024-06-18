@@ -1,4 +1,4 @@
-# SnapPDF
+# 1. SnapPDF
 ***DEMO:***
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
 
@@ -40,7 +40,7 @@ SnapPDFは、ユーザーのニーズに合わせて写真の表示サイズを�
 
 この柔軟性により、プレゼンテーションやアーカイブ、イベントの記録など、さまざまな用途に合わせてPDFをカスタマイズすることができます。
 
-# SnapSearch
+# 2. SnapSearch
 
 SnapSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出す強力なツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。
 
