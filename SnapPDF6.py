@@ -141,7 +141,7 @@ def create_pdf():
     messagebox.showinfo("Completed", "PDF creation is complete")
 
 root = tk.Tk()
-root.title("Snap PDF")
+root.title("Snap PDF6")
 
 input_frame = tk.Frame(root)
 input_frame.pack(padx=10, pady=10)
