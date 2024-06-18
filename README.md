@@ -3,7 +3,8 @@
 ***DEMO:***  
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
 
-「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。このプログラムは、特定の枚数の写真をA4横のページに配置し、プレゼンテーションやアーカイブ用のPDFを瞬時に作成します。  
+「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。  
+このプログラムは、特定の枚数の写真をA4横のページに配置し、プレゼンテーションやアーカイブ用のPDFを瞬時に作成します。  
 また、同梱の「SnapSearch」によって、保存したPDF本文を検索することができます。   
 "SnapPDF" is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.  
  The included "SnapSearch" also allows you to search the saved PDF text.  
