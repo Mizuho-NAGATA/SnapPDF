@@ -2,8 +2,24 @@
 ***DEMO:***
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
 
-SnapPDFは、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。このプログラムは、特定の枚数の写真をA4横のページに配置し、プレゼンテーションやアーカイブ用のPDFを瞬時に作成します。
-SnapPDF is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.
+ 「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。このプログラムは、特定の枚数の写真をA4横のページに配置し、プレゼンテーションやアーカイブ用のPDFを瞬時に作成します。  
+ また、同梱の「SnapSearch」によって、保存したPDF本文を検索することができます。  
+”SnapPDF" is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.  
+The included "SnapSearch" allows users to search saved PDF text.
+
+## 目次 / Table of Contents
+1-1. [特徴 / Features](#特徴--features)  
+1-2. [使い方 / Usage](#使い方--usage)  
+1-3. [必要条件 / Requirements](#必要条件--requirements)  
+1-4. [各バージョンの説明 / Versions](#各バージョンの説明--versions)  
+1-5. [バージョンの選択 / Version Selection](#バージョンの選択--version-selection)  
+2. [SnapSearch ~ PDF本文検索 ~](#snapsearch)  
+* [インストールガイド / Installation Guide](#インストールガイド--installation-guide)
+* [依存関係 / Dependencies](#依存関係--dependencies)
+* [著者 / Author](#著者--author)
+* [ライセンス / License](#ライセンス--license)
+* [謝辞 / Acknowledgments](#謝辞--acknowledgments)
+
 
 ## 1-1. 特徴
 - 複数の画像を一つのPDFに統合
@@ -42,7 +58,8 @@ SnapPDFは、ユーザーのニーズに合わせて写真の表示サイズを�
 
 # 2. SnapSearch
 
-SnapSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出す強力なツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。
+SnapSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出す強力なツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
+SnapSearch is a powerful tool that searches the contents of PDF files by keywords to find files with matching contents. It performs AND searches on PDF files in a specified directory using entered keywords and outputs the search results to a CSV file. Japanese can also be searched.
 
 ## 2-1. 特徴
 - 複数キーワードによるAND検索機能
