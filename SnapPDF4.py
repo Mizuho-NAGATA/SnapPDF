@@ -3,7 +3,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-13
+# Last updated on: 2024-06-18
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -19,6 +19,7 @@ import tkinter as tk
 from tkinter import Tk, Label, Frame, filedialog, messagebox
 import os
 import subprocess
+import threading
 
 # PDF file settings
 pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
@@ -36,7 +37,7 @@ def select_images():
     if new_image_paths:
         image_paths.extend(new_image_paths)
         messagebox.showinfo("Image Selection", f"Number of selected images: {len(new_image_paths)}")
-        display_thumbnails()
+        threading.Thread(target=display_thumbnails).start()  # Start thumbnail generation in a separate thread
 
 # Create a list to store the PhotoImage objects
 photo_images = []
@@ -115,13 +116,13 @@ def create_pdf():
         image_table_data.append(PlatypusImage(file_path, width=new_width, height=new_height))
         file_name_table_data.append(Paragraph(os.path.basename(file_path), styles['Normal']))
 
-        # When 2 images are gathered, create a table and add it to content
+        # When 4 images are gathered, create a table and add it to content
         if len(image_table_data) == 2:
             content.append(Table([image_table_data], colWidths=[available_width / 2] * 2))  # Add image table
             content.append(Spacer(1, 0.1))  # Add minimal space between image and file name
             content.append(Table([file_name_table_data], colWidths=[available_width / 2] * 2))  # Add file name table
             content.append(Spacer(1, 0.1))  # Add space between lines
-            # Clear the list
+            # Clear the lists
             image_table_data = []
             file_name_table_data = []
 
