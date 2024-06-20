@@ -3,7 +3,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-18
+# Last updated on: 2024-06-20
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -116,16 +116,15 @@ def create_pdf():
         image_table_data.append(PlatypusImage(file_path, width=new_width, height=new_height))
         file_name_table_data.append(Paragraph(os.path.basename(file_path), styles['Normal']))
 
-        # When 6 images are gathered, create a table and add it to content
-        if len(image_table_data) == 3:
-            content.append(Table([image_table_data], colWidths=[available_width / 3] * 3))  # Add image table
+        # When 3 images are gathered or it's the last image, create a table and add it to content
+        if len(image_table_data) == 3 or i == len(image_paths) - 1:
+            content.append(Table([image_table_data], colWidths=[available_width / 3] * len(image_table_data)))  # Add image table
             content.append(Spacer(1, 0.1))  # Add minimal space between image and file name
-            content.append(Table([file_name_table_data], colWidths=[available_width / 3] * 3))  # Add file name table
+            content.append(Table([file_name_table_data], colWidths=[available_width / 3] * len(file_name_table_data)))  # Add file name table
             content.append(Spacer(1, 0.1))  # Add space between lines
             # Clear the lists
             image_table_data = []
             file_name_table_data = []
-
 
     title_text = entries[0].get()
     remarks_text = entries[1].get()
