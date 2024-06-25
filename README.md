@@ -25,14 +25,19 @@
 
 # SnapPDF
 
-## 特徴
+## 特徴 / Features
 - 複数の画像を一つのPDFに統合
 - 画像は複数のフォルダから選択可能
-- A4横のページに最大2, 4, 6, 15枚の写真を配置
-- インストール不要で、Pythonスクリプトを直接実行
-- エクセルファイルのデータと複数の画像を一つのPDFファイルに統合する「SnapPDF」
+- 「SnapPDF2, 4, 6, 15」: A4横のページに最大2, 4, 6, 15枚の写真を配置
+- 「SnapPDF」: 複数の画像に加え、エクセルファイルのデータも一つのPDFファイルに統合する
+- インストール不要で、Pythonスクリプトを直接実行  
+- Combine multiple images into one PDF file
+- Images can be selected from multiple folders
+- "SnapPDF2, 4, 6, 15": Place up to 2, 4, 6, 15 photos on one A4 page
+- "SnapPDF": Combine multiple images as well as Excel data into one PDF file
+- No installation required Direct execution of Python scripts
   
-## 使い方
+## 使い方 / Usage
 1. GitHubリポジトリから適切な`.py`ファイルをダウンロードしてください。
 2. ダウンロードしたファイルを保存したディレクトリに移動します。
 3. コマンドプロンプトまたはターミナルを開き、以下のコマンドを実行します：
