@@ -113,6 +113,8 @@ SnapPDFは、以下のPythonライブラリを使用しています。これら�
 - `tkinter`: Pythonの標準GUIツールキットで、ユーザーインターフェースを作成するために使用します。
 - `os`: オペレーティングシステムとのやり取り、ファイルパスの操作に使用します。
 - `subprocess`: 新しいプロセスを生成し、入出力ストリームを取得し、プロセスを管理するために使用します。
+- `pandas`: データ分析と操作のためのライブラリです。
+- `tkinterdnd2`: tkinterでドラッグ&ドロップ機能を実装するためのライブラリです。
 
 これらのライブラリをインストールするには、以下のコマンドを実行してください。
 
@@ -120,6 +122,8 @@ SnapPDFは、以下のPythonライブラリを使用しています。これら�
 pip install Pillow
 pip install reportlab
 pip install tk
+pip install pandas
+pip install tkinterdnd2
 ```
 
 SnapSearchはPyPDF2ライブラリを使用します。以下のコマンドを実行してインストールしてください。
