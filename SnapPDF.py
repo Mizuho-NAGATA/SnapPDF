@@ -4,7 +4,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-27
+# Last updated on: 2024-07-01
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -93,6 +93,14 @@ def move_down():
             image_paths.insert(index + 1, image_paths.pop(index))
     update_image_list()
 
+def delete_selected_images():
+    global image_paths
+    selected_items = image_list.selection()
+    for item in selected_items:
+        index = image_list.index(item)
+        del image_paths[index]
+    update_image_list()
+
 def display_thumbnails():
     global image_paths
 
@@ -122,7 +130,6 @@ def display_thumbnails():
 
     # Update the GUI
     root.update_idletasks()
-
 
 def generate_thumbnail(image_path):
     try:
@@ -304,6 +311,9 @@ move_up_button.pack(pady=10)
 
 move_down_button = tk.Button(root, text="Move Down", command=move_down, font=("BIZ-UDGothicR", 14))
 move_down_button.pack(pady=10)
+
+delete_button = tk.Button(root, text="Delete Selected", command=delete_selected_images, font=("BIZ-UDGothicR", 14))
+delete_button.pack(pady=10)
 
 export_button = tk.Button(root, text="Output to PDF", command=create_pdf, font=("BIZ-UDGothicR", 14))
 export_button.pack(pady=10)
