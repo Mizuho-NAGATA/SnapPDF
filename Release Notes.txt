@@ -1,0 +1,51 @@
+## SnapPDF リリースノート
+
+### v1.2.2 - 2024/07/02
+**最新リリース**
+- 写真のPDF出力順序を入れ替えられるようにしました。
+- 写真削除ボタンを追加しました。
+
+### v1.2.1
+- SnapPDF4.py、 SnapPDF6.pyにおいて、それぞれ選択した画像ファイルが4枚未満、6枚未満の場合にPDF出力されないエラーを修正しました。
+
+### v1.2.0
+- 画像処理を並列化し、より高速化しました。
+- 画像のサムネイル生成の並列処理:
+    - `generate_thumbnail` 関数を導入し、画像のサムネイル生成を行います。
+    - `ThreadPoolExecutor` を使って複数の画像を同時に処理し、パフォーマンスを向上させます。
+- PDF作成の並列処理:
+    - `process_images_for_pdf` 関数を導入し、PDF用の画像処理を行います。
+    - 同様に `ThreadPoolExecutor` を使用して並列処理を行い、PDFの作成を高速化します。
+
+### v1.1.0
+- エクセルファイルと複数の画像を一つのPDFに統合するバージョン「SnapPDF」を追加しました。
+
+### v1.0.1
+- GUIウィンドウの日本語が文字化けするため、コードのコメント部分も含めて英語に変更しました。入力欄には日本語を入力でき、日本語でPDF出力できます。
+
+## SnapPDF Release Notes
+
+### v1.2.2 - 2024/07/02
+**Latest Release**.
+- Added ability to swap the PDF output order of photos.
+- Added a button to delete photos.
+
+### v1.2.1
+- Fixed an error in SnapPDF4.py and SnapPDF6.py where PDF output was not generated if less than 4 or 6 images were selected, respectively.
+
+### v1.2.0
+- Parallelized image processing for faster speed.
+- Parallel processing of image thumbnail generation: `generate_thumbnail
+    - Introduced `generate_thumbnail` function to generate image thumbnails.
+    - Use `ThreadPoolExecutor` to process multiple images at the same time for better performance.
+- Parallel PDF creation:.
+    - Introduce the `process_images_for_pdf` function to process images for PDF.
+    - Similarly, use `ThreadPoolExecutor` to perform parallel processing to speed up PDF creation.
+
+### v1.1.0
+- Added `SnapPDF` version that merges Excel files and multiple images into a single PDF.
+
+### v1.0.1
+- Japanese characters in the GUI window are garbled and changed to English, including the comment part of the code. You can enter Japanese in the input fields and output PDF in Japanese.
+
+
