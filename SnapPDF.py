@@ -4,7 +4,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-07-01
+# Last updated on: 2024-07-04
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -122,7 +122,7 @@ def display_thumbnails():
         if thumbnail:
             thumbnails.append(thumbnail)
 
-    num_columns = 5  # Number of columns
+    num_columns = 10  # Number of columns
     for i, photo in enumerate(thumbnails):
         label = tk.Label(thumbnail_frame, image=photo)
         label.image = photo  # Keep a reference to avoid garbage collection
