@@ -123,7 +123,7 @@ def display_thumbnails():
     for i, photo in enumerate(thumbnails):
         label = tk.Label(thumbnail_frame, image=photo)
         label.image = photo
-        label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)  # 10列に調整
+        label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)   # Adjusted to 10 columns
 
     root.update_idletasks()
 
