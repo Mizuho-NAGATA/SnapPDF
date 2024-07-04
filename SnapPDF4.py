@@ -3,7 +3,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-20
+# Last updated on: 2024-07-04
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -16,7 +16,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import tkinter as tk
-from tkinter import Tk, Label, Frame, filedialog, messagebox
+from tkinter import Tk, Label, Frame, filedialog, messagebox, ttk
 import os
 import subprocess
 import threading
@@ -33,33 +33,88 @@ styles['Title'].fontSize = 16
 image_paths = []  # List of image paths
 
 def select_images():
+    global image_paths
     new_image_paths = list(filedialog.askopenfilenames(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]))
     if new_image_paths:
         image_paths.extend(new_image_paths)
-        messagebox.showinfo("Image Selection", f"Number of selected images: {len(new_image_paths)}")
-        threading.Thread(target=display_thumbnails).start()  # Start thumbnail generation in a separate thread
+        update_image_list()
+        messagebox.showinfo("Images Selected", f"Number of selected images: {len(new_image_paths)}")
 
-# Create a list to store the PhotoImage objects
-photo_images = []
+def update_image_list():
+    global image_paths
+    for item in image_list.get_children():
+        image_list.delete(item)
+    for path in image_paths:
+        thumbnail = generate_thumbnail(path)
+        filename = os.path.basename(path)
+        image_list.insert("", "end", values=(filename, path), image=thumbnail)
+
+    # Display thumbnails after updating the list
+    display_thumbnails()
+
+def move_up():
+    selected_items = image_list.selection()
+    for item in selected_items:
+        index = image_list.index(item)
+        if index > 0:
+            image_paths.insert(index - 1, image_paths.pop(index))
+    update_image_list()
+
+def move_down():
+    selected_items = image_list.selection()
+    for item in selected_items:
+        index = image_list.index(item)
+        if index < len(image_paths) - 1:
+            image_paths.insert(index + 1, image_paths.pop(index))
+    update_image_list()
+
+def delete_selected_images():
+    global image_paths
+    selected_items = image_list.selection()
+    for item in selected_items:
+        index = image_list.index(item)
+        del image_paths[index]
+    update_image_list()
 
 def display_thumbnails():
-    global photo_images  # Declare the list as global
-    if image_paths:
-        if thumbnail_frame.winfo_children():
-            for widget in thumbnail_frame.winfo_children():
-                widget.destroy()
+    global image_paths
 
-        num_images = len(image_paths)
-        num_columns = 10
-        num_rows = (num_images + num_columns - 1) // num_columns
+    # Create or get the thumbnail_frame if it's not already defined globally
+    if 'thumbnail_frame' not in globals():
+        # Define thumbnail_frame globally if it doesn't exist
+        global thumbnail_frame
+        thumbnail_frame = tk.Frame(root)  # Replace `root` with your parent widget if necessary
+        thumbnail_frame.pack(padx=10, pady=10)
 
-        for i, file_path in enumerate(image_paths):
-            image = Image.open(file_path)
-            image.thumbnail((100, 100))
-            photo = ImageTk.PhotoImage(image=image)
-            photo_images.append(photo)  # Add the PhotoImage object to the list
-            label = Label(thumbnail_frame, image=photo_images[-1])  # Use the last added PhotoImage object
-            label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+    # Clear existing thumbnails
+    for widget in thumbnail_frame.winfo_children():
+        widget.destroy()
+
+    # Display thumbnails
+    thumbnails = []
+    for path in image_paths:
+        thumbnail = generate_thumbnail(path)
+        if thumbnail:
+            thumbnails.append(thumbnail)
+
+    num_columns = 10  # Number of columns
+    for i, photo in enumerate(thumbnails):
+        label = tk.Label(thumbnail_frame, image=photo)
+        label.image = photo  # Keep a reference to avoid garbage collection
+        label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+
+    # Update the GUI
+    root.update_idletasks()
+
+def generate_thumbnail(image_path):
+    try:
+        image = Image.open(image_path)
+        image.thumbnail((100, 100))  # Thumbnail size
+        thumbnail = ImageTk.PhotoImage(image)
+        return thumbnail
+    except Exception as e:
+        print(f"Error generating thumbnail for {image_path}: {str(e)}")
+        return None
 
 def create_pdf():
     now = datetime.now()
@@ -163,10 +218,31 @@ for field in fields:
 select_button = tk.Button(root, text="Select Images", command=select_images, font=("BIZ-UDGothicR", 14))
 select_button.pack(pady=10)
 
-export_button = tk.Button(root, text="Output to pdf", command=create_pdf, font=("BIZ-UDGothicR", 14))
+move_up_button = tk.Button(root, text="Move Up", command=move_up, font=("BIZ-UDGothicR", 14))
+move_up_button.pack(pady=10)
+
+move_down_button = tk.Button(root, text="Move Down", command=move_down, font=("BIZ-UDGothicR", 14))
+move_down_button.pack(pady=10)
+
+delete_button = tk.Button(root, text="Delete Selected", command=delete_selected_images, font=("BIZ-UDGothicR", 14))
+delete_button.pack(pady=10)
+
+export_button = tk.Button(root, text="Output to PDF", command=create_pdf, font=("BIZ-UDGothicR", 14))
 export_button.pack(pady=10)
 
-thumbnail_frame = Frame(root)
-thumbnail_frame.pack(padx=10, pady=10)
+# Create frame for image list
+image_list_frame = tk.Frame(root)
+image_list_frame.pack(padx=10, pady=10)
+
+# Create and pack the image list view
+image_list = ttk.Treeview(image_list_frame, columns=("File Name", "Path"), show='headings')
+image_list.heading("File Name", text="File Name")
+image_list.heading("Path", text="Path")
+image_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+# Add a scrollbar to the list view
+scrollbar = tk.Scrollbar(image_list_frame, orient="vertical", command=image_list.yview)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+image_list.configure(yscrollcommand=scrollbar.set)
 
 root.mainloop()
