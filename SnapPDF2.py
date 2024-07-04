@@ -117,7 +117,7 @@ def generate_thumbnail(image_path):
         print(f"Error generating thumbnail for {image_path}: {str(e)}")
         return None
 
-def process_image_for_pdf(file_path):
+def process_image_for_pdf(index, file_path):
     image = Image.open(file_path)
     original_width, original_height = image.size
 
@@ -130,7 +130,7 @@ def process_image_for_pdf(file_path):
         new_height = (A4[0] - 2.5 * inch - 0.5 * inch - 10)
         new_width = new_height * image_ratio
 
-    return (PlatypusImage(file_path, width=new_width, height=new_height), Paragraph(os.path.basename(file_path), styles['Normal']))
+    return (PlatypusImage(file_path, width=new_width, height=new_height), Paragraph(os.path.basename(file_path), styles['Normal']), index)
 
 def create_pdf():
     now = datetime.now()
@@ -140,6 +140,17 @@ def create_pdf():
     if not image_paths:
         messagebox.showerror("Error", "Please select an image")
         return
+
+    # Create a list to hold the results with their original indices
+    indexed_results = []
+
+    # Process images and store results with original indices
+    for i, file_path in enumerate(image_paths):
+        result = process_image_for_pdf(i, file_path)
+        indexed_results.append(result)
+
+    # Sort results by the original index to maintain the order
+    indexed_results.sort(key=lambda x: x[2])
 
     doc = SimpleDocTemplate(pdf_file_path, pagesize=landscape(A4), topMargin=1.5 * inch, bottomMargin=0.1 * inch)
     content = []
@@ -163,14 +174,10 @@ def create_pdf():
         remarks.wrapOn(canvas, A4[1], A4[0])
         remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
 
-    with ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_image_for_pdf, file_path): i for i, file_path in enumerate(image_paths)}
-        results = sorted(((future.result(), i) for future, i in futures.items()), key=lambda x: x[1])
-
     image_table_data = []
     file_name_table_data = []
 
-    for (image, name), _ in results:
+    for image, name, _ in indexed_results:
         image_table_data.append(image)
         file_name_table_data.append(name)
 
