@@ -16,21 +16,25 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import tkinter as tk
-from tkinter import Tk, Label, Frame, filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox, ttk
 import os
 import subprocess
-import threading
 
 # PDF file settings
-pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
-font_name = 'BIZ-UDGothicR'
-styles = getSampleStyleSheet()
-styles['Normal'].fontName = font_name
-styles['Normal'].fontSize = 10
-styles['Title'].fontName = font_name
-styles['Title'].fontSize = 16
+def initialize_pdf_settings():
+    pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
+    font_name = 'BIZ-UDGothicR'
+    styles = getSampleStyleSheet()
+    styles['Normal'].fontName = font_name
+    styles['Normal'].fontSize = 10
+    styles['Title'].fontName = font_name
+    styles['Title'].fontSize = 16
+    return styles, font_name
+
+styles, font_name = initialize_pdf_settings()
 
 image_paths = []  # List of image paths
+photo_images = []  # List to store the PhotoImage objects
 
 def select_images():
     global image_paths
@@ -97,7 +101,7 @@ def display_thumbnails():
         if thumbnail:
             thumbnails.append(thumbnail)
 
-    num_columns = 5  # Number of columns
+    num_columns = 10  # Number of columns
     for i, photo in enumerate(thumbnails):
         label = tk.Label(thumbnail_frame, image=photo)
         label.image = photo  # Keep a reference to avoid garbage collection
@@ -177,9 +181,10 @@ def create_pdf():
             content.append(Spacer(1, 0.1))  # Add minimal space between image and file name
             content.append(Table([file_name_table_data], colWidths=[available_width / 3] * len(file_name_table_data)))  # Add file name table
             content.append(Spacer(1, 0.1))  # Add space between lines
-            # Clear the lists
-            image_table_data = []
-            file_name_table_data = []
+            # Clear the lists if there are more images
+            if i < len(image_paths) - 1:
+                image_table_data = []
+                file_name_table_data = []
 
     title_text = entries[0].get()
     remarks_text = entries[1].get()
