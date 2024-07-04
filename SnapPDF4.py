@@ -31,6 +31,7 @@ styles['Title'].fontName = font_name
 styles['Title'].fontSize = 16
 
 image_paths = []  # List of image paths
+photo_images = []  # List to store the PhotoImage objects
 
 def select_images():
     global image_paths
@@ -171,7 +172,7 @@ def create_pdf():
         image_table_data.append(PlatypusImage(file_path, width=new_width, height=new_height))
         file_name_table_data.append(Paragraph(os.path.basename(file_path), styles['Normal']))
 
-        # When 2 images are gathered or it's the last image, create a table and add it to content
+        # When 4 images are gathered or it's the last image, create a table and add it to content
         if len(image_table_data) == 2 or i == len(image_paths) - 1:
             content.append(Table([image_table_data], colWidths=[available_width / 2] * len(image_table_data)))  # Add image table
             content.append(Spacer(1, 0.1))  # Add minimal space between image and file name
