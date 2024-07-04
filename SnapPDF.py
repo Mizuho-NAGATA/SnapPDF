@@ -104,31 +104,27 @@ def delete_selected_images():
 def display_thumbnails():
     global image_paths
 
-    # Create or get the thumbnail_frame if it's not already defined globally
     if 'thumbnail_frame' not in globals():
-        # Define thumbnail_frame globally if it doesn't exist
         global thumbnail_frame
-        thumbnail_frame = tk.Frame(root)  # Replace `root` with your parent widget if necessary
+        thumbnail_frame = tk.Frame(root)
         thumbnail_frame.pack(padx=10, pady=10)
 
-    # Clear existing thumbnails
     for widget in thumbnail_frame.winfo_children():
         widget.destroy()
 
-    # Display thumbnails
     thumbnails = []
     for path in image_paths:
         thumbnail = generate_thumbnail(path)
         if thumbnail:
             thumbnails.append(thumbnail)
 
-    num_columns = 10  # Number of columns
+    num_columns = 10  # 10列に変更
+
     for i, photo in enumerate(thumbnails):
         label = tk.Label(thumbnail_frame, image=photo)
-        label.image = photo  # Keep a reference to avoid garbage collection
-        label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+        label.image = photo
+        label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)  # 10列に調整
 
-    # Update the GUI
     root.update_idletasks()
 
 def generate_thumbnail(image_path):
