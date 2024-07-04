@@ -118,7 +118,7 @@ def display_thumbnails():
         if thumbnail:
             thumbnails.append(thumbnail)
 
-    num_columns = 10  # 10列に変更
+    num_columns = 10  # Change to 10 columns
 
     for i, photo in enumerate(thumbnails):
         label = tk.Label(thumbnail_frame, image=photo)
