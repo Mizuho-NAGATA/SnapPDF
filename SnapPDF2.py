@@ -164,13 +164,13 @@ def create_pdf():
         remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
 
     with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(process_image_for_pdf, file_path) for file_path in image_paths]
-        results = [future.result() for future in as_completed(futures)]
+        futures = {executor.submit(process_image_for_pdf, file_path): i for i, file_path in enumerate(image_paths)}
+        results = sorted(((future.result(), i) for future, i in futures.items()), key=lambda x: x[1])
 
     image_table_data = []
     file_name_table_data = []
 
-    for image, name in results:
+    for (image, name), _ in results:
         image_table_data.append(image)
         file_name_table_data.append(name)
 
