@@ -1,34 +1,42 @@
-## SnapPDF �����[�X�m�[�g
+## SnapPDF リリースノート
+
+### v1.2.3 - 2024/07/04
+**最新リリース**
+- SnapPDFシリーズすべてにおいて、写真のPDF出力順序を入れ替えられるようにしました。
+- SnapPDFシリーズすべてにおいて、写真削除ボタンを追加しました。
 
 ### v1.2.2 - 2024/07/02
-**�ŐV�����[�X**
-- �ʐ^��PDF�o�͏��������ւ�����悤�ɂ��܂����B
-- �ʐ^�폜�{�^����ǉ����܂����B
+- SnapPDFのみ、写真のPDF出力順序を入れ替えられるようにしました。
+- SnapPDFのみ、写真削除ボタンを追加しました。
 
 ### v1.2.1
-- SnapPDF4.py�A SnapPDF6.py�ɂ����āA���ꂼ��I�������摜�t�@�C����4�������A6�������̏ꍇ��PDF�o�͂���Ȃ��G���[���C�����܂����B
+- SnapPDF4.py、 SnapPDF6.pyにおいて、それぞれ選択した画像ファイルが4枚未満、6枚未満の場合にPDF出力されないエラーを修正しました。
 
 ### v1.2.0
-- �摜��������񉻂��A��荂�������܂����B
-- �摜�̃T���l�C�������̕��񏈗�:
-    - `generate_thumbnail` �֐��𓱓����A�摜�̃T���l�C���������s���܂��B
-    - `ThreadPoolExecutor` ���g���ĕ����̉摜�𓯎��ɏ������A�p�t�H�[�}���X�����コ���܂��B
-- PDF�쐬�̕��񏈗�:
-    - `process_images_for_pdf` �֐��𓱓����APDF�p�̉摜�������s���܂��B
-    - ���l�� `ThreadPoolExecutor` ���g�p���ĕ��񏈗����s���APDF�̍쐬�����������܂��B
+- 画像処理を並列化し、より高速化しました。
+- 画像のサムネイル生成の並列処理:
+    - `generate_thumbnail` 関数を導入し、画像のサムネイル生成を行います。
+    - `ThreadPoolExecutor` を使って複数の画像を同時に処理し、パフォーマンスを向上させます。
+- PDF作成の並列処理:
+    - `process_images_for_pdf` 関数を導入し、PDF用の画像処理を行います。
+    - 同様に `ThreadPoolExecutor` を使用して並列処理を行い、PDFの作成を高速化します。
 
 ### v1.1.0
-- �G�N�Z���t�@�C���ƕ����̉摜�����PDF�ɓ�������o�[�W�����uSnapPDF�v��ǉ����܂����B
+- エクセルファイルと複数の画像を一つのPDFに統合するバージョン「SnapPDF」を追加しました。
 
 ### v1.0.1
-- GUI�E�B���h�E�̓��{�ꂪ�����������邽�߁A�R�[�h�̃R�����g�������܂߂ĉp��ɕύX���܂����B���͗��ɂ͓��{�����͂ł��A���{���PDF�o�͂ł��܂��B
+- GUIウィンドウの日本語が文字化けするため、コードのコメント部分も含めて英語に変更しました。入力欄には日本語を入力でき、日本語でPDF出力できます。
 
 ## SnapPDF Release Notes
 
+### v1.2.3 - 2024/07/02
+**Latest release**.
+- The order of PDF output of photos can be changed in all SnapPDF series.
+- Added a button for deleting photos in all SnapPDF series.
+
 ### v1.2.2 - 2024/07/02
-**Latest Release**.
-- Added ability to swap the PDF output order of photos.
-- Added a button to delete photos.
+- For SnapPDF only, the order in which photos are output to PDF can be switched.
+- For SnapPDF only, a Delete Photo button was added.
 
 ### v1.2.1
 - Fixed an error in SnapPDF4.py and SnapPDF6.py where PDF output was not generated if less than 4 or 6 images were selected, respectively.
