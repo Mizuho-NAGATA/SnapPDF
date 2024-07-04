@@ -20,8 +20,6 @@ from tkinter import Tk, Label, Frame, filedialog, messagebox, ttk
 import os
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import threading
-from functools import lru_cache
 
 # PDF file settings
 pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
@@ -132,7 +130,7 @@ def process_image_for_pdf(file_path):
         new_height = 150
         new_width = int(new_height * image_ratio)
 
-    return (PlatypusImage(file_path, width=new_width, height=new_height), Paragraph(os.path.basename(file_path), styles['Normal']))
+    return (PlatypusImage(file_path, width=new_width, height=new_height), Paragraph(os.path.basename(file_path), styles['Normal']), file_path)
 
 def create_pdf():
     now = datetime.now()
@@ -168,14 +166,21 @@ def create_pdf():
     image_spacing = 10
     col_widths = [150 + image_spacing] * 5
 
+    # Process images sequentially for PDF
+    processed_images = []
     with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(process_image_for_pdf, file_path) for file_path in image_paths]
-        results = [future.result() for future in as_completed(futures)]
+        futures = {executor.submit(process_image_for_pdf, file_path): file_path for file_path in image_paths}
+        for future in as_completed(futures):
+            result = future.result()
+            processed_images.append(result)
+
+    # Sort processed_images by original image_paths order
+    processed_images.sort(key=lambda x: image_paths.index(x[2]))
 
     image_table_data = []
     file_name_table_data = []
 
-    for image, name in results:
+    for image, name, file_path in processed_images:
         image_table_data.append(image)
         file_name_table_data.append(name)
 
