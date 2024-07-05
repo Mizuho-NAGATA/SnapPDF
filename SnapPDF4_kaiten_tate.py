@@ -1,5 +1,5 @@
 # -------------------------------------------------------------
-# This program "SnapPDF4" was developed with the assistance of ChatGPT.
+# This program "SnapPDF4_kaiten_tate" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # 240110 Outputs titles and images to PDF, displaying page numbers.
 # Photos can be rotated.
@@ -189,7 +189,7 @@ def create_pdf():
     messagebox.showinfo("Completed", "PDF creation is complete")
 
 root = tk.Tk()
-root.title("SnapPDF4")
+root.title("SnapPDF4_kaiten_tate")
 
 input_frame = tk.Frame(root)
 input_frame.pack(padx=10, pady=10)
