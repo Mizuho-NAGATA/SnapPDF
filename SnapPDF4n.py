@@ -18,6 +18,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from tkinter import Tk, Label, Canvas, Frame, filedialog, messagebox, ttk
+from tempfile import NamedTemporaryFile
 import tkinter as tk
 import os
 import subprocess
@@ -191,9 +192,10 @@ def create_pdf():
         # Load the image
         rotated_image, rotated_file_path = rotate_image(file_path, 90 * rotated_counts.get(file_path, 0))
 
-        if rotated_image:
-            # Save rotated image to a temporary folder
-            temp_filename = tempfile.mktemp(suffix='.png')
+    if rotated_image:
+        # Save rotated image to a temporary folder
+        with NamedTemporaryFile(suffix='.png', delete=False) as temp_file:
+            temp_filename = temp_file.name
             rotated_image.save(temp_filename)
 
         # Calculate image dimensions while maintaining aspect ratio
