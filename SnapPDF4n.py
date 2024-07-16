@@ -6,7 +6,6 @@
 # Created on: 2023-09-29
 # Last updated on: 2024-07-16
 # -------------------------------------------------------------
-
 from datetime import datetime
 from PIL import Image, ImageTk, ExifTags
 from reportlab.lib import colors
@@ -35,6 +34,7 @@ styles['Title'].fontName = 'BIZ-UDGothicR'
 styles['Title'].fontSize = 16
 
 image_paths = []  # List of image paths
+thumbnails = []  # List to keep track of thumbnails
 data = []  # Data list creation
 
 def select_images():
@@ -113,7 +113,8 @@ def rotate_thumbnail(event, image_label, file_path):
         image_label.image = rotated_photo
 
 def display_thumbnails():
-    global rotated_counts  # Initialize dictionary on screen refresh
+    global rotated_counts, thumbnails  # Initialize dictionary on screen refresh
+    thumbnails = []  # Clear the list of thumbnails
 
     if image_paths:
         # Create frame for displaying thumbnails
@@ -129,6 +130,7 @@ def display_thumbnails():
             image = Image.open(file_path)
             image.thumbnail((100, 100))  # Set thumbnail size
             photo = ImageTk.PhotoImage(image=image)
+            thumbnails.append(photo)  # Append the thumbnail to the list
 
             label = tk.Label(thumbnail_frame, image=photo)
             label.image = photo
@@ -192,34 +194,34 @@ def create_pdf():
         # Load the image
         rotated_image, rotated_file_path = rotate_image(file_path, 90 * rotated_counts.get(file_path, 0))
 
-    if rotated_image:
-        # Save rotated image to a temporary folder
-        with NamedTemporaryFile(suffix='.png', delete=False) as temp_file:
-            temp_filename = temp_file.name
-            rotated_image.save(temp_filename)
+        if rotated_image:
+            # Save rotated image to a temporary folder
+            with NamedTemporaryFile(suffix='.png', delete=False) as temp_file:
+                temp_filename = temp_file.name
+                rotated_image.save(temp_filename)
 
-        # Calculate image dimensions while maintaining aspect ratio
-        image_ratio = rotated_image.width / rotated_image.height
-        new_width = available_width / 2 - 10  # Display in 2 columns, with space in between
-        new_height = new_width / image_ratio
+            # Calculate image dimensions while maintaining aspect ratio
+            image_ratio = rotated_image.width / rotated_image.height
+            new_width = available_width / 2 - 10  # Display in 2 columns, with space in between
+            new_height = new_width / image_ratio
 
-        # Check if the image fits on the page
-        if new_height > available_height / 2 - 10:  # Display in 2 rows, with space in between
-            new_height = available_height / 2 - 10  # Display in 2 rows, with space in between
-            new_width = new_height * image_ratio
+            # Check if the image fits on the page
+            if new_height > available_height / 2 - 10:  # Display in 2 rows, with space in between
+                new_height = available_height / 2 - 10  # Display in 2 rows, with space in between
+                new_width = new_height * image_ratio
 
-        image_table_data.append(PlatypusImage(temp_filename, width=new_width, height=new_height))
-        file_name_table_data.append(Paragraph(os.path.basename(rotated_file_path), styles['Normal']))
+            image_table_data.append(PlatypusImage(temp_filename, width=new_width, height=new_height))
+            file_name_table_data.append(Paragraph(os.path.basename(rotated_file_path), styles['Normal']))
 
-        # When 2 images are gathered or it's the last image, create a table and add it to content
-        if len(image_table_data) == 2 or i == len(image_paths) - 1:
-            content.append(Table([image_table_data], colWidths=[available_width / 2] * len(image_table_data)))  # Add image table
-            content.append(Spacer(1, 0.1 * inch))  # Add minimal space between image and file name
-            content.append(Table([file_name_table_data], colWidths=[available_width / 2] * len(file_name_table_data)))  # Add file name table
-            content.append(Spacer(1, 0.1 * inch))  # Add space between lines
-            # Clear the lists
-            image_table_data = []
-            file_name_table_data = []
+            # When 2 images are gathered or it's the last image, create a table and add it to content
+            if len(image_table_data) == 2 or i == len(image_paths) - 1:
+                content.append(Table([image_table_data], colWidths=[available_width / 2] * len(image_table_data)))  # Add image table
+                content.append(Spacer(1, 0.1 * inch))  # Add minimal space between image and file name
+                content.append(Table([file_name_table_data], colWidths=[available_width / 2] * len(file_name_table_data)))  # Add file name table
+                content.append(Spacer(1, 0.1 * inch))  # Add space between lines
+                # Clear the lists
+                image_table_data = []
+                file_name_table_data = []
 
     title_text = entries[0].get()
     remarks_text = entries[1].get()
