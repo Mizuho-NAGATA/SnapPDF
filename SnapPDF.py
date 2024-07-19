@@ -4,7 +4,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-07-04
+# Last updated on: 2024-07-19
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -39,12 +39,23 @@ excel_headers = []  # List to store headers from the Excel file
 
 def select_excel_file():
     global excel_data, excel_headers
+
+    # Format numerical data to four decimal places based on conditions
+    def format_float(x):
+        if isinstance(x, (int, float)):
+            return f'{x:.4f}' if isinstance(x, float) and x != int(x) else x
+        return x
+
     file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx *.xls")], title="Select Excel File")
     if file_path:
         try:
             # Read data from the Excel file
             df = pd.read_excel(file_path)
             df = df.fillna('')  # Convert missing values to empty strings
+
+            # Apply the formatting function to all numerical data in the DataFrame
+            df = df.applymap(format_float)
+
             data = df.values.tolist()  # Convert data to a 2D list
             messagebox.showinfo("Excel File Selected", f"Data loading completed. Number of rows: {len(data)}")
 
@@ -104,27 +115,31 @@ def delete_selected_images():
 def display_thumbnails():
     global image_paths
 
+    # Create or get the thumbnail_frame if it's not already defined globally
     if 'thumbnail_frame' not in globals():
+        # Define thumbnail_frame globally if it doesn't exist
         global thumbnail_frame
-        thumbnail_frame = tk.Frame(root)
+        thumbnail_frame = tk.Frame(root)  # Replace `root` with your parent widget if necessary
         thumbnail_frame.pack(padx=10, pady=10)
 
+    # Clear existing thumbnails
     for widget in thumbnail_frame.winfo_children():
         widget.destroy()
 
+    # Display thumbnails
     thumbnails = []
     for path in image_paths:
         thumbnail = generate_thumbnail(path)
         if thumbnail:
             thumbnails.append(thumbnail)
 
-    num_columns = 10  # Change to 10 columns
-
+    num_columns = 5  # Number of columns
     for i, photo in enumerate(thumbnails):
         label = tk.Label(thumbnail_frame, image=photo)
-        label.image = photo
-        label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)   # Adjusted to 10 columns
+        label.image = photo  # Keep a reference to avoid garbage collection
+        label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
 
+    # Update the GUI
     root.update_idletasks()
 
 def generate_thumbnail(image_path):
