@@ -4,7 +4,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-07-23
+# Last updated on: 2024-07-24
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -64,6 +64,9 @@ def select_excel_file():
 
             # Add headers to a separate list
             excel_headers = df.columns.tolist()
+
+            # Show selected file name
+            print(f"Selected file: {file_path}")
 
         except Exception as e:
             messagebox.showerror("Error", f"Failed to read the Excel file. Error message: {str(e)}")
