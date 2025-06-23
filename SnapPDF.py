@@ -4,7 +4,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-07-24
+# Last updated on: 2025-06-23
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -19,6 +19,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from tkinterdnd2 import TkinterDnD, DND_FILES
+from xml.sax.saxutils import escape
 import os
 import subprocess
 import pandas as pd
@@ -189,11 +190,20 @@ def create_pdf():
         text = f"Page {page_num}"
         canvas.drawCentredString(page_width / 2, inch * 0.1, text)
 
-        # Add remarks
-        remarks_text = entries[1].get()  # Get text from the second input field
-        remarks = Paragraph(remarks_text, styles["Normal"])
-        remarks.wrapOn(canvas, A4[1], A4[0])  # Wrap the remarks to the width of the page
-        remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)  # Draw the remarks 1.5 inches below the top edge of the page
+        # 備考テキストを取得してエスケープ
+        remarks_text = entries[1].get()
+
+        if not remarks_text.strip():  # 空文字だった場合に対応
+            remarks_text = " "
+
+        escaped_text = escape(remarks_text)  # 特殊文字のエスケープ（< や & を安全にする）
+
+        try:
+            remarks = Paragraph(escaped_text, styles["Normal"])
+            remarks.wrapOn(canvas, A4[1], A4[0])
+            remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
+        except Exception as e:
+            print("備考欄の描画中にエラー:", e)
 
     # Add Excel file data to the PDF if headers are present
     if excel_headers:
