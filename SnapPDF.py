@@ -4,7 +4,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2025-06-23
+# Last updated on: 2025-12-09
 # -------------------------------------------------------------
 from datetime import datetime
 from PIL import Image, ImageTk
@@ -41,36 +41,39 @@ excel_headers = []  # List to store headers from the Excel file
 def select_excel_file():
     global excel_data, excel_headers
 
-    # Format numerical data to four decimal places based on conditions
+    # 数値を条件に応じてフォーマット
     def format_float(x):
         if isinstance(x, (int, float)):
             return f'{x:.4f}' if isinstance(x, float) and x != int(x) else x
         return x
 
-    file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx *.xls")], title="Select Excel File")
+    file_path = filedialog.askopenfilename(
+        filetypes=[("Excel files", "*.xlsx *.xls")],
+        title="Select Excel File"
+    )
     if file_path:
         try:
-            # Read data from the Excel file
+            # Excel 読み込み
             df = pd.read_excel(file_path)
-            df = df.fillna('')  # Convert missing values to empty strings
+            df = df.fillna('')  # NaN を空文字に変換
 
-            # Apply the formatting function to all numerical data in the DataFrame
-            df = df.applymap(format_float)
+            # 数値列にのみフォーマット関数を適用
+            df = df.apply(lambda col: col.map(format_float))
 
-            data = df.values.tolist()  # Convert data to a 2D list
-            messagebox.showinfo("Excel File Selected", f"Data loading completed. Number of rows: {len(data)}")
+            # DataFrame → 2次元リスト
+            data = df.values.tolist()
+            messagebox.showinfo("Excel File Selected",
+                                f"Data loading completed. Number of rows: {len(data)}")
 
-            # Add data from the Excel file to `excel_data`
+            # グローバル変数に格納
             excel_data = data
-
-            # Add headers to a separate list
             excel_headers = df.columns.tolist()
 
-            # Show selected file name
             print(f"Selected file: {file_path}")
 
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to read the Excel file. Error message: {str(e)}")
+            messagebox.showerror("Error",
+                                 f"Failed to read the Excel file. Error message: {str(e)}")
 
 def select_images():
     global image_paths
