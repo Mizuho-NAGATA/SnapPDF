@@ -3,7 +3,7 @@
 ***DEMO:***  
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
 
-「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるツールです。  
+「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。  
 同梱の「SnapSearch」によって、保存したPDF本文を検索することができます。   
 "SnapPDF" is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.  
  The included "SnapSearch" also allows you to search the saved PDF text.  
@@ -62,11 +62,11 @@ python SnapPDF15.py
 ## バージョンの選択
 - `SnapPDF2.py`: 写真を大きく、詳細に表示したい場合に適しています。
 - `SnapPDF4.py`と`SnapPDF6.py`: 中間のサイズで写真を表示したい場合に適しています。
-- `SnapPDF.py`と`SnapPDF15.py`: 一つのページに多くの写真を配置し、アルバムを作成したい場合に最適です。
+- `SnapPDF.py`と`SnapPDF15.py`: 一つのページに多くの写真を配置し、コンパクトなアルバムを作成したい場合に最適です。
 
 # SnapSearch
 
-SnapSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出すツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
+SnapSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出す強力なツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
 SnapSearch is a powerful tool that searches the contents of PDF files by keywords to find files with matching contents. It performs AND searches on PDF files in a specified directory using entered keywords and outputs the search results to a CSV file. Japanese can also be searched.
 
 ## SnapSearch 特徴 / Features
@@ -132,7 +132,7 @@ SnapSearchはPyPDF2ライブラリを使用します。以下のコマンドを�
 pip install PyPDF2
 ```
 ## 著者
-Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂 - Institute of Laser Engineering, The University of Osaka
+Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂 - Institute of Laser Engineering, Osaka University
 
 ## ライセンス License
 このプロジェクトはMITライセンスの下で公開されています。ライセンスの全文については、[LICENSE](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/LICENSE) をご覧ください。

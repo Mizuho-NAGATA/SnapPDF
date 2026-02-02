@@ -1,9 +1,9 @@
 # -------------------------------------------------------------
-# 4 photos per page to pdf. You can select images from multiple folders.
-# This program "SnapPDF" was developed with the assistance of ChatGPT.
+# 1ページあたり4枚の写真をPDFに出力します。複数のフォルダから画像を選択可能。
+# このプログラム「SnapPDF」はChatGPTの支援を受けて開発されました。
 # Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-20
+# Last updated on: 2026-02-02
 # -------------------------------------------------------------
 import os
 import subprocess
@@ -78,8 +78,24 @@ def display_thumbnails():
                     return
                 photo = generate_thumbnail(image_paths[i])
                 photo_images.append(photo)
-                label = Label(thumbnail_frame, image=photo)
-                label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+
+                # Create a container frame for each image and its filename
+                container = Frame(thumbnail_frame)
+                container.grid(
+                    row=i // num_columns * 2, column=i % num_columns, padx=5, pady=5
+                )
+
+                # Display thumbnail image
+                label = Label(container, image=photo)
+                label.pack()
+
+                # Display filename below the image
+                filename = os.path.basename(image_paths[i])
+                name_label = Label(
+                    container, text=filename, wraplength=100, font=("BIZ-UDGothicR", 8)
+                )
+                name_label.pack()
+
                 thumbnail_frame.update_idletasks()
 
         with ThreadPoolExecutor() as executor:
@@ -156,52 +172,35 @@ def create_pdf():
         results = [future.result() for future in as_completed(futures)]
 
     available_width = A4[1] - 2 * inch
-    image_table_data = []
-    file_name_table_data = []
-    row_image_data = []
-    row_filename_data = []
+    table_data = []
+    row_data = []
 
     for image, name in results:
-        row_image_data.append(image)
-        row_filename_data.append(name)
+        # Create a cell with image and filename stacked vertically
+        cell_content = [[image], [name]]
+        cell_table = Table(cell_content)
+        row_data.append(cell_table)
 
         # When 2 images are gathered (1 row), add to table data
-        if len(row_image_data) == 2:
-            image_table_data.append(row_image_data)
-            file_name_table_data.append(row_filename_data)
-            row_image_data = []
-            row_filename_data = []
+        if len(row_data) == 2:
+            table_data.append(row_data)
+            row_data = []
 
         # When 2 rows are gathered (4 images), create a table and add to content
-        if len(image_table_data) == 2:
-            content.append(Table(image_table_data, colWidths=[available_width / 2] * 2))
+        if len(table_data) == 2:
+            content.append(Table(table_data, colWidths=[available_width / 2] * 2))
             content.append(Spacer(1, 0.1))
-            content.append(
-                Table(file_name_table_data, colWidths=[available_width / 2] * 2)
-            )
-            content.append(Spacer(1, 0.1))
-            image_table_data = []
-            file_name_table_data = []
+            table_data = []
 
     # Add remaining images
-    if row_image_data:
-        image_table_data.append(row_image_data)
-        file_name_table_data.append(row_filename_data)
+    if row_data:
+        table_data.append(row_data)
 
-    if image_table_data:
+    if table_data:
         content.append(
             Table(
-                image_table_data,
-                colWidths=[available_width / 2]
-                * max(len(row) for row in image_table_data),
-            )
-        )
-        content.append(Spacer(1, 0.1))
-        content.append(
-            Table(
-                file_name_table_data,
-                colWidths=[available_width / 2]
-                * max(len(row) for row in file_name_table_data),
+                table_data,
+                colWidths=[available_width / 2] * max(len(row) for row in table_data),
             )
         )
 

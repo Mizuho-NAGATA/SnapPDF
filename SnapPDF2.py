@@ -3,7 +3,7 @@
 # This program "SnapPDF" was developed with the assistance of ChatGPT.
 # Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-18
+# Last updated on: 2026-02-02
 # -------------------------------------------------------------
 import os
 import subprocess
@@ -78,8 +78,24 @@ def display_thumbnails():
                     return
                 photo = generate_thumbnail(image_paths[i])
                 photo_images.append(photo)
-                label = Label(thumbnail_frame, image=photo)
-                label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+
+                # Create a container frame for each image and its filename
+                container = Frame(thumbnail_frame)
+                container.grid(
+                    row=i // num_columns * 2, column=i % num_columns, padx=5, pady=5
+                )
+
+                # Display thumbnail image
+                label = Label(container, image=photo)
+                label.pack()
+
+                # Display filename below the image
+                filename = os.path.basename(image_paths[i])
+                name_label = Label(
+                    container, text=filename, wraplength=100, font=("BIZ-UDGothicR", 8)
+                )
+                name_label.pack()
+
                 thumbnail_frame.update_idletasks()
 
         with ThreadPoolExecutor() as executor:
