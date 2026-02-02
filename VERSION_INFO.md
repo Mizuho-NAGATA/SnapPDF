@@ -261,7 +261,6 @@ MIT License - See `LICENSE` file for details
 
 ### 問題報告 / Issue Reporting
 - **GitHub Issues**: [https://github.com/Mizuho-NAGATA/SnapPDF/issues](https://github.com/Mizuho-NAGATA/SnapPDF/issues)
-- **Email**: GitHubプロフィールを参照
 
 ### よくある質問 / FAQ
 詳細は`README.md`の「トラブルシューティング」セクションを参照してください。
@@ -352,4 +351,5 @@ python snappdf_unified.py
 
 *最終更新 / Last Updated: 2026-02-02*  
 *バージョン / Version: 2.0.0*  
+
 *著作権 / Copyright: (c) 2023-2026 NAGATA Mizuho*
