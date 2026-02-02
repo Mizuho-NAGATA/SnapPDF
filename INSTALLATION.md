@@ -1,20 +1,5 @@
 # SnapPDF v2.0.0 インストールガイド / Installation Guide
 
-## 📋 システム要件 / System Requirements
-
-### 必須要件 / Required
-- **Python**: 3.7 以上 / 3.7 or higher
-- **OS**: Windows 10/11, macOS 10.14+, Linux (Ubuntu, Debian, Fedora等)
-- **メモリ / RAM**: 最小 2GB / Minimum 2GB
-- **ディスク容量 / Disk Space**: 100MB以上の空き容量 / 100MB+ free space
-
-### 推奨環境 / Recommended
-- **Python**: 3.9 以上 / 3.9 or higher
-- **メモリ / RAM**: 4GB以上 / 4GB or more
-- **画面解像度 / Screen Resolution**: 1280x720 以上 / 1280x720 or higher
-
----
-
 ## 🚀 クイックインストール / Quick Installation
 
 ### ステップ1: Pythonの確認 / Step 1: Verify Python
@@ -451,4 +436,5 @@ Check the GitHub repository for the latest version:
 
 *Version: 2.0.0*  
 *Last Updated: 2026-02-02*  
+
 *Copyright (c) 2023-2026 NAGATA Mizuho*
