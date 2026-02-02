@@ -5,45 +5,63 @@
 # Created on: 2023-09-29
 # Last updated on: 2024-06-20
 # -------------------------------------------------------------
-from datetime import datetime
-from PIL import Image, ImageTk
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import landscape, A4
-from reportlab.lib.units import inch
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Image as PlatypusImage, Table, Paragraph, Spacer
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-import tkinter as tk
-from tkinter import Tk, Label, Frame, filedialog, messagebox
 import os
 import subprocess
 import threading
+import tkinter as tk
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
+from functools import lru_cache
+from tkinter import Frame, Label, Tk, filedialog, messagebox
+
+from PIL import Image, ImageTk
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import Image as PlatypusImage
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table
 
 # PDF file settings
-pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
-font_name = 'BIZ-UDGothicR'
+pdfmetrics.registerFont(TTFont("BIZ-UDGothicR", "BIZ-UDGothicR.ttc"))
+font_name = "BIZ-UDGothicR"
 styles = getSampleStyleSheet()
-styles['Normal'].fontName = font_name
-styles['Normal'].fontSize = 10
-styles['Title'].fontName = font_name
-styles['Title'].fontSize = 16
+styles["Normal"].fontName = font_name
+styles["Normal"].fontSize = 10
+styles["Title"].fontName = font_name
+styles["Title"].fontSize = 16
 
 image_paths = []  # List of image paths
+photo_images = []  # List to store the PhotoImage objects
+
 
 def select_images():
-    new_image_paths = list(filedialog.askopenfilenames(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]))
+    new_image_paths = list(
+        filedialog.askopenfilenames(
+            filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]
+        )
+    )
     if new_image_paths:
         image_paths.extend(new_image_paths)
-        messagebox.showinfo("Image Selection", f"Number of selected images: {len(new_image_paths)}")
-        threading.Thread(target=display_thumbnails).start()  # Start thumbnail generation in a separate thread
+        messagebox.showinfo(
+            "Image Selection", f"Number of selected images: {len(new_image_paths)}"
+        )
+        threading.Thread(
+            target=display_thumbnails
+        ).start()  # Start thumbnail generation in a separate thread
 
-# Create a list to store the PhotoImage objects
-photo_images = []
+
+@lru_cache(maxsize=None)
+def generate_thumbnail(file_path):
+    image = Image.open(file_path)
+    image.thumbnail((100, 100))
+    return ImageTk.PhotoImage(image=image)
+
 
 def display_thumbnails():
-    global photo_images  # Declare the list as global
+    global photo_images
     if image_paths:
         if thumbnail_frame.winfo_children():
             for widget in thumbnail_frame.winfo_children():
@@ -51,15 +69,48 @@ def display_thumbnails():
 
         num_images = len(image_paths)
         num_columns = 10
-        num_rows = (num_images + num_columns - 1) // num_columns
 
-        for i, file_path in enumerate(image_paths):
-            image = Image.open(file_path)
-            image.thumbnail((100, 100))
-            photo = ImageTk.PhotoImage(image=image)
-            photo_images.append(photo)  # Add the PhotoImage object to the list
-            label = Label(thumbnail_frame, image=photo_images[-1])  # Use the last added PhotoImage object
-            label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+        photo_images.clear()  # Clear previous thumbnails
+
+        def update_thumbnails(start, end):
+            for i in range(start, end):
+                if i >= num_images:
+                    return
+                photo = generate_thumbnail(image_paths[i])
+                photo_images.append(photo)
+                label = Label(thumbnail_frame, image=photo)
+                label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+                thumbnail_frame.update_idletasks()
+
+        with ThreadPoolExecutor() as executor:
+            batch_size = 10
+            for start in range(0, num_images, batch_size):
+                executor.submit(update_thumbnails, start, start + batch_size)
+
+
+def process_image_for_pdf(file_path):
+    image = Image.open(file_path)
+    original_width, original_height = image.size
+
+    image_ratio = original_width / original_height
+    available_width = A4[1] - 2 * inch
+    available_height = A4[0] - 2.5 * inch - 0.5 * inch
+
+    new_width = available_width / 3 - 10  # Display in 3 columns, with space in between
+    new_height = new_width / image_ratio
+
+    # Check if the image fits on the page
+    if (
+        new_height > available_height / 2 - 10
+    ):  # Display in 2 rows, with space in between
+        new_height = available_height / 2 - 10
+        new_width = new_height * image_ratio
+
+    return (
+        PlatypusImage(file_path, width=new_width, height=new_height),
+        Paragraph(os.path.basename(file_path), styles["Normal"]),
+    )
+
 
 def create_pdf():
     now = datetime.now()
@@ -70,8 +121,12 @@ def create_pdf():
         messagebox.showerror("Error", "Please select an image")
         return
 
-    doc = SimpleDocTemplate(pdf_file_path, pagesize=landscape(A4), topMargin=1.5 * inch, bottomMargin=0.1 * inch)
-
+    doc = SimpleDocTemplate(
+        pdf_file_path,
+        pagesize=landscape(A4),
+        topMargin=1.5 * inch,
+        bottomMargin=0.1 * inch,
+    )
     content = []
 
     def add_title_and_page_number(canvas, doc, title_text, remarks_text):
@@ -93,51 +148,83 @@ def create_pdf():
         remarks.wrapOn(canvas, A4[1], A4[0])
         remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
 
-    # Calculate to maximize the size of the image
-    available_width = A4[1] - 2 * inch
-    available_height = A4[0] - 2.5 * inch - 0.5 * inch  # Consider the space for title, remarks, and page number
+    with ThreadPoolExecutor() as executor:
+        futures = [
+            executor.submit(process_image_for_pdf, file_path)
+            for file_path in image_paths
+        ]
+        results = [future.result() for future in as_completed(futures)]
 
+    available_width = A4[1] - 2 * inch
     image_table_data = []
     file_name_table_data = []
+    row_image_data = []
+    row_filename_data = []
 
-    for i, file_path in enumerate(image_paths):
-        image = Image.open(file_path)
-        original_width, original_height = image.size
+    for image, name in results:
+        row_image_data.append(image)
+        row_filename_data.append(name)
 
-        image_ratio = original_width / original_height
-        new_width = available_width / 3 - 10  # Display in 3 columns, with space in between
-        new_height = new_width / image_ratio
+        # When 3 images are gathered (1 row), add to table data
+        if len(row_image_data) == 3:
+            image_table_data.append(row_image_data)
+            file_name_table_data.append(row_filename_data)
+            row_image_data = []
+            row_filename_data = []
 
-        # Check if the image fits on the page
-        if new_height > available_height / 2 - 10:  # Display in 2 rows, with space in between
-            new_height = available_height / 2 - 10  # Display in 2 rows, with space in between
-            new_width = new_height * image_ratio
-
-        image_table_data.append(PlatypusImage(file_path, width=new_width, height=new_height))
-        file_name_table_data.append(Paragraph(os.path.basename(file_path), styles['Normal']))
-
-        # When 3 images are gathered or it's the last image, create a table and add it to content
-        if len(image_table_data) == 3 or i == len(image_paths) - 1:
-            content.append(Table([image_table_data], colWidths=[available_width / 3] * len(image_table_data)))  # Add image table
-            content.append(Spacer(1, 0.1))  # Add minimal space between image and file name
-            content.append(Table([file_name_table_data], colWidths=[available_width / 3] * len(file_name_table_data)))  # Add file name table
-            content.append(Spacer(1, 0.1))  # Add space between lines
-            # Clear the lists
+        # When 2 rows are gathered (6 images), create a table and add to content
+        if len(image_table_data) == 2:
+            content.append(Table(image_table_data, colWidths=[available_width / 3] * 3))
+            content.append(Spacer(1, 0.1))
+            content.append(
+                Table(file_name_table_data, colWidths=[available_width / 3] * 3)
+            )
+            content.append(Spacer(1, 0.1))
             image_table_data = []
             file_name_table_data = []
+
+    # Add remaining images
+    if row_image_data:
+        image_table_data.append(row_image_data)
+        file_name_table_data.append(row_filename_data)
+
+    if image_table_data:
+        content.append(
+            Table(
+                image_table_data,
+                colWidths=[available_width / 3]
+                * max(len(row) for row in image_table_data),
+            )
+        )
+        content.append(Spacer(1, 0.1))
+        content.append(
+            Table(
+                file_name_table_data,
+                colWidths=[available_width / 3]
+                * max(len(row) for row in file_name_table_data),
+            )
+        )
 
     title_text = entries[0].get()
     remarks_text = entries[1].get()
 
-    doc.build(content, onFirstPage=lambda canvas, doc: add_title_and_page_number(canvas, doc, title_text, remarks_text),
-              onLaterPages=lambda canvas, doc: add_title_and_page_number(canvas, doc, title_text, remarks_text))
+    doc.build(
+        content,
+        onFirstPage=lambda canvas, doc: add_title_and_page_number(
+            canvas, doc, title_text, remarks_text
+        ),
+        onLaterPages=lambda canvas, doc: add_title_and_page_number(
+            canvas, doc, title_text, remarks_text
+        ),
+    )
 
-    if os.name == 'nt':
+    if os.name == "nt":
         subprocess.Popen(["start", pdf_file_path], shell=True)
     else:
         subprocess.Popen(["open", pdf_file_path])
 
     messagebox.showinfo("Completed", "PDF creation is complete")
+
 
 root = tk.Tk()
 root.title("Snap PDF6")
@@ -160,10 +247,14 @@ for field in fields:
 
     entries.append(entry)
 
-select_button = tk.Button(root, text="Select Images", command=select_images, font=("BIZ-UDGothicR", 14))
+select_button = tk.Button(
+    root, text="Select Images", command=select_images, font=("BIZ-UDGothicR", 14)
+)
 select_button.pack(pady=10)
 
-export_button = tk.Button(root, text="Output to pdf", command=create_pdf, font=("BIZ-UDGothicR", 14))
+export_button = tk.Button(
+    root, text="Output to pdf", command=create_pdf, font=("BIZ-UDGothicR", 14)
+)
 export_button.pack(pady=10)
 
 thumbnail_frame = Frame(root)
