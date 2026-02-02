@@ -44,8 +44,10 @@ try:
     print("[DEBUG] Importing snappdf modules...")
     try:
         from snappdf import __author__, __license__, __version__
+
         print(f"[DEBUG] Successfully imported snappdf metadata")
         from snappdf.ui import create_application
+
         print(f"[DEBUG] Successfully imported create_application")
     except ImportError as e:
         print("=" * 60)

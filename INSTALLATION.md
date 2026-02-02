@@ -85,6 +85,17 @@ python test_installation.py
 
 #### 6. 起動 / Launch
 
+**方法1: バッチファイルで起動（推奨）/ Using Batch File (Recommended)**
+
+```cmd
+run_snappdf.bat
+```
+
+または、エクスプローラーで `run_snappdf.bat` をダブルクリック  
+Or, double-click `run_snappdf.bat` in Explorer
+
+**方法2: Pythonコマンドで起動 / Using Python Command**
+
 ```cmd
 python snappdf_unified.py
 ```
@@ -133,6 +144,9 @@ python3 test_installation.py
 python3 snappdf_unified.py
 ```
 
+**注意**: macOSではバッチファイル（.bat）は使用できません。Pythonコマンドを使用してください。  
+**Note**: Batch files (.bat) cannot be used on macOS. Use Python commands.
+
 ---
 
 ### Linux (Ubuntu/Debian)
@@ -167,6 +181,9 @@ python3 test_installation.py
 ```bash
 python3 snappdf_unified.py
 ```
+
+**注意**: Linuxではバッチファイル（.bat）は使用できません。Pythonコマンドを使用してください。  
+**Note**: Batch files (.bat) cannot be used on Linux. Use Python commands.
 
 ---
 
@@ -311,25 +328,38 @@ Installation Test Summary
 インストールが完了したら:  
 After installation is complete:
 
-1. **クイックスタートガイドを読む**  
+1. **起動方法ガイドを読む（推奨）**  
+   Read the How to Run Guide (Recommended)
+   ```
+   HOW_TO_RUN.md
+   ```
+
+2. **クイックスタートガイドを読む**  
    Read the Quick Start Guide
    ```
    QUICKSTART_JP.md
    ```
 
-2. **アプリケーションを起動**  
+3. **アプリケーションを起動**  
    Launch the application
+   
+   **Windows**: 
    ```bash
-   python snappdf_unified.py
+   run_snappdf.bat
+   ```
+   
+   **macOS/Linux**:
+   ```bash
+   python3 snappdf_unified.py
    ```
 
-3. **完全なドキュメントを参照**  
+4. **完全なドキュメントを参照**  
    Refer to complete documentation
    ```
    README.md
    ```
 
-4. **旧バージョンからの移行**  
+5. **旧バージョンからの移行**  
    Migrating from old version
    ```
    MIGRATION_GUIDE.md
@@ -359,6 +389,20 @@ Check the GitHub repository for the latest version:
 ---
 
 ## 🆘 サポート / Support
+
+### 起動方法のまとめ / Launch Methods Summary
+
+**Windows ユーザー（推奨）/ Windows Users (Recommended)**:
+- エクスプローラーで `run_snappdf.bat` をダブルクリック
+- または、コマンドプロンプトで `run_snappdf.bat` を実行
+
+**macOS/Linux ユーザー / macOS/Linux Users**:
+- ターミナルで `python3 snappdf_unified.py` を実行
+
+**すべてのOS共通 / All OS**:
+- `python snappdf_unified.py` (または `python3 snappdf_unified.py`)
+
+---
 
 ### 問題が解決しない場合 / If Issues Persist
 
@@ -392,7 +436,7 @@ Check the GitHub repository for the latest version:
 - [ ] pipが使用可能
 - [ ] requirements.txtから依存パッケージをインストール
 - [ ] test_installation.pyが全てパス
-- [ ] snappdf_unified.pyが起動できる
+- [ ] アプリケーションが起動できる（run_snappdf.bat または python snappdf_unified.py）
 - [ ] ドキュメントを確認した
 
 ---

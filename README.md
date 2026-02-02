@@ -15,16 +15,17 @@
 1. [新機能 / What's New in v2.0](#新機能--whats-new-in-v20)
 2. [特徴 / Features](#特徴--features)
 3. [インストールガイド / Installation Guide](#インストールガイド--installation-guide)
-4. [使い方 / Usage](#使い方--usage)
-5. [レイアウトオプション / Layout Options](#レイアウトオプション--layout-options)
-6. [SnapSearch](#snapsearch)
-7. [依存関係 / Dependencies](#依存関係--dependencies)
-8. [旧バージョンからの移行 / Migration from Old Versions](#旧バージョンからの移行--migration-from-old-versions)
-9. [トラブルシューティング / Troubleshooting](#トラブルシューティング--troubleshooting)
-10. [開発者向け情報 / Developer Information](#開発者向け情報--developer-information)
-11. [著者 / Author](#著者--author)
-12. [ライセンス / License](#ライセンス--license)
-13. [謝辞 / Acknowledgments](#謝辞--acknowledgments)
+4. [起動方法 / How to Run](HOW_TO_RUN.md) ⭐
+5. [使い方 / Usage](#使い方--usage)
+6. [レイアウトオプション / Layout Options](#レイアウトオプション--layout-options)
+7. [SnapSearch](#snapsearch)
+8. [依存関係 / Dependencies](#依存関係--dependencies)
+9. [旧バージョンからの移行 / Migration from Old Versions](#旧バージョンからの移行--migration-from-old-versions)
+10. [トラブルシューティング / Troubleshooting](#トラブルシューティング--troubleshooting)
+11. [開発者向け情報 / Developer Information](#開発者向け情報--developer-information)
+12. [著者 / Author](#著者--author)
+13. [ライセンス / License](#ライセンス--license)
+14. [謝辞 / Acknowledgments](#謝辞--acknowledgments)
 
 ---
 
@@ -129,6 +130,13 @@ If not found, it will automatically fallback to Helvetica.
 ### 基本的な使い方 / Basic Usage
 
 1. **アプリケーションの起動 / Launch Application**
+   
+   **方法1: バッチファイルで起動（Windows・推奨）/ Using Batch File (Windows - Recommended)**
+   ```bash
+   run_snappdf.bat
+   ```
+   
+   **方法2: Pythonコマンドで起動 / Using Python Command**
    ```bash
    python snappdf_unified.py
    ```
@@ -207,6 +215,13 @@ SnapSearch is a powerful tool that searches the contents of PDF files by keyword
 ### 使い方 / Usage
 
 1. **起動 / Launch**
+   
+   **方法1: バッチファイルで起動（Windows・推奨）/ Using Batch File (Windows - Recommended)**
+   ```bash
+   run_snapsearch.bat
+   ```
+   
+   **方法2: Pythonコマンドで起動 / Using Python Command**
    ```bash
    python SnapSearch.py
    ```

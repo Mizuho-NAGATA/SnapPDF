@@ -72,8 +72,16 @@ SnapPDF-1.2.2/
    ```
 
 3. **新しい統合版を試す**
+   
+   **Windowsの場合（推奨）:**
    ```bash
-   python snappdf_unified.py
+   run_snappdf.bat
+   ```
+   または、エクスプローラーで `run_snappdf.bat` をダブルクリック
+   
+   **macOS/Linuxの場合:**
+   ```bash
+   python3 snappdf_unified.py
    ```
 
 4. **使い慣れたら、旧版の使用を減らしていく**
@@ -99,8 +107,15 @@ SnapPDF-1.2.2/
    ```
 
 3. **統合版に切り替え**
+   
+   **Windowsの場合（推奨）:**
    ```bash
-   python snappdf_unified.py
+   run_snappdf.bat
+   ```
+   
+   **macOS/Linuxの場合:**
+   ```bash
+   python3 snappdf_unified.py
    ```
 
 ---
@@ -130,13 +145,17 @@ SnapPDF-1.2.2/
 
 ### コマンドの対応 / Command Mapping
 
-| v1.2.2 | v2.0 統合版 | レイアウト選択 |
-|---|---|---|
-| `python SnapPDF2.py` | `python snappdf_unified.py` | "Large (2 per page)" |
-| `python SnapPDF4.py` | `python snappdf_unified.py` | "Medium (4 per page)" |
-| `python SnapPDF6.py` | `python snappdf_unified.py` | "Standard (6 per page)" |
-| `python SnapPDF15.py` | `python snappdf_unified.py` | "Compact (15 per page)" |
-| `python SnapPDF.py` | `python snappdf_unified.py` | "Excel + Images (5 per page)" |
+| v1.2.2 | v2.0 統合版（Windows） | v2.0 統合版（macOS/Linux） | レイアウト選択 |
+|---|---|---|---|
+| `python SnapPDF2.py` | `run_snappdf.bat` | `python3 snappdf_unified.py` | "Large (2 per page)" |
+| `python SnapPDF4.py` | `run_snappdf.bat` | `python3 snappdf_unified.py` | "Medium (4 per page)" |
+| `python SnapPDF6.py` | `run_snappdf.bat` | `python3 snappdf_unified.py` | "Standard (6 per page)" |
+| `python SnapPDF15.py` | `run_snappdf.bat` | `python3 snappdf_unified.py` | "Compact (15 per page)" |
+| `python SnapPDF.py` | `run_snappdf.bat` | `python3 snappdf_unified.py` | "Excel + Images (5 per page)" |
+
+**注意 / Note:**
+- Windows: `run_snappdf.bat` をダブルクリックするだけでも起動できます
+- macOS/Linux: バッチファイルは使用できないため、Pythonコマンドを使用してください
 
 ### コードの対応 / Code Mapping
 
@@ -236,7 +255,9 @@ pip install tkinterdnd2
 - [ ] すべてのテストがパスすることを確認
 
 ### 動作確認 / Testing
-- [ ] `python snappdf_unified.py` で起動できることを確認
+- [ ] アプリケーションが起動できることを確認
+  - Windows: `run_snappdf.bat` をダブルクリック
+  - macOS/Linux: `python3 snappdf_unified.py` を実行
 - [ ] 各レイアウトオプションを試す
 - [ ] 画像を選択してPDFを生成
 - [ ] 生成されたPDFが正しく表示されることを確認
@@ -380,9 +401,21 @@ A: いいえ、Python 3.7以上が必要です。Python 2.7はサポート終了
 ### 移行のステップ / Migration Steps
 
 1. **今日**: 依存パッケージをインストール
-2. **明日**: 統合版を試してみる
+2. **明日**: 統合版を試してみる（Windowsユーザーは `run_snappdf.bat` をダブルクリック）
 3. **来週**: 日常的に使い始める
 4. **来月**: 旧バージョンを完全に置き換え
+
+### 起動方法のまとめ / Quick Launch Reference
+
+**Windows（推奨）:**
+- エクスプローラーで `run_snappdf.bat` をダブルクリック
+- または、コマンドプロンプトで `run_snappdf.bat` を実行
+
+**macOS/Linux:**
+- ターミナルで `python3 snappdf_unified.py` を実行
+
+**すべてのOS共通:**
+- `python snappdf_unified.py` (または `python3 snappdf_unified.py`)
 
 ---
 

@@ -21,6 +21,10 @@ This folder contains **only the new files** for SnapPDF v2.0.0.
 - ✅ `SnapSearch.py` - PDF検索ツール（修正版）/ PDF search tool (fixed version)
 - ✅ `test_installation.py` - インストール検証スクリプト / Installation test script
 
+#### 起動用バッチファイル / Launch Batch Files (Windows)
+- ✅ `run_snappdf.bat` - SnapPDF起動スクリプト / SnapPDF launcher
+- ✅ `run_snapsearch.bat` - SnapSearch起動スクリプト / SnapSearch launcher
+
 #### パッケージモジュール / Package Modules
 - ✅ `snappdf/__init__.py` - パッケージ初期化 / Package initialization
 - ✅ `snappdf/config.py` - 設定管理 / Configuration management
@@ -33,6 +37,7 @@ This folder contains **only the new files** for SnapPDF v2.0.0.
 - ✅ `QUICKSTART_JP.md` - クイックスタートガイド / Quick start guide
 - ✅ `INSTALLATION.md` - インストールガイド / Installation guide
 - ✅ `MIGRATION_GUIDE.md` - 移行ガイド / Migration guide
+- ✅ `HOW_TO_RUN.md` - 起動方法ガイド / How to run guide
 - ✅ `REFACTORING_SUMMARY.md` - リファクタリング記録 / Refactoring summary
 - ✅ `VERSION_INFO.md` - このファイル / This file
 
@@ -70,6 +75,19 @@ python test_installation.py
 
 ### 2. 起動 / Launch
 
+**Windows（推奨）/ Windows (Recommended)**
+```bash
+# 統合版アプリケーション - バッチファイルで起動
+run_snappdf.bat
+
+# PDF検索ツール - バッチファイルで起動
+run_snapsearch.bat
+```
+
+または、エクスプローラーで `.bat` ファイルをダブルクリック  
+Or, double-click the `.bat` files in Explorer
+
+**全OS共通 / All OS (Alternative)**
 ```bash
 # 統合版アプリケーション
 python snappdf_unified.py
@@ -78,8 +96,18 @@ python snappdf_unified.py
 python SnapSearch.py
 ```
 
+**macOS/Linux**
+```bash
+# 統合版アプリケーション
+python3 snappdf_unified.py
+
+# PDF検索ツール
+python3 SnapSearch.py
+```
+
 ### 3. ドキュメントを読む / Read Documentation
 
+- **起動方法**: `HOW_TO_RUN.md` ⭐ 全OS対応の起動方法
 - **初めての方**: `QUICKSTART_JP.md`
 - **詳細な情報**: `README.md`
 - **インストール**: `INSTALLATION.md`
@@ -132,13 +160,13 @@ python SnapSearch.py
 
 ### 機能の対応 / Feature Mapping
 
-| 旧ファイル | v2.0.0での対応 |
-|---|---|
-| SnapPDF2.py | "Large (2 per page)" を選択 |
-| SnapPDF4.py | "Medium (4 per page)" を選択 |
-| SnapPDF6.py | "Standard (6 per page)" を選択 |
-| SnapPDF15.py | "Compact (15 per page)" を選択 |
-| SnapPDF.py | "Excel + Images (5 per page)" を選択 |
+| 旧ファイル | v2.0.0での対応（Windows） | v2.0.0での対応（macOS/Linux） |
+|---|---|---|
+| SnapPDF2.py | `run_snappdf.bat` → "Large (2 per page)" を選択 | `python3 snappdf_unified.py` → "Large (2 per page)" を選択 |
+| SnapPDF4.py | `run_snappdf.bat` → "Medium (4 per page)" を選択 | `python3 snappdf_unified.py` → "Medium (4 per page)" を選択 |
+| SnapPDF6.py | `run_snappdf.bat` → "Standard (6 per page)" を選択 | `python3 snappdf_unified.py` → "Standard (6 per page)" を選択 |
+| SnapPDF15.py | `run_snappdf.bat` → "Compact (15 per page)" を選択 | `python3 snappdf_unified.py` → "Compact (15 per page)" を選択 |
+| SnapPDF.py | `run_snappdf.bat` → "Excel + Images (5 per page)" を選択 | `python3 snappdf_unified.py` → "Excel + Images (5 per page)" を選択 |
 
 ### 生成されるPDF / Generated PDFs
 - ✅ 完全に互換性あり
@@ -254,13 +282,15 @@ MIT License - See `LICENSE` file for details
 ## 📞 サポート / Support
 
 ### ドキュメント / Documentation
-1. `INSTALLATION.md` - インストール手順
-2. `QUICKSTART_JP.md` - 使い方ガイド
-3. `README.md` - 完全なドキュメント
-4. `MIGRATION_GUIDE.md` - 移行ガイド
+1. `HOW_TO_RUN.md` - 起動方法ガイド（推奨）⭐
+2. `INSTALLATION.md` - インストール手順
+3. `QUICKSTART_JP.md` - 使い方ガイド
+4. `README.md` - 完全なドキュメント
+5. `MIGRATION_GUIDE.md` - 移行ガイド
 
 ### 問題報告 / Issue Reporting
 - **GitHub Issues**: [https://github.com/Mizuho-NAGATA/SnapPDF/issues](https://github.com/Mizuho-NAGATA/SnapPDF/issues)
+- **Email**: GitHubプロフィールを参照
 
 ### よくある質問 / FAQ
 詳細は`README.md`の「トラブルシューティング」セクションを参照してください。
@@ -272,8 +302,9 @@ MIT License - See `LICENSE` file for details
 ### 初心者 / Beginners
 1. `INSTALLATION.md` でインストール
 2. `test_installation.py` で動作確認
-3. `QUICKSTART_JP.md` で基本操作を学ぶ
-4. 実際に使ってみる
+3. `HOW_TO_RUN.md` で起動方法を確認（特にWindowsユーザー）
+4. `QUICKSTART_JP.md` で基本操作を学ぶ
+5. 実際に使ってみる
 
 ### 中級者 / Intermediate Users
 1. `README.md` で全機能を理解
@@ -334,9 +365,18 @@ SnapPDF v2.0.0は、旧バージョンの全ての機能を統合し、大幅に
 
 **今すぐ始めましょう！**
 
+**Windows:**
 ```bash
 python test_installation.py
-python snappdf_unified.py
+run_snappdf.bat
+```
+
+または、`run_snappdf.bat` をダブルクリック！
+
+**macOS/Linux:**
+```bash
+python3 test_installation.py
+python3 snappdf_unified.py
 ```
 
 ---
@@ -351,5 +391,4 @@ python snappdf_unified.py
 
 *最終更新 / Last Updated: 2026-02-02*  
 *バージョン / Version: 2.0.0*  
-
 *著作権 / Copyright: (c) 2023-2026 NAGATA Mizuho*

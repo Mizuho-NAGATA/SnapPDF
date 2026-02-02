@@ -22,6 +22,16 @@ pip install Pillow reportlab pandas PyPDF2
 
 ## ステップ2: アプリケーションの起動
 
+**方法1: バッチファイルで起動（Windows・推奨）**
+
+```bash
+run_snappdf.bat
+```
+
+ダブルクリックするだけでも起動できます！
+
+**方法2: Pythonコマンドで起動（全OS共通）**
+
 ```bash
 python snappdf_unified.py
 ```
@@ -216,6 +226,13 @@ python snappdf_unified.py
 PDFファイルの内容を検索したい場合：
 
 1. **起動**:
+   
+   **Windowsの場合（バッチファイル）**:
+   ```bash
+   run_snapsearch.bat
+   ```
+   
+   **または、Pythonコマンド（全OS共通）**:
    ```bash
    python SnapSearch.py
    ```
@@ -241,8 +258,11 @@ PDFファイルの内容を検索したい場合：
 
 ### さらに詳しく知りたい場合
 
-- **README_v2.md**: 完全なドキュメント
+- **HOW_TO_RUN.md**: 起動方法の詳細ガイド ⭐
+- **README.md**: 完全なドキュメント
 - **test_installation.py**: インストール確認スクリプト
+- **INSTALLATION.md**: 詳細なインストール手順
+- **MIGRATION_GUIDE.md**: 旧バージョンからの移行ガイド
 - **GitHub Issues**: 問題報告・機能リクエスト
 
 ### コミュニティ
@@ -257,7 +277,7 @@ PDFファイルの内容を検索したい場合：
 
 SnapPDF v2.0は、以下の3ステップで使えます：
 
-1. `python snappdf_unified.py` で起動
+1. `run_snappdf.bat` をダブルクリック（または `python snappdf_unified.py` で起動）
 2. レイアウトを選択、画像を追加
 3. 「Create PDF」をクリック
 
@@ -265,4 +285,10 @@ SnapPDF v2.0は、以下の3ステップで使えます：
 
 ---
 
-質問・問題がある場合は、README_v2.mdの「トラブルシューティング」セクションをご覧ください。
+## 📖 追加ドキュメント / Additional Documentation
+
+- **起動方法の詳細**: `HOW_TO_RUN.md` - 全OS対応の起動方法ガイド
+- **トラブルシューティング**: `README.md` - 問題解決方法
+- **完全マニュアル**: `INSTALLATION.md` - 詳細なインストール手順
+
+質問・問題がある場合は、まず `HOW_TO_RUN.md` をご覧ください。
