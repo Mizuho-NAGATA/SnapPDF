@@ -4,19 +4,19 @@
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
 
 「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。  
-同梱の「SnapSearch」によって、保存したPDF本文を検索することができます。   
+同梱の「PDFSearch」によって、保存したPDF本文を検索することができます。   
 "SnapPDF" is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.  
- The included "SnapSearch" also allows you to search the saved PDF text.  
+ The included "PDFSearch" also allows you to search the saved PDF text.
 ## 目次 / Table of Contents
 1. [SnapPDF](#snappdf)
     1. [特徴 / Features](#特徴--features)
     2. [使い方 / Usage](#使い方--usage)
     3. [各バージョンの説明 / Versions](#各バージョンの説明--versions)
     4. [バージョンの選択 / Version Selection](#バージョンの選択--version-selection)
-2. [SnapSearch](#snapsearch)
-    1. [特徴 / Features](#snapsearch-特徴--features)
-    2. [使い方 / Usage](#snapsearch-使い方--usage)
-    3. [特記事項 / Notes](#snapsearch-特記事項--notes)
+2. [PDFSearch](#pdfsearch)
+    1. [特徴 / Features](#pdfsearch-特徴--features)
+    2. [使い方 / Usage](#pdfsearch-使い方--usage)
+    3. [特記事項 / Notes](#pdfsearch-特記事項--notes)
 3. [インストールガイド / Installation Guide](#インストールガイド--installation-guide)
 4. [依存関係 / Dependencies](#依存関係--dependencies)
 5. [著者 / Author](#著者--author)
@@ -64,39 +64,39 @@ python SnapPDF15.py
 - `SnapPDF4.py`と`SnapPDF6.py`: 中間のサイズで写真を表示したい場合に適しています。
 - `SnapPDF.py`と`SnapPDF15.py`: 一つのページに多くの写真を配置し、コンパクトなアルバムを作成したい場合に最適です。
 
-# SnapSearch
+# PDFSearch
 
-SnapSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出す強力なツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
-SnapSearch is a powerful tool that searches the contents of PDF files by keywords to find files with matching contents. It performs AND searches on PDF files in a specified directory using entered keywords and outputs the search results to a CSV file. Japanese can also be searched.
+PDFSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出す強力なツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
+PDFSearch is a powerful tool that searches the contents of PDF files by keywords to find files with matching contents. It performs AND searches on PDF files in a specified directory using entered keywords and outputs the search results to a CSV file. Japanese can also be searched.
 
-## SnapSearch 特徴 / Features
+## PDFSearch 特徴 / Features
 - 複数キーワードによるAND検索機能
 - 指定ディレクトリ内のPDFファイルを対象とした検索
 - 検索結果のCSV出力機能
 - 日本語キーワード検索に対応
 - シンプルなGUIによる直感的な操作性
 
-## SnapSearch 使い方 / Usage
-1. `SnapSearch.py`をダウンロードし、実行したいディレクトリに配置します。
+## PDFSearch 使い方 / Usage
+1. `PDFSearch.py`をダウンロードし、実行したいディレクトリに配置します。
 2. コマンドプロンプトまたはターミナルを開き、以下のコマンドを実行します：
 ```bash
-python SnapSearch.py
+python PDFSearch.py
 ```
 4. GUIから検索したいディレクトリとキーワードを入力し、検索を開始します。
 
-## SnapSearch 特記事項 / Notes
+## PDFSearch 特記事項 / Notes
 日本語環境の場合、`PdfReadWarning: Advanced encoding /UniJIS-UCS2-H not implemented yet`という警告メッセージが表示されることがあります。これは、使用しているPDF処理ライブラリが特定の日本語エンコーディングを完全にサポートしていないことを示しています。しかし、この警告はプログラムの実行を停止させるものではなく、検索は引き続き行われます。したがって、このメッセージが表示されても心配する必要はありません。検索が完了するまでしばらくお待ちください。
 
-## SnapSearch  必要条件
+## PDFSearch  必要条件
 - Python 3.x
 - PyPDF2ライブラリ
 
 # インストールガイド
 
-SnapPDFとSnapSearchを使用する前に、以下の手順に従って必要なソフトウェアをインストールしてください。
+SnapPDFとPDFSearchを使用する前に、以下の手順に従って必要なソフトウェアをインストールしてください。
 
 ## Pythonのインストール
-SnapPDFとSnapSearchはPython 3.xを必要とします。まだインストールしていない場合は、以下の手順に従ってください。
+SnapPDFとPDFSearchはPython 3.xを必要とします。まだインストールしていない場合は、以下の手順に従ってください。
 
 1. Python公式ウェブサイトにアクセスします。
 2. お使いのオペレーティングシステムに合わせたPython 3.xのインストーラーをダウンロードします。
@@ -126,7 +126,7 @@ pip install pandas
 pip install tkinterdnd2
 ```
 
-SnapSearchはPyPDF2ライブラリを使用します。以下のコマンドを実行してインストールしてください。
+PDFSearchはPyPDF2ライブラリを使用します。以下のコマンドを実行してインストールしてください。
 
 ```bash
 pip install PyPDF2
