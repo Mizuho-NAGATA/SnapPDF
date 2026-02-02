@@ -52,9 +52,31 @@ class SnapPDFApplication:
 
     def _setup_gui(self) -> None:
         """Setup the GUI layout"""
-        # Main container
-        main_frame = tk.Frame(self.root, padx=10, pady=10)
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        # Create a canvas with scrollbar
+        canvas = tk.Canvas(self.root)
+        scrollbar = tk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
+
+        # Scrollable frame inside canvas
+        scrollable_frame = tk.Frame(canvas, padx=10, pady=10)
+        scrollable_frame.bind(
+            "<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Pack canvas and scrollbar
+        canvas.pack(side="left", fill=tk.BOTH, expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Bind mouse wheel scrolling
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+        # Main container (now inside scrollable_frame)
+        main_frame = scrollable_frame
 
         # Title section
         self._create_title_section(main_frame)
