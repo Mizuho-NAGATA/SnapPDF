@@ -132,7 +132,7 @@ SnapSearchはPyPDF2ライブラリを使用します。以下のコマンドを�
 pip install PyPDF2
 ```
 ## 著者
-Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂 - Institute of Laser Engineering, Osaka University
+Copyright (c) 2023 NAGATA Mizuho, 永田 みず穂 - Institute of Laser Engineering, The University of Osaka 
 
 ## ライセンス License
 このプロジェクトはMITライセンスの下で公開されています。ライセンスの全文については、[LICENSE](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/LICENSE) をご覧ください。
