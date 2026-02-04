@@ -3,7 +3,7 @@
 ***DEMO:***  
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
 
-「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるシンプルで強力なツールです。  
+「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるツールです。  
 同梱の「PDFSearch」によって、保存したPDF本文を検索することができます。   
 "SnapPDF" is a simple and powerful tool that combines multiple images into a single PDF file. The program places a specific number of photos on an A4 horizontal page and instantly creates a PDF for presentation or archival purposes.  
  The included "PDFSearch" also allows you to search the saved PDF text.
@@ -66,7 +66,7 @@ python SnapPDF15.py
 
 # PDFSearch
 
-PDFSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出す強力なツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
+PDFSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出すツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
 PDFSearch is a powerful tool that searches the contents of PDF files by keywords to find files with matching contents. It performs AND searches on PDF files in a specified directory using entered keywords and outputs the search results to a CSV file. Japanese can also be searched.
 
 ## PDFSearch 特徴 / Features
