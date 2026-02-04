@@ -1,136 +1,152 @@
 # -------------------------------------------------------------
-# PDFキーワード検索とCSV出力プログラム
-# このプログラム「PDF Search」はChatGPTの支援を受けて開発されました。
-# Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
+# PDFキーワード検索とCSV出力プログラム（クラス化リファクタリング版）
+# このプログラム「PDFSearch」は ChatGPT と共に開発し、Copilotによって改良されました。
+# Copyright (c) 2023
+# NAGATA Mizuho, Institute of Laser Engineering, The University of Osaka.
 # Created on: 2023-09-15
-# Last updated on: 2026-02-02
+# Last updated on: 2026-02-04 (Class-based refactoring)
 # -------------------------------------------------------------
+
 import csv
 import os
 import tkinter as tk
-from datetime import datetime  # Import the datetime module
-from tkinter import filedialog
+from datetime import datetime
+from tkinter import filedialog, messagebox
 
 from PyPDF2 import PdfReader
 
 
-def search_pdf():
-    # Display a dialog box to select a directory
-    selected_directory = filedialog.askdirectory(
-        title="Select the directory you want to search"
-    )  # Set the title of the dialog box
+class PDFSearchApp:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("PDF Text Search - PDFSearch")
+        self.root.geometry("420x230")
 
-    # Get the entered keywords
-    search_keywords = keyword_entry.get().split()  # Split keywords by space
+        self.keyword_entry = None
+        self.and_checkbox_var = tk.BooleanVar(value=True)
 
-    # Get the state of the and search checkbox
-    and_search = and_checkbox_var.get()
+        self._build_gui()
 
-    # List to store search results
-    search_results = []
-
-    # Search for PDF files in the directory
-    for root, _, files in os.walk(selected_directory):
-        for filename in files:
-            if filename.endswith(".pdf"):
-                pdf_file_path = os.path.join(root, filename)
-
-                # Open the PDF file
-                pdf_reader = PdfReader(pdf_file_path)
-
-                # Search each page
-                for page_num, page in enumerate(pdf_reader.pages):
-                    page_text = page.extract_text()
-
-                    # and search: Check if all keywords are included
-                if and_search:
-                    if all(keyword in page_text for keyword in search_keywords):
-                        # Add keywords to search results
-                        search_results.append(
-                            (filename, pdf_file_path, search_keywords)
-                        )
-                        continue  # No need to check other pages
-                # or search: Check if any one keyword is included
-                else:
-                    if any(keyword in page_text for keyword in search_keywords):
-                        # Add keywords to search results
-                        search_results.append(
-                            (filename, pdf_file_path, search_keywords)
-                        )
-
-    # Get the current date and time
-    current_datetime = datetime.now()
-
-    # Format the current date and time
-    date_time_str = current_datetime.strftime("%Y%m%d_%H%M%S")
-
-    # Path to the search result CSV file (including the current time)
-    csv_file_path = f"search_results_{date_time_str}.csv"
-
-    # Write the search results to a CSV file
-    with open(csv_file_path, "w", newline="", encoding="shift-jis") as csv_file:
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(["File name", "Location", "Keywords"])
-
-        for filename, location, keywords in search_results:
-            csv_writer.writerow([filename, location, ", ".join(keywords)])
-
-    # Create a window to display search results
-    result_window = tk.Toplevel(window)
-    result_window.title("PDF Text Search Results")
-
-    if not search_results:
-        # Label when there are no search results
-        result_label = tk.Label(result_window, text="No keywords were found")
-        result_label.pack()
-    else:
-        # Display search results
-        result_label = tk.Label(
-            result_window, text="PDF files where keywords were found:"
+    # -------------------------------------------------------------
+    # GUI構築
+    # -------------------------------------------------------------
+    def _build_gui(self):
+        label = tk.Label(
+            self.root,
+            text="Search keywords\n(separate with space, supports Japanese):",
+            font=("Helvetica", 14),
         )
-        result_label.pack()
+        label.pack()
 
-    # Display the file name, location, and keywords of the search results
-    for filename, location, keywords in search_results:
-        keyword_str = ", ".join(keywords)
-        result_text = (
-            f"File name: {filename}, Location: {location}, Keywords: {keyword_str}"
+        self.keyword_entry = tk.Entry(self.root, font=("Helvetica", 14))
+        self.keyword_entry.pack()
+
+        and_checkbox = tk.Checkbutton(
+            self.root,
+            text="AND search",
+            font=("Helvetica", 14),
+            variable=self.and_checkbox_var,
         )
-        result_label = tk.Label(result_window, text=result_text, font=("Helvetica", 14))
-        result_label.pack()
+        and_checkbox.pack()
+
+        search_button = tk.Button(
+            self.root,
+            text="Select directory\nOutput search results to CSV",
+            font=("Helvetica", 14),
+            command=self.search_pdf,
+        )
+        search_button.pack(pady=10)
+
+    # -------------------------------------------------------------
+    # PDF検索処理
+    # -------------------------------------------------------------
+    def search_pdf(self):
+        directory = filedialog.askdirectory(title="Select directory to search")
+        if not directory:
+            return
+
+        keywords = self.keyword_entry.get().split()
+        if not keywords:
+            messagebox.showerror("Error", "Please enter at least one keyword")
+            return
+
+        and_search = self.and_checkbox_var.get()
+        results = []
+
+        for root, _, files in os.walk(directory):
+            for filename in files:
+                if filename.lower().endswith(".pdf"):
+                    pdf_path = os.path.join(root, filename)
+
+                    try:
+                        reader = PdfReader(pdf_path)
+                    except Exception:
+                        continue
+
+                    found = False
+
+                    for page in reader.pages:
+                        text = page.extract_text() or ""
+
+                        if and_search:
+                            if all(k in text for k in keywords):
+                                found = True
+                                break
+                        else:
+                            if any(k in text for k in keywords):
+                                found = True
+                                break
+
+                    if found:
+                        results.append((filename, pdf_path, keywords))
+
+        self.export_csv(results)
+        self.show_results(results)
+
+    # -------------------------------------------------------------
+    # CSV出力
+    # -------------------------------------------------------------
+    def export_csv(self, results):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        csv_path = f"search_results_{timestamp}.csv"
+
+        with open(csv_path, "w", newline="", encoding="shift-jis") as f:
+            writer = csv.writer(f)
+            writer.writerow(["File name", "Location", "Keywords"])
+
+            for filename, location, keywords in results:
+                writer.writerow([filename, location, ", ".join(keywords)])
+
+    # -------------------------------------------------------------
+    # 結果表示ウィンドウ
+    # -------------------------------------------------------------
+    def show_results(self, results):
+        win = tk.Toplevel(self.root)
+        win.title("PDF Search Results")
+
+        if not results:
+            label = tk.Label(win, text="No keywords were found", font=("Helvetica", 14))
+            label.pack()
+            return
+
+        header = tk.Label(
+            win, text="PDF files where keywords were found:", font=("Helvetica", 14)
+        )
+        header.pack()
+
+        for filename, location, keywords in results:
+            text = (
+                f"File: {filename}\nPath: {location}\nKeywords: {', '.join(keywords)}"
+            )
+            label = tk.Label(win, text=text, font=("Helvetica", 12), justify="left")
+            label.pack(pady=5)
+
+    # -------------------------------------------------------------
+    # 実行
+    # -------------------------------------------------------------
+    def run(self):
+        self.root.mainloop()
 
 
-# Create a GUI window
-window = tk.Tk()
-window.title("PDF Text Search Snap Search")
-
-# Change the size of the window
-window.geometry("400x200")  # Width 400 pixels, height 200 pixels
-
-# Keyword input field
-keyword_label = tk.Label(
-    window,
-    text="Search keywords \n (separate with space, \n supports Japanese):",
-    font=("Helvetica", 14),
-)
-keyword_label.pack()
-keyword_entry = tk.Entry(window, font=("Helvetica", 14))
-keyword_entry.pack()
-
-# and search checkbox (checked from the beginning)
-and_checkbox_var = tk.BooleanVar(value=True)
-and_checkbox = tk.Checkbutton(
-    window, text="and search", font=("Helvetica", 14), variable=and_checkbox_var
-)
-and_checkbox.pack()
-
-# Directory selection and CSV output button
-export_csv_button = tk.Button(
-    window,
-    text="Select directory \n Output search results to CSV",
-    font=("Helvetica", 14),
-    command=search_pdf,
-)
-export_csv_button.pack()
-
-window.mainloop()
+if __name__ == "__main__":
+    PDFSearchApp().run()
