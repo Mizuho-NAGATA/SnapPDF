@@ -112,6 +112,7 @@ python SnapPDF15.py
 
 PDFSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出すツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
 PDFSearch is a powerful tool that searches the contents of PDF files by keywords to find files with matching contents. It performs AND searches on PDF files in a specified directory using entered keywords and outputs the search results to a CSV file. Japanese can also be searched.  
+
 v2.0.0 では以下を改善：
 
 - クラス化  
