@@ -12,6 +12,7 @@
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)  
 「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるツールです。  
 同梱の「PDFSearch」によって、保存したPDF本文を検索することができます。  
+v2.0.0 は、見た目や使用方法に大きな変更はありませんが、内部機能は v1.2.2 から大幅に改善されています。  
 "SnapPDF" is a simple and powerful tool that combines multiple images into a single PDF file.  
 The included "PDFSearch" allows you to search the text inside saved PDF files.
 
