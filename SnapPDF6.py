@@ -1,172 +1,273 @@
 # -------------------------------------------------------------
-# 6 photos per page to pdf. You can select images from multiple folders.
-# This program "SnapPDF" was developed with the assistance of ChatGPT.
-# Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, Osaka University.
+# 1ページあたり6枚の写真をPDFに出力します。複数のフォルダから画像を選択可能。
+# このプログラム「SnapPDF」は ChatGPT と共に開発し、Copilot によって改良されました。
+# Copyright (c) 2023 NAGATA Mizuho, Institute of Laser Engineering, The University of Osaka.
 # Created on: 2023-09-29
-# Last updated on: 2024-06-20
+# Last updated on: 2026-02-04 (Class-based refactoring)
 # -------------------------------------------------------------
-from datetime import datetime
-from PIL import Image, ImageTk
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import landscape, A4
-from reportlab.lib.units import inch
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Image as PlatypusImage, Table, Paragraph, Spacer
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-import tkinter as tk
-from tkinter import Tk, Label, Frame, filedialog, messagebox
+
 import os
 import subprocess
 import threading
+import tkinter as tk
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
+from functools import lru_cache
+from tkinter import Frame, Label, filedialog, messagebox
 
-# PDF file settings
-pdfmetrics.registerFont(TTFont('BIZ-UDGothicR', 'BIZ-UDGothicR.ttc'))
-font_name = 'BIZ-UDGothicR'
+from PIL import Image, ImageTk
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import Image as PlatypusImage
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table
+
+# PDF font settings
+pdfmetrics.registerFont(TTFont("BIZ-UDGothicR", "BIZ-UDGothicR.ttc"))
 styles = getSampleStyleSheet()
-styles['Normal'].fontName = font_name
-styles['Normal'].fontSize = 10
-styles['Title'].fontName = font_name
-styles['Title'].fontSize = 16
+styles["Normal"].fontName = "BIZ-UDGothicR"
+styles["Normal"].fontSize = 10
+styles["Title"].fontName = "BIZ-UDGothicR"
+styles["Title"].fontSize = 16
 
-image_paths = []  # List of image paths
 
-def select_images():
-    new_image_paths = list(filedialog.askopenfilenames(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]))
-    if new_image_paths:
-        image_paths.extend(new_image_paths)
-        messagebox.showinfo("Image Selection", f"Number of selected images: {len(new_image_paths)}")
-        threading.Thread(target=display_thumbnails).start()  # Start thumbnail generation in a separate thread
+class SnapPDF6App:
+    def __init__(self):
+        self.image_paths = []  # 選択された画像パス
+        self.photo_images = []  # サムネイル保持（GC対策）
+        self.entries = []  # Title / Remarks
 
-# Create a list to store the PhotoImage objects
-photo_images = []
+        self.root = tk.Tk()
+        self.root.title("SnapPDF6")
 
-def display_thumbnails():
-    global photo_images  # Declare the list as global
-    if image_paths:
-        if thumbnail_frame.winfo_children():
-            for widget in thumbnail_frame.winfo_children():
-                widget.destroy()
+        self.thumbnail_frame = None
 
-        num_images = len(image_paths)
+        self._build_gui()
+
+    # -------------------------------------------------------------
+    # GUI構築
+    # -------------------------------------------------------------
+    def _build_gui(self):
+        input_frame = tk.Frame(self.root)
+        input_frame.pack(padx=10, pady=10)
+
+        fields = ["Title", "Remarks"]
+        for field in fields:
+            frame = tk.Frame(input_frame)
+            frame.pack(pady=5)
+
+            label = tk.Label(frame, text=field, width=15, font=("BIZ-UDGothicR", 14))
+            label.pack(side=tk.LEFT)
+
+            entry = tk.Entry(frame, font=("BIZ-UDGothicR", 14))
+            entry.pack(side=tk.LEFT)
+
+            self.entries.append(entry)
+
+        select_button = tk.Button(
+            self.root,
+            text="Select Images",
+            command=self.select_images,
+            font=("BIZ-UDGothicR", 14),
+        )
+        select_button.pack(pady=10)
+
+        export_button = tk.Button(
+            self.root,
+            text="Output to PDF",
+            command=self.create_pdf,
+            font=("BIZ-UDGothicR", 14),
+        )
+        export_button.pack(pady=10)
+
+        self.thumbnail_frame = Frame(self.root)
+        self.thumbnail_frame.pack(padx=10, pady=10)
+
+    # -------------------------------------------------------------
+    # 画像選択
+    # -------------------------------------------------------------
+    def select_images(self):
+        new_paths = list(
+            filedialog.askopenfilenames(
+                filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp")]
+            )
+        )
+        if new_paths:
+            self.image_paths.extend(new_paths)
+            messagebox.showinfo(
+                "Image Selection", f"Number of selected images: {len(new_paths)}"
+            )
+            threading.Thread(target=self.display_thumbnails).start()
+
+    # -------------------------------------------------------------
+    # サムネイル生成（キャッシュ付き）
+    # -------------------------------------------------------------
+    @lru_cache(maxsize=None)
+    def generate_thumbnail(self, file_path):
+        image = Image.open(file_path)
+        image.thumbnail((100, 100))
+        return ImageTk.PhotoImage(image=image)
+
+    # -------------------------------------------------------------
+    # サムネイル表示
+    # -------------------------------------------------------------
+    def display_thumbnails(self):
+        if not self.image_paths:
+            return
+
+        for widget in self.thumbnail_frame.winfo_children():
+            widget.destroy()
+
+        num_images = len(self.image_paths)
         num_columns = 10
-        num_rows = (num_images + num_columns - 1) // num_columns
+        self.photo_images.clear()
 
-        for i, file_path in enumerate(image_paths):
-            image = Image.open(file_path)
-            image.thumbnail((100, 100))
-            photo = ImageTk.PhotoImage(image=image)
-            photo_images.append(photo)  # Add the PhotoImage object to the list
-            label = Label(thumbnail_frame, image=photo_images[-1])  # Use the last added PhotoImage object
-            label.grid(row=i // num_columns, column=i % num_columns, padx=5, pady=5)
+        def update_thumbnails(start, end):
+            for i in range(start, end):
+                if i >= num_images:
+                    return
 
-def create_pdf():
-    now = datetime.now()
-    timestamp = now.strftime("%y%m%d_%H%M%S")
-    pdf_file_path = timestamp + ".pdf"
+                photo = self.generate_thumbnail(self.image_paths[i])
+                self.photo_images.append(photo)
 
-    if not image_paths:
-        messagebox.showerror("Error", "Please select an image")
-        return
+                container = Frame(self.thumbnail_frame)
+                container.grid(
+                    row=(i // num_columns) * 2, column=i % num_columns, padx=5, pady=5
+                )
 
-    doc = SimpleDocTemplate(pdf_file_path, pagesize=landscape(A4), topMargin=1.5 * inch, bottomMargin=0.1 * inch)
+                label = Label(container, image=photo)
+                label.pack()
 
-    content = []
+                filename = os.path.basename(self.image_paths[i])
+                name_label = Label(
+                    container, text=filename, wraplength=100, font=("BIZ-UDGothicR", 8)
+                )
+                name_label.pack()
 
-    def add_title_and_page_number(canvas, doc, title_text, remarks_text):
-        title_style = styles["Title"]
-        title = Paragraph(title_text, title_style)
-        title.wrapOn(canvas, A4[1], A4[0])
-        x = (A4[1] - title.width) / 2
-        y = A4[0] - inch * 1
-        title.drawOn(canvas, x, y)
+                self.thumbnail_frame.update_idletasks()
 
-        page_num = canvas.getPageNumber()
-        canvas.setFont(font_name, 10)
-        canvas.setFillColor(colors.black)
-        page_width, page_height = landscape(A4)
-        text = f"Page {page_num}"
-        canvas.drawCentredString(page_width / 2, inch * 0.1, text)
+        with ThreadPoolExecutor() as executor:
+            batch_size = 10
+            for start in range(0, num_images, batch_size):
+                executor.submit(update_thumbnails, start, start + batch_size)
 
-        remarks = Paragraph(remarks_text, styles["Normal"])
-        remarks.wrapOn(canvas, A4[1], A4[0])
-        remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
-
-    # Calculate to maximize the size of the image
-    available_width = A4[1] - 2 * inch
-    available_height = A4[0] - 2.5 * inch - 0.5 * inch  # Consider the space for title, remarks, and page number
-
-    image_table_data = []
-    file_name_table_data = []
-
-    for i, file_path in enumerate(image_paths):
+    # -------------------------------------------------------------
+    # PDF用画像処理
+    # -------------------------------------------------------------
+    def process_image_for_pdf(self, file_path):
         image = Image.open(file_path)
         original_width, original_height = image.size
 
         image_ratio = original_width / original_height
-        new_width = available_width / 3 - 10  # Display in 3 columns, with space in between
+        available_width = A4[1] - 2 * inch
+        available_height = A4[0] - 2.5 * inch - 0.5 * inch
+
+        new_width = available_width / 3 - 10
         new_height = new_width / image_ratio
 
-        # Check if the image fits on the page
-        if new_height > available_height / 2 - 10:  # Display in 2 rows, with space in between
-            new_height = available_height / 2 - 10  # Display in 2 rows, with space in between
+        if new_height > available_height / 2 - 10:
+            new_height = available_height / 2 - 10
             new_width = new_height * image_ratio
 
-        image_table_data.append(PlatypusImage(file_path, width=new_width, height=new_height))
-        file_name_table_data.append(Paragraph(os.path.basename(file_path), styles['Normal']))
+        return (
+            PlatypusImage(file_path, width=new_width, height=new_height),
+            Paragraph(os.path.basename(file_path), styles["Normal"]),
+        )
 
-        # When 3 images are gathered or it's the last image, create a table and add it to content
-        if len(image_table_data) == 3 or i == len(image_paths) - 1:
-            content.append(Table([image_table_data], colWidths=[available_width / 3] * len(image_table_data)))  # Add image table
-            content.append(Spacer(1, 0.1))  # Add minimal space between image and file name
-            content.append(Table([file_name_table_data], colWidths=[available_width / 3] * len(file_name_table_data)))  # Add file name table
-            content.append(Spacer(1, 0.1))  # Add space between lines
-            # Clear the lists
-            image_table_data = []
-            file_name_table_data = []
+    # -------------------------------------------------------------
+    # PDF生成
+    # -------------------------------------------------------------
+    def create_pdf(self):
+        if not self.image_paths:
+            messagebox.showerror("Error", "Please select images")
+            return
 
-    title_text = entries[0].get()
-    remarks_text = entries[1].get()
+        now = datetime.now()
+        pdf_file_path = now.strftime("%y%m%d_%H%M%S") + ".pdf"
 
-    doc.build(content, onFirstPage=lambda canvas, doc: add_title_and_page_number(canvas, doc, title_text, remarks_text),
-              onLaterPages=lambda canvas, doc: add_title_and_page_number(canvas, doc, title_text, remarks_text))
+        doc = SimpleDocTemplate(
+            pdf_file_path,
+            pagesize=landscape(A4),
+            topMargin=1.5 * inch,
+            bottomMargin=0.1 * inch,
+        )
+        content = []
 
-    if os.name == 'nt':
-        subprocess.Popen(["start", pdf_file_path], shell=True)
-    else:
-        subprocess.Popen(["open", pdf_file_path])
+        title_text = self.entries[0].get()
+        remarks_text = self.entries[1].get()
 
-    messagebox.showinfo("Completed", "PDF creation is complete")
+        def add_header(canvas, doc):
+            title = Paragraph(title_text, styles["Title"])
+            title.wrapOn(canvas, A4[1], A4[0])
+            x = (A4[1] - title.width) / 2
+            y = A4[0] - inch * 1
+            title.drawOn(canvas, x, y)
 
-root = tk.Tk()
-root.title("Snap PDF6")
+            page_num = canvas.getPageNumber()
+            canvas.setFont("BIZ-UDGothicR", 10)
+            canvas.drawCentredString(
+                landscape(A4)[0] / 2, inch * 0.1, f"Page {page_num}"
+            )
 
-input_frame = tk.Frame(root)
-input_frame.pack(padx=10, pady=10)
+            remarks = Paragraph(remarks_text, styles["Normal"])
+            remarks.wrapOn(canvas, A4[1], A4[0])
+            remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
 
-fields = ["Title", "Remarks"]
-entries = []
+        # 並列で画像処理
+        with ThreadPoolExecutor() as executor:
+            futures = [
+                executor.submit(self.process_image_for_pdf, path)
+                for path in self.image_paths
+            ]
+            results = [f.result() for f in as_completed(futures)]
 
-for field in fields:
-    frame = tk.Frame(input_frame)
-    frame.pack(pady=5)
+        available_width = A4[1] - 2 * inch
+        table_data = []
+        row_data = []
 
-    label = tk.Label(frame, text=field, width=15, font=("BIZ-UDGothicR", 14))
-    label.pack(side=tk.LEFT)
+        for image, name in results:
+            cell_content = [[image], [name]]
+            cell_table = Table(cell_content)
+            row_data.append(cell_table)
 
-    entry = tk.Entry(frame, font=("BIZ-UDGothicR", 14))
-    entry.pack(side=tk.LEFT)
+            if len(row_data) == 3:
+                table_data.append(row_data)
+                row_data = []
 
-    entries.append(entry)
+            if len(table_data) == 2:
+                content.append(Table(table_data, colWidths=[available_width / 3] * 3))
+                content.append(Spacer(1, 0.1))
+                table_data = []
 
-select_button = tk.Button(root, text="Select Images", command=select_images, font=("BIZ-UDGothicR", 14))
-select_button.pack(pady=10)
+        if row_data:
+            table_data.append(row_data)
 
-export_button = tk.Button(root, text="Output to pdf", command=create_pdf, font=("BIZ-UDGothicR", 14))
-export_button.pack(pady=10)
+        if table_data:
+            content.append(
+                Table(
+                    table_data,
+                    colWidths=[available_width / 3]
+                    * max(len(row) for row in table_data),
+                )
+            )
 
-thumbnail_frame = Frame(root)
-thumbnail_frame.pack(padx=10, pady=10)
+        doc.build(content, onFirstPage=add_header, onLaterPages=add_header)
 
-root.mainloop()
+        if os.name == "nt":
+            subprocess.Popen(["start", pdf_file_path], shell=True)
+        else:
+            subprocess.Popen(["open", pdf_file_path])
+
+        messagebox.showinfo("Completed", "PDF creation is complete")
+
+    # -------------------------------------------------------------
+    # 実行
+    # -------------------------------------------------------------
+    def run(self):
+        self.root.mainloop()
+
+
+if __name__ == "__main__":
+    SnapPDF6App().run()
