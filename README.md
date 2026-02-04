@@ -197,7 +197,6 @@ This project is released under the MIT License. For the full text of the license
 
 ## 謝辞 Acknowledgments
 - このプログラムは、ChatGPT と Copilot の助力によって開発されました。また、ChatGPTを紹介してくれた私の家族に感謝します。
-- このREADEMEファイルは、Copilot の協力によって作成されました。
 - 本開発は文部科学省先端研究基盤共用促進事業（先端研究設備プラットフォームプログラム） JPMXS0450300021である[パワーレーザーDXプラットフォーム](https://powerlaser.jp/)で共用された機器を利用した成果です。
 - このプログラムは、第2回身近な研究DXコンテスト2023 の受賞作品です。
 - This program was developed with the assistance of ChatGPT. I would like to express my gratitude to my family for introducing me to ChatGPT.
