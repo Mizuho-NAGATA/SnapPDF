@@ -1,21 +1,20 @@
-# 📘 **SnapPDF v2.0.0 – README（最新版）**
+# 📘 **SnapPDF v2.0.0 – README**
 
-> **🔥 v2.0.0 はメジャーアップデートです**  
-> 全コードをクラス化し、SnapPDF / SnapPDF2 / 4 / 6 / 15 / PDFSearch を全面再構築しました。  
-> main（v1.2.2）から大幅に改善されています。
+> ** SnapPDF v2.0.0 は、v1 系から内部構造を全面的に再設計したメジャーアップデートです**  
+> 全バージョン（2/4/6/15/Excel版）および PDFSearch をクラス化し、処理速度・安定性・保守性が大幅に向上しました。  
+> 見た目や使用方法に大きな変更はありませんが、内部機能は v1.2.2 から大幅に改善されています。
 
 ---
 
 # SnapPDF
 
 ***DEMO:***  
-![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
-
+![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)  
 「SnapPDF」は、複数の画像を一つのPDFファイルにまとめるツールです。  
-同梱の「PDFSearch」によって、保存したPDF本文を検索することができます。   
-
+同梱の「PDFSearch」によって、保存したPDF本文を検索することができます。  
 "SnapPDF" is a simple and powerful tool that combines multiple images into a single PDF file.  
 The included "PDFSearch" allows you to search the text inside saved PDF files.
+
 ---
 
 # 🆕 **v2.0.0 での主な変更点**
