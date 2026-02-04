@@ -18,7 +18,7 @@
 The included "PDFSearch" allows you to search the text inside saved PDF files.
 ---
 
-# 🆕 **v2.0.0 での主な変更点（重要）**
+# 🆕 **v2.0.0 での主な変更点**
 
 > **main（v1.2.2）からの大幅アップデート内容**
 
