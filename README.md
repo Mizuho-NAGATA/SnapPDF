@@ -21,7 +21,7 @@ The included "PDFSearch" allows you to search the text inside saved PDF files.
 
 # 🆕 **v2.0.0 での主な変更点**
 
-> **main（v1.2.2）からの大幅アップデート内容**
+> **v1.2.2 からの大幅アップデート内容**
 
 ### ✅ **1. 全コードをクラス化（最大の変更）**
 - SnapPDF / SnapPDF2 / 4 / 6 / 15 / PDFSearch をすべてクラスベースに再構築  
