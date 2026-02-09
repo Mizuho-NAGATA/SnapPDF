@@ -46,12 +46,14 @@ SnapPDF v2.0.0 は、全コードのクラス化と内部構造の刷新によ�
 - 「SnapPDF2, 4, 6, 15」: A4横のページに最大2, 4, 6, 15枚の写真を配置
 - 「SnapPDF」：画像＋Excel データを 1 つの PDF に統合  
 - クラス化により高速・安定  
-- インストール不要で、Pythonスクリプトを直接実行  
+- インストール不要で、Pythonスクリプトを直接実行
+- **マルチプラットフォーム対応**: Windows, macOS, Linux で動作
 - Combine multiple images into one PDF file
 - Images can be selected from multiple folders
 - SnapPDF2/4/6/15: place 2/4/6/15 photos per A4 landscape page  
 - SnapPDF: combine images + Excel data  
 - No installation required
+- **Multi-platform support**: Works on Windows, macOS, and Linux
   
 ## 使い方 / Usage
 1. GitHubリポジトリから適切な`.py`ファイルをダウンロードしてください。
@@ -118,6 +120,18 @@ python PDFSearch.py
 
 SnapPDFとPDFSearchを使用する前に、以下の手順に従って必要なソフトウェアをインストールしてください。
 
+## 対応プラットフォーム / Supported Platforms
+
+SnapPDF と PDFSearch は以下のプラットフォームで動作確認済みです：
+- **Windows** (Windows 10/11)
+- **macOS** (Mac OS X 10.10以降)
+- **Linux** (Ubuntu, Debian, Fedora など主要なディストリビューション)
+
+SnapPDF and PDFSearch have been tested and are confirmed to work on the following platforms:
+- **Windows** (Windows 10/11)
+- **macOS** (Mac OS X 10.10 and later)
+- **Linux** (major distributions including Ubuntu, Debian, Fedora)
+
 ## Pythonのインストール
 SnapPDFとPDFSearchはPython 3.xを必要とします。まだインストールしていない場合は、以下の手順に従ってください。
 
@@ -158,6 +172,25 @@ pip install tk
 pip install pandas
 pip install tkinterdnd2
 pip install PyPDF2
+```
+
+### プラットフォーム固有の要件 / Platform-Specific Requirements
+
+**Linux ユーザーへの注意 / Note for Linux Users:**
+
+Linux システムでは、PDF ファイルを自動的に開くために `xdg-open` が必要です。ほとんどの主要な Linux ディストリビューションにはデフォルトでインストールされていますが、もしインストールされていない場合は、以下のコマンドでインストールしてください：
+
+On Linux systems, `xdg-open` is required to automatically open PDF files. It comes pre-installed on most major Linux distributions, but if it's not installed, you can install it using:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install xdg-utils
+
+# Fedora/RHEL/CentOS
+sudo yum install xdg-utils
+
+# Arch Linux
+sudo pacman -S xdg-utils
 ```
 
 ---
