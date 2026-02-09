@@ -8,6 +8,7 @@
 # Last updated on: 2026-02-04 (Class-based refactoring)
 # -------------------------------------------------------------
 import os
+import platform
 import subprocess
 import tkinter as tk
 from datetime import datetime
@@ -443,8 +444,10 @@ class SnapPDFApp:
         # PDFを開く
         if os.name == "nt":
             os.startfile(pdf_file_path)
-        else:
+        elif platform.system() == "Darwin":
             subprocess.Popen(["open", pdf_file_path])
+        else:
+            subprocess.Popen(["xdg-open", pdf_file_path])
 
         messagebox.showinfo("Completed", "PDF creation is complete")
 

@@ -9,6 +9,7 @@
 # -------------------------------------------------------------
 
 import os
+import platform
 import subprocess
 import threading
 import tkinter as tk
@@ -242,8 +243,10 @@ class SnapPDF2App:
 
         if os.name == "nt":
             subprocess.Popen(["start", pdf_file_path], shell=True)
-        else:
+        elif platform.system() == "Darwin":
             subprocess.Popen(["open", pdf_file_path])
+        else:
+            subprocess.Popen(["xdg-open", pdf_file_path])
 
         messagebox.showinfo("Completed", "PDF creation is complete")
 
