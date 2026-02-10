@@ -34,12 +34,69 @@ from reportlab.platypus import (
 )
 from tkinterdnd2 import DND_FILES, TkinterDnD
 
+# -------------------------------------------------------------
+# Cross-platform font selection
+# -------------------------------------------------------------
+def select_font():
+    """
+    Select appropriate font based on the operating system.
+    Returns tuple: (pdf_font_name, gui_font_name)
+    """
+    system = platform.system()
+    
+    # Try to register fonts based on OS
+    if system == "Windows":
+        # Windows: Try BIZ-UDGothicR, then SimHei, then fallback
+        font_attempts = [
+            ("BIZ-UDGothicR", "BIZ-UDGothicR.ttc"),
+            ("BIZ-UDGothicR", "BIZ-UDGothicR.ttf"),
+            ("SimHei", "simhei.ttf"),
+            ("Arial", None),  # System default, no registration needed
+        ]
+    elif system == "Darwin":  # macOS
+        # macOS: Try Hiragino Sans or fallback to Helvetica
+        font_attempts = [
+            ("HiraginoSans", "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc"),
+            ("HiraginoSans", "/System/Library/Fonts/Hiragino Sans GB W3.otf"),
+            ("HiraKakuProN-W3", "/System/Library/Fonts/ヒラギノ角ゴ ProN W3.otc"),
+            ("Helvetica", None),  # System default, no registration needed
+        ]
+    else:  # Linux and others
+        # Linux: Try DejaVu Sans or other common fonts
+        font_attempts = [
+            ("DejaVuSans", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+            ("DejaVuSans", "/usr/share/fonts/dejavu/DejaVuSans.ttf"),
+            ("LiberationSans", "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),
+            ("FreeSans", "/usr/share/fonts/truetype/freefont/FreeSans.ttf"),
+            ("Helvetica", None),  # Fallback
+        ]
+    
+    # Try each font in order
+    for font_name, font_path in font_attempts:
+        try:
+            if font_path:
+                # Try to register the font
+                pdfmetrics.registerFont(TTFont(font_name, font_path))
+                return (font_name, font_name)
+            else:
+                # Use system default (Helvetica/Times-Roman are built-in to reportlab)
+                return (font_name, font_name)
+        except Exception:
+            # Font file not found or registration failed, try next
+            continue
+    
+    # Ultimate fallback: use reportlab's built-in Helvetica
+    return ("Helvetica", "Helvetica")
+
+
+# Initialize fonts
+PDF_FONT_NAME, GUI_FONT_NAME = select_font()
+
 # PDF file settings (globalな設定だが状態は持たないのでこのままでOK)
-pdfmetrics.registerFont(TTFont("BIZ-UDGothicR", "BIZ-UDGothicR.ttc"))
 styles = getSampleStyleSheet()
-styles["Normal"].fontName = "BIZ-UDGothicR"
+styles["Normal"].fontName = PDF_FONT_NAME
 styles["Normal"].fontSize = 10
-styles["Title"].fontName = "BIZ-UDGothicR"
+styles["Title"].fontName = PDF_FONT_NAME
 styles["Title"].fontSize = 16
 styles["Title"].alignment = 1  # center
 
@@ -75,10 +132,10 @@ class SnapPDFApp:
             frame = tk.Frame(input_frame)
             frame.pack(pady=5)
 
-            label = tk.Label(frame, text=field, width=15, font=("BIZ-UDGothicR", 14))
+            label = tk.Label(frame, text=field, width=15, font=(GUI_FONT_NAME, 14))
             label.pack(side=tk.LEFT)
 
-            entry = tk.Entry(frame, font=("BIZ-UDGothicR", 14))
+            entry = tk.Entry(frame, font=(GUI_FONT_NAME, 14))
             entry.pack(side=tk.LEFT)
 
             self.entries.append(entry)
@@ -88,7 +145,7 @@ class SnapPDFApp:
             self.root,
             text="Select Excel File",
             command=self.select_excel_file,
-            font=("BIZ-UDGothicR", 14),
+            font=(GUI_FONT_NAME, 14),
         )
         select_excel_button.pack(pady=10)
 
@@ -96,7 +153,7 @@ class SnapPDFApp:
             self.root,
             text="Select Images",
             command=self.select_images,
-            font=("BIZ-UDGothicR", 14),
+            font=(GUI_FONT_NAME, 14),
         )
         select_button.pack(pady=10)
 
@@ -104,7 +161,7 @@ class SnapPDFApp:
             self.root,
             text="Move Up",
             command=self.move_up,
-            font=("BIZ-UDGothicR", 14),
+            font=(GUI_FONT_NAME, 14),
         )
         move_up_button.pack(pady=10)
 
@@ -112,7 +169,7 @@ class SnapPDFApp:
             self.root,
             text="Move Down",
             command=self.move_down,
-            font=("BIZ-UDGothicR", 14),
+            font=(GUI_FONT_NAME, 14),
         )
         move_down_button.pack(pady=10)
 
@@ -120,7 +177,7 @@ class SnapPDFApp:
             self.root,
             text="Delete Selected",
             command=self.delete_selected_images,
-            font=("BIZ-UDGothicR", 14),
+            font=(GUI_FONT_NAME, 14),
         )
         delete_button.pack(pady=10)
 
@@ -128,7 +185,7 @@ class SnapPDFApp:
             self.root,
             text="Output to PDF",
             command=self.create_pdf,
-            font=("BIZ-UDGothicR", 14),
+            font=(GUI_FONT_NAME, 14),
         )
         export_button.pack(pady=10)
 
@@ -269,7 +326,7 @@ class SnapPDFApp:
                     container,
                     text=filename,
                     wraplength=100,
-                    font=("BIZ-UDGothicR", 8),
+                    font=(GUI_FONT_NAME, 8),
                 )
                 name_label.pack()
 
@@ -316,7 +373,7 @@ class SnapPDFApp:
 
             # Page number
             page_num = c.getPageNumber()
-            c.setFont("BIZ-UDGothicR", 10)
+            c.setFont(PDF_FONT_NAME, 10)
             c.setFillColor(colors.black)
             page_width, page_height = landscape(A4)
             text = f"Page {page_num}"
@@ -340,7 +397,7 @@ class SnapPDFApp:
                 ("BACKGROUND", (0, 0), (-1, 0), (0.8, 0.9, 1.0)),
                 ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
                 ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ("FONT", (0, 0), (-1, -1), "BIZ-UDGothicR", 10),
+                ("FONT", (0, 0), (-1, -1), PDF_FONT_NAME, 10),
             ]
 
             for row in range(2, data_table._nrows, 2):

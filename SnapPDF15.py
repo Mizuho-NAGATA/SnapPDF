@@ -25,12 +25,69 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Image as PlatypusImage
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table
 
+# -------------------------------------------------------------
+# Cross-platform font selection
+# -------------------------------------------------------------
+def select_font():
+    """
+    Select appropriate font based on the operating system.
+    Returns tuple: (pdf_font_name, gui_font_name)
+    """
+    system = platform.system()
+    
+    # Try to register fonts based on OS
+    if system == "Windows":
+        # Windows: Try BIZ-UDGothicR, then SimHei, then fallback
+        font_attempts = [
+            ("BIZ-UDGothicR", "BIZ-UDGothicR.ttc"),
+            ("BIZ-UDGothicR", "BIZ-UDGothicR.ttf"),
+            ("SimHei", "simhei.ttf"),
+            ("Arial", None),  # System default, no registration needed
+        ]
+    elif system == "Darwin":  # macOS
+        # macOS: Try Hiragino Sans or fallback to Helvetica
+        font_attempts = [
+            ("HiraginoSans", "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc"),
+            ("HiraginoSans", "/System/Library/Fonts/Hiragino Sans GB W3.otf"),
+            ("HiraKakuProN-W3", "/System/Library/Fonts/ヒラギノ角ゴ ProN W3.otc"),
+            ("Helvetica", None),  # System default, no registration needed
+        ]
+    else:  # Linux and others
+        # Linux: Try DejaVu Sans or other common fonts
+        font_attempts = [
+            ("DejaVuSans", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+            ("DejaVuSans", "/usr/share/fonts/dejavu/DejaVuSans.ttf"),
+            ("LiberationSans", "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),
+            ("FreeSans", "/usr/share/fonts/truetype/freefont/FreeSans.ttf"),
+            ("Helvetica", None),  # Fallback
+        ]
+    
+    # Try each font in order
+    for font_name, font_path in font_attempts:
+        try:
+            if font_path:
+                # Try to register the font
+                pdfmetrics.registerFont(TTFont(font_name, font_path))
+                return (font_name, font_name)
+            else:
+                # Use system default (Helvetica/Times-Roman are built-in to reportlab)
+                return (font_name, font_name)
+        except Exception:
+            # Font file not found or registration failed, try next
+            continue
+    
+    # Ultimate fallback: use reportlab's built-in Helvetica
+    return ("Helvetica", "Helvetica")
+
+
+# Initialize fonts
+PDF_FONT_NAME, GUI_FONT_NAME = select_font()
+
 # PDF font settings
-pdfmetrics.registerFont(TTFont("BIZ-UDGothicR", "BIZ-UDGothicR.ttc"))
 styles = getSampleStyleSheet()
-styles["Normal"].fontName = "BIZ-UDGothicR"
+styles["Normal"].fontName = PDF_FONT_NAME
 styles["Normal"].fontSize = 10
-styles["Title"].fontName = "BIZ-UDGothicR"
+styles["Title"].fontName = PDF_FONT_NAME
 styles["Title"].fontSize = 16
 
 
@@ -59,10 +116,10 @@ class SnapPDF15App:
             frame = tk.Frame(input_frame)
             frame.pack(pady=5)
 
-            label = tk.Label(frame, text=field, width=15, font=("BIZ-UDGothicR", 14))
+            label = tk.Label(frame, text=field, width=15, font=(GUI_FONT_NAME, 14))
             label.pack(side=tk.LEFT)
 
-            entry = tk.Entry(frame, font=("BIZ-UDGothicR", 14))
+            entry = tk.Entry(frame, font=(GUI_FONT_NAME, 14))
             entry.pack(side=tk.LEFT)
 
             self.entries.append(entry)
@@ -71,7 +128,7 @@ class SnapPDF15App:
             self.root,
             text="Select Images",
             command=self.select_images,
-            font=("BIZ-UDGothicR", 14),
+            font=(GUI_FONT_NAME, 14),
         )
         select_button.pack(pady=10)
 
@@ -79,7 +136,7 @@ class SnapPDF15App:
             self.root,
             text="Output to PDF",
             command=self.create_pdf,
-            font=("BIZ-UDGothicR", 14),
+            font=(GUI_FONT_NAME, 14),
         )
         export_button.pack(pady=10)
 
@@ -143,7 +200,7 @@ class SnapPDF15App:
 
                 filename = os.path.basename(self.image_paths[i])
                 name_label = Label(
-                    container, text=filename, wraplength=100, font=("BIZ-UDGothicR", 8)
+                    container, text=filename, wraplength=100, font=(GUI_FONT_NAME, 8)
                 )
                 name_label.pack()
 
@@ -206,7 +263,7 @@ class SnapPDF15App:
             title.drawOn(canvas, x, y)
 
             page_num = canvas.getPageNumber()
-            canvas.setFont("BIZ-UDGothicR", 10)
+            canvas.setFont(PDF_FONT_NAME, 10)
             canvas.drawCentredString(
                 landscape(A4)[0] / 2, inch * 0.1, f"Page {page_num}"
             )
