@@ -2,7 +2,7 @@
 # SnapPDF Unified - Universal Image to PDF Converter
 # Combines functionality of SnapPDF, SnapPDF2, SnapPDF4, SnapPDF6, and SnapPDF15
 # Allows user to select layout (images per page) via GUI
-# Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, The University of Osaka.
+# Copyright (c) 2023 NAGATA Mizuho. Institute of Laser Engineering, Osaka University.
 # Created on: 2026-02-10
 # -------------------------------------------------------------
 
@@ -407,13 +407,16 @@ class SnapPDFUnifiedApp:
             data_table.setStyle(TableStyle(table_style))
             content.append(data_table)
 
-        # Process images in parallel
+        # Process images in parallel while maintaining order
         with ThreadPoolExecutor() as executor:
-            futures = [
-                executor.submit(self.process_image_for_pdf, path)
-                for path in self.image_paths
-            ]
-            results = [f.result() for f in as_completed(futures)]
+            futures = {
+                executor.submit(self.process_image_for_pdf, path): idx
+                for idx, path in enumerate(self.image_paths)
+            }
+            results = [None] * len(self.image_paths)
+            for future in as_completed(futures):
+                idx = futures[future]
+                results[idx] = future.result()
 
         # Build PDF content based on layout
         self._build_pdf_content(content, results)
@@ -439,7 +442,8 @@ class SnapPDFUnifiedApp:
         available_width = A4[1] - 2 * inch
 
         if self.layout_key == 2:
-            # 2 images per page (1 column x 2 rows)
+            # 2 images per page (horizontal layout, side-by-side)
+            # Note: Creates a table with 2 images in one row, matching SnapPDF2.py behavior
             image_row = []
             name_row = []
 
