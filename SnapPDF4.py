@@ -56,7 +56,6 @@ def select_font():
         # Linux: Try DejaVu Sans or other common fonts
         font_attempts = [
             ("DejaVuSans", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
-            ("DejaVuSans", "/usr/share/fonts/dejavu/DejaVuSans.ttf"),
             ("LiberationSans", "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),
             ("FreeSans", "/usr/share/fonts/truetype/freefont/FreeSans.ttf"),
             ("Helvetica", None),  # Fallback
