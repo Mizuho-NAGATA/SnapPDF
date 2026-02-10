@@ -47,13 +47,11 @@ SnapPDF v2.0.0 は、全コードのクラス化と内部構造の刷新によ�
 - 「SnapPDF」：画像＋Excel データを 1 つの PDF に統合  
 - クラス化により高速・安定  
 - インストール不要で、Pythonスクリプトを直接実行
-- **マルチプラットフォーム対応**: Windows, macOS, Linux で動作
 - Combine multiple images into one PDF file
 - Images can be selected from multiple folders
 - SnapPDF2/4/6/15: place 2/4/6/15 photos per A4 landscape page  
 - SnapPDF: combine images + Excel data  
 - No installation required
-- **Multi-platform support**: Works on Windows, macOS, and Linux
   
 ## 使い方 / Usage
 1. GitHubリポジトリから適切な`.py`ファイルをダウンロードしてください。
@@ -124,13 +122,9 @@ SnapPDFとPDFSearchを使用する前に、以下の手順に従って必要な�
 
 SnapPDF と PDFSearch は以下のプラットフォームで動作確認済みです：
 - **Windows** (Windows 10/11)
-- **macOS** (Mac OS X 10.10以降)
-- **Linux** (Ubuntu, Debian, Fedora など主要なディストリビューション)
 
 SnapPDF and PDFSearch have been tested and are confirmed to work on the following platforms:
 - **Windows** (Windows 10/11)
-- **macOS** (Mac OS X 10.10 and later)
-- **Linux** (major distributions including Ubuntu, Debian, Fedora)
 
 ## Pythonのインストール
 SnapPDFとPDFSearchはPython 3.xを必要とします。まだインストールしていない場合は、以下の手順に従ってください。
