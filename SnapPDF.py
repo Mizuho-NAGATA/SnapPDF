@@ -80,7 +80,7 @@ def select_font():
             else:
                 # Use system default (Helvetica/Times-Roman are built-in to reportlab)
                 return (font_name, font_name)
-        except Exception:
+        except (IOError, OSError, RuntimeError):
             # Font file not found or registration failed, try next
             continue
     
