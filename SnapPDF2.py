@@ -45,7 +45,7 @@ def select_font():
             ("BIZ-UDGothicR", "BIZ-UDGothicR.ttc"),
             ("BIZ-UDGothicR", "BIZ-UDGothicR.ttf"),
             ("SimHei", "simhei.ttf"),
-            ("Arial", None),  # System default, no registration needed
+            ("Helvetica", None),  # System default, no registration needed
         ]
     elif system == "Darwin":  # macOS
         # macOS: Try Hiragino Sans or fallback to Helvetica
