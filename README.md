@@ -43,7 +43,6 @@ python SnapPDF_tabbed.py
 
 - [クイックスタートガイド / Quick Start Guide](docs/QUICKSTART.md)
 - [タブ版完全ガイド / Tabbed Version Guide](docs/guides/TABBED_VERSION_GUIDE.md)
-- [統合版ガイド / Unified Version Guide](docs/guides/UNIFIED_VERSION_GUIDE.md)
 
 ## 📦 インストール | Installation
 
