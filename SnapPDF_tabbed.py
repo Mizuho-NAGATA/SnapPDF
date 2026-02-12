@@ -595,22 +595,24 @@ class PDFSearchTab:
         self.show_results(results)
     
     def export_csv(self, results):
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    csv_path = f"search_results_{timestamp}.csv"
-    
-    try:
-        # Excel に渡す場合に文字化けを防ぐため BOM 付き UTF-8 ('utf-8-sig') で書き出す
-        with open(csv_path, "w", newline="", encoding="utf-8-sig") as f:
-            writer = csv.writer(f)
-            writer.writerow(["File name", "Location", "Keywords"])
-            
-            for filename, location, keywords in results:
-                writer.writerow([filename, location, ", ".join(keywords)])
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to write CSV file: {e}")
-        return
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        csv_path = f"search_results_{timestamp}.csv"
 
-    messagebox.showinfo("CSV Saved", f"Search results saved to:\n{csv_path}")
+        try:
+            # Excel に渡す場合に文字化けを防ぐため BOM 付き UTF-8 ('utf-8-sig') で書き出す
+            with open(csv_path, "w", newline="", encoding="utf-8-sig") as f:
+                writer = csv.writer(f)
+                writer.writerow(["File name", "Location", "Keywords"])
+
+                for filename, location, keywords in results:
+                    writer.writerow([filename, location, ", ".join(keywords)])
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to write CSV file: {e}")
+            return
+
+        messagebox.showinfo("CSV Saved", f"Search results saved to:\n{csv_path}")
+
     
     def show_results(self, results):
         win = tk.Toplevel(self.parent)
