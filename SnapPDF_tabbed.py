@@ -118,9 +118,8 @@ GUI_FONT_FAMILY, GUI_FONT_SIZE = select_font_for_gui()
 # Layout configurations: (columns, rows, description)
 # Using Unicode multiplication sign (U+00D7) instead of ASCII 'x'
 LAYOUT_PRESETS = {
-    "2": {"cols": 1, "rows": 2, "total": 2, "name": "2 images (1\u00D72)"},
+    "2": {"cols": 2, "rows": 1, "total": 2, "name": "2 images (2\u00D71)"},
     "4": {"cols": 2, "rows": 2, "total": 4, "name": "4 images (2\u00D72)"},
-    "5": {"cols": 5, "rows": 1, "total": 5, "name": "5 images (5\u00D71)"},
     "6": {"cols": 3, "rows": 2, "total": 6, "name": "6 images (3\u00D72)"},
     "15": {"cols": 5, "rows": 3, "total": 15, "name": "15 images (5\u00D73)"},
 }
@@ -138,7 +137,9 @@ class SnapPDFTab:
         self.excel_data = []
         self.excel_headers = []
         self.selected_layout = tk.StringVar(value="6")  # Default to 6 images
-        self.thumbnail_frame = None
+        self.thumbnail_canvas = None
+        self.thumbnail_inner_frame = None
+        self.thumbnail_vscroll = None
         
         self._build_gui()
     
@@ -176,7 +177,8 @@ class SnapPDFTab:
         button_frame = tk.Frame(layout_frame)
         button_frame.pack(pady=5)
         
-        for key in ["2", "4", "5", "6", "15"]:
+        # Note: removed the 5 images option as requested
+        for key in ["2", "4", "6", "15"]:
             preset = LAYOUT_PRESETS[key]
             rb = tk.Radiobutton(
                 button_frame,
@@ -214,9 +216,63 @@ class SnapPDFTab:
         )
         export_button.pack(pady=10)
         
-        # Thumbnail display frame
-        self.thumbnail_frame = Frame(main_frame)
-        self.thumbnail_frame.pack(padx=10, pady=10)
+        # Thumbnail display frame with scrollbar (canvas + inner frame)
+        thumb_container = Frame(main_frame)
+        thumb_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # Canvas for scrolling
+        canvas = tk.Canvas(thumb_container, height=260)
+        vscroll = tk.Scrollbar(thumb_container, orient=tk.VERTICAL, command=canvas.yview)
+        canvas.configure(yscrollcommand=vscroll.set)
+        
+        vscroll.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        inner_frame = Frame(canvas)
+        canvas.create_window((0, 0), window=inner_frame, anchor="nw")
+        
+        # Update scroll region when inner_frame changes
+        def _on_frame_config(event):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+        
+        inner_frame.bind("<Configure>", _on_frame_config)
+        
+        # Mousewheel support when hovering thumbnails
+        def _on_enter(event):
+            # bind to the canvas so wheel works when pointer is over the thumbnails area
+            canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+            canvas.bind_all("<Button-4>", self._on_mousewheel)  # Linux
+            canvas.bind_all("<Button-5>", self._on_mousewheel)
+        
+        def _on_leave(event):
+            canvas.unbind_all("<MouseWheel>")
+            canvas.unbind_all("<Button-4>")
+            canvas.unbind_all("<Button-5>")
+        
+        inner_frame.bind("<Enter>", _on_enter)
+        inner_frame.bind("<Leave>", _on_leave)
+        
+        self.thumbnail_canvas = canvas
+        self.thumbnail_inner_frame = inner_frame
+        self.thumbnail_vscroll = vscroll
+    
+    def _on_mousewheel(self, event):
+        # Cross-platform mousewheel handling
+        system = platform.system()
+        if system == "Darwin":
+            delta = int(-1 * (event.delta))
+        else:
+            # On Windows event.delta is multiple of 120; on many Linux setups Button-4/5 used instead
+            if hasattr(event, "num"):
+                # Button-4 (up) or Button-5 (down)
+                if event.num == 4:
+                    self.thumbnail_canvas.yview_scroll(-1, "units")
+                elif event.num == 5:
+                    self.thumbnail_canvas.yview_scroll(1, "units")
+                return
+            else:
+                delta = int(-1 * (event.delta / 120))
+        self.thumbnail_canvas.yview_scroll(delta, "units")
     
     def select_excel_file(self):
         file_path = filedialog.askopenfilename(
@@ -254,7 +310,9 @@ class SnapPDFTab:
             messagebox.showinfo(
                 "Image Selection", f"Number of selected images: {len(new_paths)}"
             )
-            threading.Thread(target=self.display_thumbnails).start()
+            # Ensure thumbnail generation and GUI updates happen in main thread
+            # (creating ImageTk.PhotoImage from other threads can be unsafe)
+            self.display_thumbnails()
     
     @lru_cache(maxsize=None)
     def generate_thumbnail(self, file_path):
@@ -266,42 +324,41 @@ class SnapPDFTab:
         if not self.image_paths:
             return
         
-        for widget in self.thumbnail_frame.winfo_children():
+        # Clear previous thumbnails
+        for widget in self.thumbnail_inner_frame.winfo_children():
             widget.destroy()
         
         num_images = len(self.image_paths)
         num_columns = 10
         self.photo_images.clear()
         
-        def update_thumbnails(start, end):
-            for i in range(start, end):
-                if i >= num_images:
-                    return
-                
-                photo = self.generate_thumbnail(self.image_paths[i])
-                self.photo_images.append(photo)
-                
-                container = Frame(self.thumbnail_frame)
-                container.grid(
-                    row=(i // num_columns) * 2, column=i % num_columns, padx=5, pady=5
-                )
-                
-                label = Label(container, image=photo)
-                label.pack()
-                
-                filename = os.path.basename(self.image_paths[i])
-                name_label = Label(
-                    container, text=filename, wraplength=100, 
-                    font=(GUI_FONT_FAMILY, 8)
-                )
-                name_label.pack()
-                
-                self.thumbnail_frame.update_idletasks()
+        # Build thumbnails sequentially (safe for Tkinter)
+        for i in range(num_images):
+            photo = self.generate_thumbnail(self.image_paths[i])
+            # Keep reference to prevent GC
+            self.photo_images.append(photo)
+            
+            container = Frame(self.thumbnail_inner_frame)
+            container.grid(
+                row=(i // num_columns) * 2, column=i % num_columns, padx=5, pady=5
+            )
+            
+            label = Label(container, image=photo)
+            label.pack()
+            
+            filename = os.path.basename(self.image_paths[i])
+            name_label = Label(
+                container, text=filename, wraplength=100, 
+                font=(GUI_FONT_FAMILY, 8)
+            )
+            name_label.pack()
+            
+            # Force redraw occasionally
+            if i % 20 == 0:
+                self.thumbnail_inner_frame.update_idletasks()
         
-        with ThreadPoolExecutor() as executor:
-            batch_size = 10
-            for start in range(0, num_images, batch_size):
-                executor.submit(update_thumbnails, start, start + batch_size)
+        # Update scrollregion explicitly
+        self.thumbnail_canvas.configure(scrollregion=self.thumbnail_canvas.bbox("all"))
     
     def process_image_for_pdf(self, file_path, layout_config):
         image = Image.open(file_path)
