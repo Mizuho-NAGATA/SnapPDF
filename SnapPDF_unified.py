@@ -63,11 +63,9 @@ class SnapPDFUnifiedApp:
         self.entries = []
         self.excel_data = []
         self.excel_headers = []
-        self.selected_layout = tk.StringVar(value="6")  # Default to 6 images
-
         self.root = tk.Tk()
         self.root.title("SnapPDF Unified")
-
+        self.selected_layout = tk.StringVar(value="6")  # Default to 6 images
         self.thumbnail_frame = None
 
         self._build_gui()
