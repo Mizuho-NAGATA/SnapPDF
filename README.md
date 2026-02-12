@@ -1,5 +1,5 @@
-# 📘 **SnapPDF v2.0.0 – README**
-
+# SnapPDF — Fast batch PDF export from photos across multiple folders (Excel import supported)
+SnapPDF — 複数フォルダの写真をまとめて高速に一括PDF出力（Excel連携対応）
 > ** SnapPDF v2.0.0 はメジャーアップデートです**  
 > 見た目や使用方法に大きな変更はありませんが、内部機能は v1.2.2 から大幅に改善されています。
 
