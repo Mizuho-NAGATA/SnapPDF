@@ -13,7 +13,7 @@ import platform
 import subprocess
 import threading
 import tkinter as tk
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from functools import lru_cache
 from tkinter import Frame, Label, filedialog, messagebox
@@ -338,13 +338,13 @@ class SnapPDFUnifiedApp:
         rows = layout_config["rows"]
         images_per_page = layout_config["total"]
 
-        # Process images in parallel
+        # Process images in parallel (preserve order)
         with ThreadPoolExecutor() as executor:
             futures = [
                 executor.submit(self.process_image_for_pdf, path, layout_config)
                 for path in self.image_paths
             ]
-            results = [f.result() for f in as_completed(futures)]
+            results = [f.result() for f in futures]
 
         available_width = A4[1] - 2 * inch
 
