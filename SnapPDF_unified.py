@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # -------------------------------------------------------------
 # SnapPDF Unified - Select layout to output multiple photos per page to PDF
 # Images can be selected from multiple folders
