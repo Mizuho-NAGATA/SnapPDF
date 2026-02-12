@@ -1,5 +1,24 @@
 # SnapPDF — Fast batch PDF export from photos across multiple folders (Excel import supported)
 SnapPDF — 複数フォルダの写真をまとめて高速に一括PDF出力（Excel連携対応）
+
+> ## 🆕 **SnapPDF Tabbed - マルチプラットフォーム対応版が追加されました！**
+> PDF作成とPDF検索が1つのGUIで使える、タブ付き統合版`SnapPDF_tabbed.py`が利用可能になりました。  
+> - ✅ **マルチプラットフォーム対応**: Windows/macOS/Linuxで適切なフォントを自動選択
+> - ✅ **タブインターフェース**: PDF作成とPDF検索を1つのウィンドウで切り替え
+> - ✅ **文字化け修正**: レイアウト表示の「×」記号が正しく表示されます
+> 
+> **SnapPDF Tabbed - Multi-platform version now available!**  
+> The tabbed unified version `SnapPDF_tabbed.py` combines PDF creation and search in one GUI.
+> - ✅ **Multi-platform support**: Auto-selects appropriate fonts for Windows/macOS/Linux
+> - ✅ **Tabbed interface**: Switch between PDF creation and search in one window
+> - ✅ **Fixed character encoding**: Proper display of "×" symbol in layouts
+
+> ## SnapPDF Unified も利用可能
+> すべてのレイアウト（2, 4, 5, 6, 15枚/ページ）を1つのプログラムで選択できる統合版`SnapPDF_unified.py`も利用可能です。  
+> 
+> **SnapPDF Unified also available**  
+> The unified version `SnapPDF_unified.py` allows you to select all layouts (2, 4, 5, 6, 15 images/page) from a single program.
+
 > ** SnapPDF v2.0.0 はメジャーアップデートです**  
 > 見た目や使用方法に大きな変更はありませんが、内部機能は v1.2.2 から大幅に改善されています。
 
@@ -43,12 +62,16 @@ SnapPDF v2.0.0 は、全コードのクラス化と内部構造の刷新によ�
 ## 特徴 / Features
 - 複数の画像を一つのPDFに統合
 - 画像は複数のフォルダから選択可能
+- 🆕 **「SnapPDF_tabbed.py」（最新・推奨）**: PDF作成とPDF検索を1つのGUIで統合、マルチプラットフォーム対応
+- 🆕 **「SnapPDF_unified.py」**: ボタンで2, 4, 5, 6, 15枚のレイアウトを選択可能な統合版
 - 「SnapPDF2, 4, 6, 15」: A4横のページに最大2, 4, 6, 15枚の写真を配置
 - 「SnapPDF」：画像＋Excel データを 1 つの PDF に統合  
 - クラス化により高速・安定  
 - インストール不要で、Pythonスクリプトを直接実行
 - Combine multiple images into one PDF file
 - Images can be selected from multiple folders
+- 🆕 **SnapPDF_tabbed.py (Latest & Recommended)**: Unified PDF creation and search in one GUI with multi-platform support
+- 🆕 **SnapPDF_unified.py**: Unified version with button selection for 2/4/5/6/15 image layouts
 - SnapPDF2/4/6/15: place 2/4/6/15 photos per A4 landscape page  
 - SnapPDF: combine images + Excel data  
 - No installation required
@@ -58,7 +81,20 @@ SnapPDF v2.0.0 は、全コードのクラス化と内部構造の刷新によ�
 2. ダウンロードしたファイルを保存したディレクトリに移動します。
 3. コマンドプロンプトまたはターミナルを開き、以下のコマンドを実行します：
 
-例: 
+🆕 **タブ付き統合版を使用する場合（最新・推奨）/ Using the tabbed version (Latest & Recommended):**
+```bash
+python SnapPDF_tabbed.py
+```
+- PDF作成とPDF検索が1つのGUIで使えます
+- マルチプラットフォーム対応（Windows/macOS/Linux）
+- 文字化けなし
+
+**統合版を使用する場合（推奨）/ Using the unified version (Recommended):**
+```bash
+python SnapPDF_unified.py
+```
+
+従来のバージョンを使用する場合 / Using traditional versions:
 ```bash
 python SnapPDF15.py
 ```
@@ -66,7 +102,26 @@ python SnapPDF15.py
 ## 必要条件
 - Python 3.x がシステムにインストールされていること
 
-## 各バージョンの説明
+## 各バージョンの説明 / Version Descriptions
+
+### 🆕 タブ付き統合版（最新・推奨）/ Tabbed Unified Version (Latest & Recommended)
+- **`SnapPDF_tabbed.py`**: PDF作成とPDF検索を1つのGUIで統合。マルチプラットフォーム対応。
+  - ✅ **タブインターフェース**: PDF作成とPDF検索を切り替え可能
+  - ✅ **マルチプラットフォーム**: Windows/macOS/Linuxで自動的に適切なフォントを選択
+  - ✅ **文字化け修正**: レイアウト表示の「×」記号が正しく表示
+  - **Unified PDF creation and search in one GUI with multi-platform support.**
+  - ✅ **Tabbed interface**: Switch between PDF creation and search
+  - ✅ **Multi-platform**: Auto-selects appropriate fonts for Windows/macOS/Linux
+  - ✅ **Fixed encoding**: Proper display of "×" symbol in layouts
+
+### 統合版 / Unified Version
+- **`SnapPDF_unified.py`**: すべての機能を統合した新バージョン。GUIでレイアウト（2/4/5/6/15枚）を選択可能。Excel連携にも対応。
+  - **Unified new version with all features. Select layout (2/4/5/6/15 images) from GUI. Excel import supported.**
+
+### 従来のバージョン / Traditional Versions
+これらのファイルは後方互換性のために保持されていますが、新しいユーザーには統合版の使用を推奨します。
+*These files are kept for backward compatibility, but the unified version is recommended for new users.*
+
 - `SnapPDF.py`: A4横1ページにエクセルファイルと小さいサイズの写真をPDF出力。エクセルファイルを選択しない場合は、写真のみを出力。
 - `SnapPDF2.py`: A4横1ページに2枚の写真をPDF出力。
 - `SnapPDF4.py`: A4横1ページに4枚の写真をPDF出力。
@@ -75,7 +130,13 @@ python SnapPDF15.py
   
 注意: 縦長の写真を含むと、1ページあたりの出力枚数が少なくなることがあります。その場合はページ数が増えます。  
 
-## バージョンの選択
+## バージョンの選択 / Version Selection
+
+🆕 **新規ユーザーの方へ / For New Users:**
+- **`SnapPDF_unified.py`を使用してください。** すべてのレイアウトを1つのプログラムで切り替えられます。
+- **Use `SnapPDF_unified.py`.** Switch between all layouts in a single program.
+
+従来のバージョンを使用する場合 / When using traditional versions:
 - `SnapPDF2.py`: 写真を大きく、詳細に表示したい場合に適しています。
 - `SnapPDF4.py`と`SnapPDF6.py`: 中間のサイズで写真を表示したいとき。
 - `SnapPDF.py`と`SnapPDF15.py`: 多くの写真をコンパクトにまとめます。
