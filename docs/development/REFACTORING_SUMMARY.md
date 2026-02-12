@@ -145,9 +145,9 @@ PDF生成 / PDF Generation
 ## 📝 変更ファイル / Changed Files
 
 - ✨ **新規作成 / New**: `SnapPDF_unified.py`
-- ✨ **新規作成 / New**: `UNIFIED_VERSION_GUIDE.md`
-- ✨ **新規作成 / New**: `REFACTORING_SUMMARY.md`
-- 📝 **更新 / Updated**: `README.md`
+- ✨ **新規作成 / New**: [`../guides/UNIFIED_VERSION_GUIDE.md`](../guides/UNIFIED_VERSION_GUIDE.md)
+- ✨ **新規作成 / New**: [`REFACTORING_SUMMARY.md`](REFACTORING_SUMMARY.md) (このドキュメント)
+- 📝 **更新 / Updated**: [`../../README.md`](../../README.md)
 - 📦 **保持 / Kept**: `SnapPDF.py`, `SnapPDF2.py`, `SnapPDF4.py`, `SnapPDF6.py`, `SnapPDF15.py` (後方互換性のため)
 
 ## 🎓 学んだこと / Lessons Learned

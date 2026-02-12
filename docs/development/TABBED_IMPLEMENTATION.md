@@ -298,8 +298,8 @@ python SnapPDF_tabbed.py
 
 ## 📞 サポート / Support
 
-詳細なガイドは `TABBED_VERSION_GUIDE.md` を参照してください。
+詳細なガイドは [`../guides/TABBED_VERSION_GUIDE.md`](../guides/TABBED_VERSION_GUIDE.md) を参照してください。
 
-For detailed guide, please refer to `TABBED_VERSION_GUIDE.md`.
+For detailed guide, please refer to [`../guides/TABBED_VERSION_GUIDE.md`](../guides/TABBED_VERSION_GUIDE.md).
 
 **GitHub**: https://github.com/Mizuho-NAGATA/SnapPDF
