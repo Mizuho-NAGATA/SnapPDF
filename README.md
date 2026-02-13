@@ -27,9 +27,7 @@ SnapPDF is a tool that combines multiple images into a single PDF file. The incl
 
 ## 🚀 クイックスタート | Quick Start
 
-### おすすめバージョン | Recommended Versions
-
-#### 🆕 SnapPDF_tabbed.py（最新・推奨）
+#### 🆕 SnapPDF_tabbed.py
 PDF 作成と検索を1つの GUI で統合。マルチプラットフォーム対応。  
 **Unified PDF creation and search in one GUI with multi-platform support.**
 
@@ -73,19 +71,6 @@ For detailed documentation, see the [docs/](docs/) folder.
 - **[クイックスタート / Quick Start](docs/QUICKSTART.md)** - 5分で始める
 - **[ユーザーガイド / User Guides](docs/guides/)** - 各バージョンの詳細ガイド
 - **[開発者向け / Development](docs/development/)** - アーキテクチャと技術詳細
-
-## 🔧 利用可能なバージョン | Available Versions
-
-### 最新版 | Latest Versions
-- **SnapPDF_tabbed.py** - タブ統合版（推奨）/ Tabbed unified version (Recommended)
-
-### 従来版 | Traditional Versions
-- SnapPDF_unified.py - レイアウト統合版 / Layout unified version
-- SnapPDF.py, SnapPDF2.py, SnapPDF4.py, SnapPDF6.py, SnapPDF15.py
-- PDFSearch.py - PDF検索ツール / PDF search tool
-
-*従来版は後方互換性のために保持されています。新規ユーザーには最新版の使用を推奨します。*  
-*Traditional versions are kept for backward compatibility. New users should use the latest versions.*
 
 ## 👤 著者 | Author
 
