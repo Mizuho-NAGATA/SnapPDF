@@ -1,5 +1,4 @@
-Pillow
-reportlab
-PyPDF2
 pandas
-tkinterdnd2
+pillow
+PyPDF2
+reportlab
