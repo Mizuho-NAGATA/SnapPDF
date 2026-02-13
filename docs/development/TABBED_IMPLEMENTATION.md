@@ -74,7 +74,7 @@ LAYOUT_PRESETS = {
 SnapPDFTabbedApp
 ├── ttk.Notebook
 │   ├── Tab 1: PDF Creation (SnapPDFTab)
-│   │   ├── Layout Selection (2/4/5/6/15)
+│   │   ├── Layout Selection (2/4/6/15)
 │   │   ├── Excel Import
 │   │   ├── Image Selection
 │   │   └── PDF Generation
@@ -89,7 +89,7 @@ SnapPDFTabbedApp
 
 **SnapPDFTab クラス:**
 - 元の `SnapPDFUnifiedApp` の機能を移植
-- 全レイアウト対応 (2/4/5/6/15 images)
+- 全レイアウト対応 (2/4/6/15 images)
 - Excel連携機能
 - サムネイル表示
 
@@ -229,7 +229,7 @@ Text(frame, wrap=tk.WORD, yscrollcommand=scrollbar.set)  # スクロール可能
 
 ### PDF作成 / PDF Creation
 ```bash
-python SnapPDF_tabbed.py
+python SnapPDF.py
 # 1. 「PDF Creation」タブを選択（デフォルト）
 # 2. レイアウトを選択（6 images推奨）
 # 3. 画像を選択
@@ -238,7 +238,7 @@ python SnapPDF_tabbed.py
 
 ### PDF検索 / PDF Search
 ```bash
-python SnapPDF_tabbed.py
+python SnapPDF.py
 # 1. 「PDF Search」タブをクリック
 # 2. 検索キーワードを入力
 # 3. 「Select directory」クリック
