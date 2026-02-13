@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License">
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg" alt="Multi-platform">
 </p>
+![Clipboard_02-13-2026_01](https://github.com/user-attachments/assets/eeccbe3d-41cd-4a75-9607-74efa7a7d407)
 
 複数の画像を一つの PDF にまとめます。PDF の生成と PDF 本文検索をひとつの GUI に統合。日常的な資料作成から研究用途まで幅広く活用できます。  
 たくさんの写真をひとまとめにしたい、特定の単語を含む PDF を検索したい、という思いから作りました。  
