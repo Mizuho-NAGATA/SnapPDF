@@ -86,7 +86,6 @@ python SnapPDF.py
 1. **レイアウトを選択**
    - 2 images (1×2)
    - 4 images (2×2)
-   - 5 images (5×1)
    - 6 images (3×2) ← デフォルト
    - 15 images (5×3)
 
