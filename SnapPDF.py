@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # -------------------------------------------------------------
-# SnapPDF - Unified interface with PDF creation and search
-# Multi-platform font support with automatic OS detection
-# This program "SnapPDF" was developed with ChatGPT and Copilot
+# Excelファイルと画像ファイルを読み込み、PDFファイルとして出力します。
+# Excelファイルが選択されない場合は、画像ファイルのみが出力されます。
+# 複数のフォルダから画像を選択可能
+# このプログラム「SnapPDF」は ChatGPT と共に開発され、Copilot によって改良されました。
 # Copyright (c) 2023-2026 NAGATA Mizuho
-# Institute of Laser Engineering, Osaka University
+# Institute of Laser Engineering, The University of Osaka .
 # Created on: 2023-09-29
-# Last updated on: 2026-02-12 (Tabbed interface with multi-platform fonts)
+# Last updated on: 2026-02-13 (Tabbed interface with multi-platform fonts)
 # -------------------------------------------------------------
 
 import csv
@@ -38,6 +39,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
+from io import BytesIO  # ← 追加（回転画像をメモリで渡すため）
 
 # =============================================================================
 # Multi-platform font configuration
@@ -140,7 +142,11 @@ class SnapPDFTab:
         self.thumbnail_canvas = None
         self.thumbnail_inner_frame = None
         self.thumbnail_vscroll = None
-        
+
+        # 追加: Treeview（画像一覧）と回転情報
+        self.image_list = None
+        self.image_rotations = {}  # {file_path: angle_in_degrees}
+
         self._build_gui()
     
     def _build_gui(self):
@@ -215,7 +221,64 @@ class SnapPDFTab:
             font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
         )
         export_button.pack(pady=10)
-        
+
+        # 追加: 画像操作ボタン（Move / Rotate / Delete）
+        control_frame = tk.Frame(main_frame)
+        control_frame.pack(pady=5)
+
+        move_up_button = tk.Button(
+            control_frame,
+            text="Move Up",
+            command=self.move_up,
+            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
+        )
+        move_up_button.pack(side=tk.LEFT, padx=4)
+
+        move_down_button = tk.Button(
+            control_frame,
+            text="Move Down",
+            command=self.move_down,
+            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
+        )
+        move_down_button.pack(side=tk.LEFT, padx=4)
+
+        rotate_left_button = tk.Button(
+            control_frame,
+            text="Rotate Left",
+            command=lambda: self.rotate_selected(-90),
+            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
+        )
+        rotate_left_button.pack(side=tk.LEFT, padx=4)
+
+        rotate_right_button = tk.Button(
+            control_frame,
+            text="Rotate Right",
+            command=lambda: self.rotate_selected(90),
+            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
+        )
+        rotate_right_button.pack(side=tk.LEFT, padx=4)
+
+        delete_button = tk.Button(
+            control_frame,
+            text="Delete Selected",
+            command=self.delete_selected_images,
+            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
+        )
+        delete_button.pack(side=tk.LEFT, padx=4)
+
+        # 追加: Treeview（画像一覧） — サムネイルとは別に選択・順序操作を行うため
+        image_list_frame = tk.Frame(main_frame)
+        image_list_frame.pack(padx=10, pady=5, fill=tk.X)
+
+        self.image_list = ttk.Treeview(image_list_frame, columns=("File Name", "Path"), show="headings", height=5)
+        self.image_list.heading("File Name", text="File Name")
+        self.image_list.heading("Path", text="Path")
+        self.image_list.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        list_scrollbar = tk.Scrollbar(image_list_frame, orient="vertical", command=self.image_list.yview)
+        list_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.image_list.configure(yscrollcommand=list_scrollbar.set)
+
         # Thumbnail display frame with scrollbar (canvas + inner frame)
         thumb_container = Frame(main_frame)
         thumb_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -307,16 +370,30 @@ class SnapPDFTab:
         )
         if new_paths:
             self.image_paths.extend(new_paths)
+            # 初期回転角は 0 にしておく
+            for p in new_paths:
+                if p not in self.image_rotations:
+                    self.image_rotations[p] = 0
             messagebox.showinfo(
                 "Image Selection", f"Number of selected images: {len(new_paths)}"
             )
+            # 更新
+            self.update_image_list()
             # Ensure thumbnail generation and GUI updates happen in main thread
             # (creating ImageTk.PhotoImage from other threads can be unsafe)
             self.display_thumbnails()
     
     @lru_cache(maxsize=None)
-    def generate_thumbnail(self, file_path):
+    def generate_thumbnail(self, file_path, angle):
+        """
+        file_path と angle(度) をキーにサムネイルを生成。
+        angle は 0, 90, 180, 270 のいずれか（一般的な回転）を想定。
+        """
         image = Image.open(file_path)
+        # 回転は先に行い、その後サムネイルで縮小
+        if angle:
+            # PIL の rotate は左回転（90 で左回転）。ここでは角度の正負に合わせる
+            image = image.rotate(angle, expand=True)
         image.thumbnail((100, 100))
         return ImageTk.PhotoImage(image=image)
     
@@ -334,7 +411,9 @@ class SnapPDFTab:
         
         # Build thumbnails sequentially (safe for Tkinter)
         for i in range(num_images):
-            photo = self.generate_thumbnail(self.image_paths[i])
+            path = self.image_paths[i]
+            angle = self.image_rotations.get(path, 0)
+            photo = self.generate_thumbnail(path, angle)
             # Keep reference to prevent GC
             self.photo_images.append(photo)
             
@@ -346,7 +425,7 @@ class SnapPDFTab:
             label = Label(container, image=photo)
             label.pack()
             
-            filename = os.path.basename(self.image_paths[i])
+            filename = os.path.basename(path)
             name_label = Label(
                 container, text=filename, wraplength=100, 
                 font=(GUI_FONT_FAMILY, 8)
@@ -359,10 +438,82 @@ class SnapPDFTab:
         
         # Update scrollregion explicitly
         self.thumbnail_canvas.configure(scrollregion=self.thumbnail_canvas.bbox("all"))
-    
+
+    def update_image_list(self):
+        # Treeview をクリアして、現在の self.image_paths に従って再構築
+        for item in self.image_list.get_children():
+            self.image_list.delete(item)
+        for path in self.image_paths:
+            filename = os.path.basename(path)
+            angle = self.image_rotations.get(path, 0)
+            display_name = f"{filename} {'(rot:{}°)'.format(angle) if angle else ''}"
+            self.image_list.insert("", "end", values=(display_name, path))
+        # サムネイルも更新
+        self.display_thumbnails()
+
+    def move_up(self):
+        selected_items = self.image_list.selection()
+        # selection の順序に注意（Treeview依存）
+        for item in selected_items:
+            index = self.image_list.index(item)
+            if index > 0:
+                # 同じ index を image_paths の順で扱う
+                self.image_paths.insert(index - 1, self.image_paths.pop(index))
+        self.update_image_list()
+
+    def move_down(self):
+        selected_items = self.image_list.selection()
+        # selection の順序に注意
+        for item in selected_items:
+            index = self.image_list.index(item)
+            if index < len(self.image_paths) - 1:
+                self.image_paths.insert(index + 1, self.image_paths.pop(index))
+        self.update_image_list()
+
+    def delete_selected_images(self):
+        selected_items = self.image_list.selection()
+        # 選択アイテムを削除（index がずれないように後ろから処理するのが安全）
+        # ただし Treeview の selection() の順序は不定なので、index を取ってソート
+        indices = sorted([self.image_list.index(item) for item in selected_items], reverse=True)
+        for index in indices:
+            path = self.image_paths.pop(index)
+            # 回転情報も消す
+            if path in self.image_rotations:
+                del self.image_rotations[path]
+        self.update_image_list()
+
+    def rotate_selected(self, delta_angle):
+        """
+        選択した画像に対して回転を行う。delta_angle は ±90 等。
+        """
+        selected_items = self.image_list.selection()
+        for item in selected_items:
+            index = self.image_list.index(item)
+            path = self.image_paths[index]
+            current = self.image_rotations.get(path, 0)
+            new_angle = (current + delta_angle) % 360
+            # 正負に対応して 0/90/180/270 を保持
+            self.image_rotations[path] = new_angle
+            # キャッシュしたサムネイルがある場合、generate_thumbnail のキャッシュを壊す必要がある。
+            # lru_cache を用いているため、キャッシュ破棄を簡潔に行うため一旦全部クリアする:
+            try:
+                self.generate_thumbnail.cache_clear()
+            except Exception:
+                pass
+        # 表示を更新
+        self.update_image_list()
+
     def process_image_for_pdf(self, file_path, layout_config):
         image = Image.open(file_path)
         original_width, original_height = image.size
+        
+        # 回転がある場合は rotated_image を使ってサイズ計算・出力
+        angle = self.image_rotations.get(file_path, 0)
+        if angle:
+            rotated = image.rotate(angle, expand=True)
+            original_width, original_height = rotated.size
+        else:
+            rotated = None
         
         available_width = A4[1] - 2 * inch
         available_height = A4[0] - 2.5 * inch - 0.5 * inch
@@ -384,10 +535,21 @@ class SnapPDFTab:
             new_height = target_height
             new_width = new_height * image_ratio
         
-        return (
-            PlatypusImage(file_path, width=new_width, height=new_height),
-            Paragraph(os.path.basename(file_path), styles["Normal"]),
-        )
+        # 回転がある場合は BytesIO に回転済み画像を保存して PlatypusImage に渡す
+        if angle and rotated is not None:
+            bio = BytesIO()
+            # 保存フォーマットは PNG を使う（透過はない想定）
+            rotated.save(bio, format="PNG")
+            bio.seek(0)
+            return (
+                PlatypusImage(bio, width=new_width, height=new_height),
+                Paragraph(os.path.basename(file_path), styles["Normal"]),
+            )
+        else:
+            return (
+                PlatypusImage(file_path, width=new_width, height=new_height),
+                Paragraph(os.path.basename(file_path), styles["Normal"]),
+            )
     
     def create_pdf(self):
         if not self.image_paths:
