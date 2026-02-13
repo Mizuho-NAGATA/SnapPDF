@@ -69,7 +69,6 @@ sudo yum install xdg-utils
 For detailed documentation, see the [docs/](docs/) folder.
 
 - **[クイックスタート / Quick Start](docs/QUICKSTART.md)** - 5分で始める
-- **[ユーザーガイド / User Guides](docs/guides/)** - 各バージョンの詳細ガイド
 - **[開発者向け / Development](docs/development/)** - アーキテクチャと技術詳細
 
 ## 👤 著者 | Author
