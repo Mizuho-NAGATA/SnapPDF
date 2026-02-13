@@ -10,7 +10,7 @@
 
 ![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
 
-SnapPDF は複数の画像を一つのPDFファイルに統合するツールです。同梱の PDFSearch で PDF 本文を検索できます。  
+SnapPDF は複数の画像を一つのPDFファイルに統合するツールです。 PDFSearch で PDF 本文を検索できます。  
 SnapPDF is a tool that combines multiple images into a single PDF file. The included PDFSearch allows you to search PDF content.
 
 ---
@@ -38,21 +38,13 @@ pip install Pillow reportlab PyPDF2
 python SnapPDF_tabbed.py
 ```
 
-#### SnapPDF_unified.py
-すべてのレイアウトを1つのプログラムで選択可能。  
-**Select all layouts (2/4/5/6/15 images) from one program.**
-
-```bash
-pip install Pillow reportlab pandas
-python SnapPDF_unified.py
-```
 
 📖 **詳細なガイドは [docs/](docs/) フォルダをご覧ください**  
 📖 **For detailed guides, see the [docs/](docs/) folder**
 
 - [クイックスタートガイド / Quick Start Guide](docs/QUICKSTART.md)
 - [タブ版完全ガイド / Tabbed Version Guide](docs/guides/TABBED_VERSION_GUIDE.md)
-- [統合版ガイド / Unified Version Guide](docs/guides/UNIFIED_VERSION_GUIDE.md)
+
 
 ## 📦 インストール | Installation
 
@@ -61,17 +53,7 @@ python SnapPDF_unified.py
 
 ### 基本パッケージ | Basic Packages
 ```bash
-pip install Pillow reportlab
-```
-
-### タブ版使用時 | For Tabbed Version
-```bash
-pip install PyPDF2
-```
-
-### Excel 連携時 | For Excel Support
-```bash
-pip install pandas tkinterdnd2
+pip install Pillow reportlab PyPDF2 pandas tkinterdnd2
 ```
 
 ### Linux の場合 | For Linux Users
@@ -96,9 +78,9 @@ For detailed documentation, see the [docs/](docs/) folder.
 
 ### 最新版 | Latest Versions
 - **SnapPDF_tabbed.py** - タブ統合版（推奨）/ Tabbed unified version (Recommended)
-- **SnapPDF_unified.py** - レイアウト統合版 / Layout unified version
 
 ### 従来版 | Traditional Versions
+- SnapPDF_unified.py - レイアウト統合版 / Layout unified version
 - SnapPDF.py, SnapPDF2.py, SnapPDF4.py, SnapPDF6.py, SnapPDF15.py
 - PDFSearch.py - PDF検索ツール / PDF search tool
 
@@ -123,6 +105,4 @@ This project is released under the MIT License. See [LICENSE](LICENSE) for detai
 
 ---
 
-<p align="center">
-  Made with ❤️ by NAGATA Mizuho
-</p>
+
