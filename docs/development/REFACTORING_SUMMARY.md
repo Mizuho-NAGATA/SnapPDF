@@ -71,7 +71,6 @@ SnapPDF_unified.py ─ 単一のコードベース / Single Codebase
 LAYOUT_PRESETS = {
     "2":  {"cols": 1, "rows": 2, "total": 2},   # 1×2 (縦2列)
     "4":  {"cols": 2, "rows": 2, "total": 4},   # 2×2
-    "5":  {"cols": 5, "rows": 1, "total": 5},   # 5×1 (横1列)
     "6":  {"cols": 3, "rows": 2, "total": 6},   # 3×2
     "15": {"cols": 5, "rows": 3, "total": 15},  # 5×3
 }
@@ -109,7 +108,6 @@ PDF生成 / PDF Generation
 │  Select Layout (Images per Page)       │
 │  ○ 2 images (1×2)                      │
 │  ○ 4 images (2×2)                      │
-│  ○ 5 images (5×1)                      │
 │  ● 6 images (3×2)  [Default]           │
 │  ○ 15 images (5×3)                     │
 └─────────────────────────────────────────┘
@@ -148,7 +146,6 @@ PDF生成 / PDF Generation
 - ✨ **新規作成 / New**: `UNIFIED_VERSION_GUIDE.md` (後に削除 / later removed)
 - ✨ **新規作成 / New**: [`REFACTORING_SUMMARY.md`](REFACTORING_SUMMARY.md) (このドキュメント)
 - 📝 **更新 / Updated**: [`../../README.md`](../../README.md)
-- 📦 **保持 / Kept**: `SnapPDF.py`, `SnapPDF2.py`, `SnapPDF4.py`, `SnapPDF6.py`, `SnapPDF15.py` (後方互換性のため)
 
 ## 🎓 学んだこと / Lessons Learned
 
