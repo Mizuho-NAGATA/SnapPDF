@@ -32,7 +32,7 @@ In the PDF Creation tab, choose your desired layout:
 
 - **2 images (1×2)** - 最大サイズで2枚 / 2 photos in maximum size
 - **4 images (2×2)** - バランスの良い4枚 / 4 photos in balanced size
-- **6 images (3×2)** - 推奨・6枚 / 6 photos (recommended)
+- **6 images (3×2)** - 6枚 / 6 photos (recommended)
 - **15 images (5×3)** - コンパクトに15枚 / 15 photos compactly
 
 ### ステップ5: 画像を選択 / Step 5: Select Images
