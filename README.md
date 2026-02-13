@@ -27,13 +27,13 @@ SnapPDF is a tool that combines multiple images into a single PDF file. The incl
 
 ## 🚀 クイックスタート | Quick Start
 
-#### 🆕 SnapPDF_tabbed.py
+#### 🆕 SnapPDF.py
 PDF 作成と検索を1つの GUI で統合。マルチプラットフォーム対応。  
 **Unified PDF creation and search in one GUI with multi-platform support.**
 
 ```bash
-pip install Pillow reportlab PyPDF2
-python SnapPDF_tabbed.py
+pip install Pillow reportlab PyPDF2 pandas tkinterdnd2
+python SnapPDF.py
 ```
 
 
