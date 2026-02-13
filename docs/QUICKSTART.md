@@ -104,7 +104,7 @@ Enter search keywords (space-separated for multiple), select search mode (AND or
 |----------------|----------------------------|
 | 詳細な写真記録 / Detailed photo records | 2 images (1×2) |
 | 実験結果の比較 / Experiment comparison | 4 images (2×2) |
-| イベント記録 / Event documentation | 6 images (3×2) ⭐ |
+| イベント記録 / Event documentation | 6 images (3×2)  |
 | サムネイル一覧 / Thumbnail overview | 15 images (5×3) |
 
 #### ファイル名のルール / File Naming Rules
