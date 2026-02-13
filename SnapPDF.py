@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -------------------------------------------------------------
-# SnapPDF Tabbed - Unified interface with PDF creation and search
+# SnapPDF - Unified interface with PDF creation and search
 # Multi-platform font support with automatic OS detection
 # This program "SnapPDF" was developed with ChatGPT and Copilot
 # Copyright (c) 2023-2026 NAGATA Mizuho
