@@ -8,8 +8,6 @@
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg" alt="Multi-platform">
 </p>
 
-![SnapPDF demo video](https://github.com/Mizuho-NAGATA/SnapPDF/blob/main/SnapPDF%20demo%20video.gif?raw=true)
-
 複数の画像を一つの PDF にまとめるためのシンプルで実用的なツールです。PDF の生成と検索をひとつの GUI に統合し、日常的な資料作成から研究用途まで幅広く活用できます。  
 SnapPDF is a tool that combines multiple images into a single PDF file. The included PDFSearch allows you to search PDF content.
 
