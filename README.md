@@ -86,6 +86,7 @@ The included "PDFSearch" allows you to search the text inside saved PDF files.
 
 例: 
 ```bash
+pip install Pillow reportlab tk pandas tkinterdnd2 PyPDF2
 python SnapPDF.py
 ```
 
