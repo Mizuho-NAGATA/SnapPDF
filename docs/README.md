@@ -24,10 +24,9 @@ SnapPDF ドキュメントへようこそ！このディレクトリには詳細
 新規ユーザーの方は、まず [QUICKSTART.md](QUICKSTART.md) をお読みください。  
 New users should start with [QUICKSTART.md](QUICKSTART.md).
 
-使用するバージョンを選択するには：  
-To choose which version to use:
+詳細な使用方法については：  
+For detailed usage instructions:
 - **最新版（推奨）/ Latest (Recommended)**: [guides/TABBED_VERSION_GUIDE.md](guides/TABBED_VERSION_GUIDE.md)
-- **統合版 / Unified**: [guides/UNIFIED_VERSION_GUIDE.md](guides/UNIFIED_VERSION_GUIDE.md)
 
 ## 🔧 For Developers / 開発者向け
 
