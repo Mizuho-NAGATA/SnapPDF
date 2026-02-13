@@ -356,6 +356,23 @@ class SnapPDFTab:
                 self.excel_data = data
                 self.excel_headers = df.columns.tolist()
                 
+                # --- ここから追加: 読み込んだ Excel の中身をコマンドラインに表示 ---
+                try:
+                    print("\n" + "=" * 60)
+                    print(f"Loaded Excel file: {file_path}")
+                    print("Headers:", self.excel_headers)
+                    # pandas の表示設定を一時的に拡張して全行・全列を表示
+                    with pd.option_context(
+                        "display.max_rows", None, "display.max_columns", None, "display.width", None
+                    ):
+                        # index を表示したくない場合は index=False を使う
+                        print(df.to_string(index=False))
+                    print("=" * 60 + "\n")
+                except Exception as e:
+                    # コンソール出力に失敗しても GUI の挙動には影響させない
+                    print(f"Failed to print Excel contents to console: {e}")
+                # --- ここまで追加 ---
+                
             except Exception as e:
                 messagebox.showerror(
                     "Error",
