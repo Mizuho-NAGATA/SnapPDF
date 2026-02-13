@@ -1,12 +1,10 @@
 # SnapPDF.py - Quick Start Guide
 # SnapPDF.py - クイックスタートガイド
 
-## 🚀 5分で始める / Get Started in 5 Minutes
-
 ### ステップ1: 必要なパッケージをインストール / Step 1: Install Required Packages
 
 ```bash
-pip install Pillow reportlab PyPDF2 pandas tkinterdnd2
+pip install Pillow reportlab PyPDF2 pandas tkinterdnd2 xlrd
 ```
 
 ### ステップ2: プログラムを起動 / Step 2: Launch the Program
@@ -139,7 +137,7 @@ YYMMDD_HHMMSS.pdf
 
 ```bash
 # 必要なパッケージを再インストール
-pip install --upgrade Pillow reportlab pandas PyPDF2
+pip install --upgrade Pillow reportlab PyPDF2 pandas tkinterdnd2 xlrd
 ```
 
 ### PDFが開かない / PDF doesn't open
