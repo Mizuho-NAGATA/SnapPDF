@@ -1,0 +1,5 @@
+Pillow
+reportlab
+PyPDF2
+pandas
+tkinterdnd2
