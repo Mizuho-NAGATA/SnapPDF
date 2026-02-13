@@ -51,7 +51,7 @@ SnapPDF は、画像ファイルをまとめて PDF 化する機能と、PDF 内
 PDF 作成と検索を統合した GUI 版です。
 
 ```bash
-pip install Pillow reportlab PyPDF2 pandas tkinterdnd2
+pip install Pillow reportlab PyPDF2 pandas tkinterdnd2 xlrd
 python SnapPDF.py
 ```
 
@@ -70,7 +70,7 @@ For detailed guides, see the [docs/](docs/) folder
 
 ### 基本パッケージ
 ```bash
-pip install Pillow reportlab PyPDF2 pandas tkinterdnd2
+pip install Pillow reportlab PyPDF2 pandas tkinterdnd2 xlrd
 ```
 
 ### Linux での追加設定
