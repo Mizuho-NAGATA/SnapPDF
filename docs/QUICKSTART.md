@@ -1,25 +1,34 @@
-# SnapPDF Unified - Quick Start Guide
-# SnapPDF統合版 - クイックスタートガイド
+# SnapPDF_tabbed.py - Quick Start Guide
+# SnapPDF_tabbed.py - クイックスタートガイド
 
 ## 🚀 5分で始める / Get Started in 5 Minutes
 
 ### ステップ1: 必要なパッケージをインストール / Step 1: Install Required Packages
 
 ```bash
-pip install Pillow reportlab pandas
+pip install Pillow reportlab pandas PyPDF2
 ```
 
 ### ステップ2: プログラムを起動 / Step 2: Launch the Program
 
 ```bash
-python SnapPDF_unified.py
+python SnapPDF_tabbed.py
 ```
 
-### ステップ3: レイアウトを選択 / Step 3: Select Layout
+### ステップ3: タブを選択 / Step 3: Select Tab
 
-プログラムが起動したら、希望するレイアウトを選択します：
+プログラムが起動したら、使用する機能のタブを選択します：
 
-Choose your desired layout when the program starts:
+Choose the tab for the function you want to use:
+
+- **PDF Creation** - 画像からPDFを作成 / Create PDF from images
+- **PDF Search** - PDFファイル内のテキストを検索 / Search text within PDF files
+
+### ステップ4: レイアウトを選択 (PDF作成の場合) / Step 4: Select Layout (For PDF Creation)
+
+PDF Creationタブで、希望するレイアウトを選択します：
+
+In the PDF Creation tab, choose your desired layout:
 
 - **2 images (1×2)** - 最大サイズで2枚 / 2 photos in maximum size
 - **4 images (2×2)** - バランスの良い4枚 / 4 photos in balanced size
@@ -27,7 +36,7 @@ Choose your desired layout when the program starts:
 - **6 images (3×2)** - 推奨・6枚 / 6 photos (recommended)
 - **15 images (5×3)** - コンパクトに15枚 / 15 photos compactly
 
-### ステップ4: 画像を選択 / Step 4: Select Images
+### ステップ5: 画像を選択 / Step 5: Select Images
 
 1. 「Select Images」ボタンをクリック
 2. 画像ファイルを選択（複数選択可能）
@@ -35,7 +44,7 @@ Choose your desired layout when the program starts:
 
 Click "Select Images" button, choose image files (multiple selection allowed), and thumbnails will be displayed.
 
-### ステップ5: PDFを出力 / Step 5: Output PDF
+### ステップ6: PDFを出力 / Step 6: Output PDF
 
 「Output to PDF」ボタンをクリックすると、PDFが生成され自動的に開きます。
 
@@ -45,7 +54,9 @@ Click "Output to PDF" button, and the PDF will be generated and automatically op
 
 ## 📖 基本的な使い方 / Basic Usage
 
-### タイトルと備考を追加 / Add Title and Remarks
+### PDF作成タブ / PDF Creation Tab
+
+#### タイトルと備考を追加 / Add Title and Remarks
 
 ```
 ┌─────────────────────────────┐
@@ -58,7 +69,7 @@ Click "Output to PDF" button, and the PDF will be generated and automatically op
 
 Title and remarks will appear in the header of each page.
 
-### Excel連携（オプション）/ Excel Integration (Optional)
+#### Excel連携（オプション）/ Excel Integration (Optional)
 
 Excel形式のデータテーブルをPDFに含めることができます：
 
@@ -70,11 +81,24 @@ You can include Excel data tables in the PDF:
 
 Click "Select Excel File (Optional)", choose an Excel file (.xlsx or .xls), and it will appear as a table at the beginning of the PDF.
 
+### PDF検索タブ / PDF Search Tab
+
+#### キーワード検索 / Keyword Search
+
+1. 検索キーワードを入力（スペース区切りで複数可能）
+2. 検索モードを選択（AND検索 または OR検索）
+3. 「Select directory」でディレクトリを選択
+4. 検索結果が表示され、CSVファイルも生成されます
+
+Enter search keywords (space-separated for multiple), select search mode (AND or OR), select directory, and view results with auto-generated CSV file.
+
 ---
 
 ## 💡 便利な使い方 / Useful Tips
 
-### レイアウトの選び方 / How to Choose Layout
+### PDF作成のヒント / PDF Creation Tips
+
+#### レイアウトの選び方 / How to Choose Layout
 
 | 用途 / Purpose | 推奨レイアウト / Recommended |
 |----------------|----------------------------|
@@ -83,7 +107,7 @@ Click "Select Excel File (Optional)", choose an Excel file (.xlsx or .xls), and 
 | イベント記録 / Event documentation | 6 images (3×2) ⭐ |
 | サムネイル一覧 / Thumbnail overview | 15 images (5×3) |
 
-### ファイル名のルール / File Naming Rules
+#### ファイル名のルール / File Naming Rules
 
 生成されるPDFファイル名は自動的に日時で命名されます：
 
@@ -94,6 +118,20 @@ YYMMDD_HHMMSS.pdf
 例 / Example: 260212_143025.pdf
 ```
 
+### PDF検索のヒント / PDF Search Tips
+
+#### AND検索 / AND Search
+すべてのキーワードを含むPDFを検索します：
+```
+実験 結果 2026
+```
+
+#### OR検索 / OR Search
+いずれかのキーワードを含むPDFを検索します：
+```
+レポート 報告書 ドキュメント
+```
+
 ---
 
 ## ⚠️ トラブルシューティング / Troubleshooting
@@ -102,7 +140,7 @@ YYMMDD_HHMMSS.pdf
 
 ```bash
 # 必要なパッケージを再インストール
-pip install --upgrade Pillow reportlab pandas
+pip install --upgrade Pillow reportlab pandas PyPDF2
 ```
 
 ### PDFが開かない / PDF doesn't open
@@ -113,21 +151,30 @@ The PDF is saved in the working directory. Open it manually.
 
 ### 日本語フォントが表示されない / Japanese fonts not displaying
 
-BIZ-UDGothicR.ttcフォントがシステムにインストールされていることを確認してください。
+SnapPDF_tabbed.pyは自動的にOS に応じた適切なフォントを選択します。
+フォントが見つからない場合は、以下をインストールしてください：
 
-Ensure BIZ-UDGothicR.ttc font is installed on your system.
+SnapPDF_tabbed.py automatically selects appropriate fonts based on your OS.
+If fonts are not found, install the following:
+
+**Windows**: MS Gothic または Yu Gothic（通常はプリインストール済み）
+**macOS**: Hiragino Sans（通常はプリインストール済み）
+**Linux**:
+```bash
+sudo apt-get install fonts-noto-cjk fonts-takao-gothic
+```
 
 ---
 
 ## 🎯 よくある質問 / FAQ
 
-### Q: 統合版は従来版と何が違いますか？
+### Q: SnapPDF_tabbed.pyは他のバージョンと何が違いますか？
 
-A: 統合版では5つの異なるレイアウトを1つのプログラムで切り替えられます。従来版では各レイアウトごとに別のプログラムを起動する必要がありました。
+A: SnapPDF_tabbed.pyはPDF作成とPDF検索を1つのGUIで統合し、タブで簡単に切り替えられます。また、Windows、macOS、Linuxの各プラットフォームで適切なフォントを自動的に選択します。
 
-### Q: How is the unified version different from traditional versions?
+### Q: How is SnapPDF_tabbed.py different from other versions?
 
-A: The unified version allows you to switch between 5 different layouts in one program. Traditional versions required launching separate programs for each layout.
+A: SnapPDF_tabbed.py integrates PDF creation and search in one GUI with easy tab switching. It also automatically selects appropriate fonts for Windows, macOS, and Linux platforms.
 
 ### Q: 画像の順序は保持されますか？
 
@@ -153,6 +200,14 @@ A: A4横向き（landscape）で出力されます。
 
 A: Output is A4 landscape orientation.
 
+### Q: PDF検索で日本語は使えますか？
+
+A: はい、日本語のキーワードで検索できます。
+
+### Q: Can I use Japanese for PDF search?
+
+A: Yes, you can search using Japanese keywords.
+
 ---
 
 ## 📱 実行例 / Usage Example
@@ -160,42 +215,44 @@ A: Output is A4 landscape orientation.
 ### 例1: 実験記録をPDFにまとめる / Example 1: Create PDF of Experiment Records
 
 ```bash
-python SnapPDF_unified.py
+python SnapPDF_tabbed.py
 ```
 
-1. レイアウト「6 images (3×2)」を選択
-2. Title: "Experiment 2026-02-12"
-3. Remarks: "Temperature: 25°C, Humidity: 45%"
-4. Excelファイルで実験パラメータを選択
-5. 実験写真を選択
-6. 「Output to PDF」をクリック
+1. 「PDF Creation」タブを選択
+2. レイアウト「6 images (3×2)」を選択
+3. Title: "Experiment 2026-02-12"
+4. Remarks: "Temperature: 25°C, Humidity: 45%"
+5. Excelファイルで実験パラメータを選択（オプション）
+6. 実験写真を選択
+7. 「Output to PDF」をクリック
 
-### 例2: イベント写真アルバム / Example 2: Event Photo Album
+### 例2: PDF内のキーワード検索 / Example 2: Search for Keywords in PDFs
 
 ```bash
-python SnapPDF_unified.py
+python SnapPDF_tabbed.py
 ```
 
-1. レイアウト「15 images (5×3)」を選択
-2. Title: "Lab Meeting 2026-02-12"
-3. イベント写真を選択（多数）
-4. 「Output to PDF」をクリック
+1. 「PDF Search」タブを選択
+2. キーワード入力: "実験 結果"
+3. AND検索を選択
+4. 「Select directory」でフォルダを選択
+5. 検索結果が表示され、CSVファイルが生成されます
 
 ---
 
-## 🔧 詳細設定 / Advanced Settings
+## 🌟 主な特徴 / Key Features
 
-### カスタムレイアウトの追加 / Adding Custom Layouts
+### マルチプラットフォーム対応 / Multi-platform Support
 
-将来のアップデートで、カスタムレイアウトの定義が可能になる予定です。
+SnapPDF_tabbed.pyは、Windows、macOS、Linuxで動作し、各OSに最適なフォントを自動的に選択します。
 
-Future updates will allow custom layout definitions.
+SnapPDF_tabbed.py works on Windows, macOS, and Linux, automatically selecting optimal fonts for each OS.
 
-### バッチ処理 / Batch Processing
+### タブインターフェース / Tabbed Interface
 
-複数のPDFを一度に生成する機能は、将来のアップデートで追加予定です。
+PDF作成とPDF検索を1つのウィンドウで切り替えられる直感的なインターフェース。
 
-Batch processing to generate multiple PDFs at once is planned for future updates.
+Intuitive interface allowing you to switch between PDF creation and search in one window.
 
 ---
 
@@ -204,8 +261,8 @@ Batch processing to generate multiple PDFs at once is planned for future updates
 ### ヘルプが必要ですか？ / Need Help?
 
 - **GitHub Issues**: https://github.com/Mizuho-NAGATA/SnapPDF/issues
-- **Documentation**: README.md, UNIFIED_VERSION_GUIDE.md
-- **Technical Details**: ARCHITECTURE.md
+- **詳細ガイド / Detailed Guide**: [TABBED_VERSION_GUIDE.md](guides/TABBED_VERSION_GUIDE.md)
+- **技術詳細 / Technical Details**: [ARCHITECTURE.md](development/ARCHITECTURE.md)
 
 ### バグを見つけた場合 / Found a Bug?
 
@@ -224,9 +281,9 @@ Please report bugs on GitHub Issues with the following information:
 
 ### もっと詳しく知りたい方へ / For More Information
 
-- **UNIFIED_VERSION_GUIDE.md** - 詳細な使用方法と移行ガイド
-- **REFACTORING_SUMMARY.md** - 統合版の技術的な詳細
-- **ARCHITECTURE.md** - システムアーキテクチャ
+- **[TABBED_VERSION_GUIDE.md](guides/TABBED_VERSION_GUIDE.md)** - 詳細な使用方法とトラブルシューティング
+- **[ARCHITECTURE.md](development/ARCHITECTURE.md)** - システムアーキテクチャ
+- **[TABBED_IMPLEMENTATION.md](development/TABBED_IMPLEMENTATION.md)** - タブ版の実装詳細
 
 ### フィードバックをお願いします / We Want Your Feedback
 
@@ -236,8 +293,8 @@ Help us improve this tool by providing feedback!
 
 ---
 
-**Last Updated**: 2026-02-12  
-**Version**: 1.0  
+**Last Updated**: 2026-02-13  
+**Version**: Tabbed 1.0  
 **Ready to Use**: ✅
 
 ---
@@ -245,9 +302,9 @@ Help us improve this tool by providing feedback!
 ## 🎉 さあ、始めましょう！ / Let's Get Started!
 
 ```bash
-python SnapPDF_unified.py
+python SnapPDF_tabbed.py
 ```
 
-簡単、高速、パワフル - SnapPDF Unified
+簡単、高速、パワフル - SnapPDF_tabbed.py
 
-Easy, Fast, Powerful - SnapPDF Unified
+Easy, Fast, Powerful - SnapPDF_tabbed.py
