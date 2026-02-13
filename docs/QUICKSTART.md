@@ -1,5 +1,5 @@
-# SnapPDF_tabbed.py - Quick Start Guide
-# SnapPDF_tabbed.py - クイックスタートガイド
+# SnapPDF.py - Quick Start Guide
+# SnapPDF.py - クイックスタートガイド
 
 ## 🚀 5分で始める / Get Started in 5 Minutes
 
@@ -12,7 +12,7 @@ pip install Pillow reportlab pandas PyPDF2
 ### ステップ2: プログラムを起動 / Step 2: Launch the Program
 
 ```bash
-python SnapPDF_tabbed.py
+python SnapPDF.py
 ```
 
 ### ステップ3: タブを選択 / Step 3: Select Tab
