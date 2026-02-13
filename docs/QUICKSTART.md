@@ -6,7 +6,7 @@
 ### ステップ1: 必要なパッケージをインストール / Step 1: Install Required Packages
 
 ```bash
-pip install Pillow reportlab pandas PyPDF2
+pip install Pillow reportlab PyPDF2 pandas tkinterdnd2
 ```
 
 ### ステップ2: プログラムを起動 / Step 2: Launch the Program
