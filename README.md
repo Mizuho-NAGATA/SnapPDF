@@ -87,7 +87,7 @@ The included "PDFSearch" allows you to search the text inside saved PDF files.
 
 例: 
 ```bash
-python SnapPDF15.py
+python SnapPDF.py
 ```
 
 ## 必要条件
