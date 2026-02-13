@@ -1,46 +1,68 @@
-# SnapPDF Unified Architecture
-# SnapPDF統合版アーキテクチャ
+# SnapPDF Tabbed Architecture
+# SnapPDF タブ版アーキテクチャ
 
 ## 📐 システム構成図 / System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    SnapPDF Unified                          │
-│                  (SnapPDF_unified.py)                       │
+│                    SnapPDF Tabbed                           │
+│                     (SnapPDF.py)                            │
 └─────────────────────────────────────────────────────────────┘
                               │
-                              ├── GUI Layer (Tkinter)
-                              │   ├── Title/Remarks Input
-                              │   ├── Layout Selection (Radio Buttons)
-                              │   ├── Excel File Selection
-                              │   ├── Image Selection
-                              │   ├── Thumbnail Display
-                              │   └── PDF Export Button
+                              ├── Main Application Layer
+                              │   └── SnapPDFTabbedApp (Notebook/Tabs)
+                              │       ├── PDF Creation Tab
+                              │       └── PDF Search Tab
                               │
-                              ├── Business Logic Layer
-                              │   ├── SnapPDFUnifiedApp (Main Class)
-                              │   ├── Layout Configuration
-                              │   │   └── LAYOUT_PRESETS
-                              │   ├── Image Processing
+                              ├── PDF Creation Tab (SnapPDFTab)
+                              │   ├── GUI Components
+                              │   │   ├── Title/Remarks Input
+                              │   │   ├── Layout Selection (Radio Buttons)
+                              │   │   ├── Excel File Selection
+                              │   │   ├── Image Selection
+                              │   │   ├── Thumbnail Display (Scrollable)
+                              │   │   └── PDF Export Button
+                              │   │
+                              │   ├── Business Logic
+                              │   │   ├── Layout Configuration (LAYOUT_PRESETS)
+                              │   │   ├── Image Processing (Parallel)
                               │   │   ├── Thumbnail Generation (LRU Cache)
-                              │   │   └── PDF Image Processing (Parallel)
-                              │   └── Excel Data Handling
+                              │   │   └── Excel Data Handling
+                              │   │
+                              │   └── PDF Generation (ReportLab)
+                              │       ├── Page Layout
+                              │       ├── Header/Footer
+                              │       └── Image Table
                               │
-                              └── Output Layer
-                                  ├── PDF Generation (ReportLab)
-                                  │   ├── Page Layout
-                                  │   ├── Header/Footer
-                                  │   └── Image Table
-                                  └── PDF Opening (Cross-Platform)
+                              ├── PDF Search Tab (PDFSearchTab)
+                              │   ├── GUI Components
+                              │   │   ├── Folder Selection
+                              │   │   ├── Keyword Input (Multiple)
+                              │   │   ├── Search Button
+                              │   │   └── Results Display
+                              │   │
+                              │   └── Search Logic
+                              │       ├── PDF Text Extraction (PyPDF2)
+                              │       ├── Keyword Matching
+                              │       ├── Results Window
+                              │       └── CSV Export
+                              │
+                              └── Cross-Platform Support
+                                  ├── Multi-Platform Font Selection
+                                  │   ├── select_font_for_pdf()
+                                  │   └── select_font_for_gui()
+                                  └── PDF Opening (OS-specific)
 ```
 
 ## 🔄 データフロー / Data Flow
+
+### PDF Creation Tab Flow (PDF作成タブフロー)
 
 ```
 1. User Input
    ↓
 ┌──────────────────────────────┐
-│  Select Layout (2/4/5/6/15)  │
+│  Select Layout (2/4/6/15)    │
 │  Select Excel File (Optional)│
 │  Select Images               │
 └──────────────────────────────┘
@@ -78,6 +100,34 @@
 └──────────────────────────────┘
 ```
 
+### PDF Search Tab Flow (PDF検索タブフロー)
+
+```
+1. User Input
+   ↓
+┌──────────────────────────────┐
+│  Select Folder               │
+│  Enter Keywords (Multiple)   │
+│  Click Search                │
+└──────────────────────────────┘
+   ↓
+2. Search Processing
+   ↓
+┌──────────────────────────────┐
+│  Scan Folder for PDFs        │
+│  Extract Text (PyPDF2)       │
+│  Match Keywords              │
+└──────────────────────────────┘
+   ↓
+3. Results Display
+   ↓
+┌──────────────────────────────┐
+│  Show Results Window         │
+│  Display Matches             │
+│  Option to Save as CSV       │
+└──────────────────────────────┘
+```
+
 ## 🎨 レイアウトシステム / Layout System
 
 ### レイアウトプリセット構成 / Layout Preset Configuration
@@ -85,14 +135,33 @@
 ```python
 LAYOUT_PRESETS = {
     "2": {
-        "cols": 1,      # 列数 / Columns
-        "rows": 2,      # 行数 / Rows
+        "cols": 2,      # 列数 / Columns
+        "rows": 1,      # 行数 / Rows
         "total": 2,     # 1ページあたりの画像数 / Images per page
-        "name": "2 images (1×2)"
+        "name": "2 images (2×1)"
     },
-    # ... 他のプリセット
+    "4": {
+        "cols": 2,
+        "rows": 2,
+        "total": 4,
+        "name": "4 images (2×2)"
+    },
+    "6": {
+        "cols": 3,
+        "rows": 2,
+        "total": 6,
+        "name": "6 images (3×2)"
+    },
+    "15": {
+        "cols": 5,
+        "rows": 3,
+        "total": 15,
+        "name": "15 images (5×3)"
+    }
 }
 ```
+
+**Note**: Unicode multiplication sign (U+00D7: ×) is used instead of ASCII 'x' to prevent character encoding issues.
 
 ### 動的サイズ計算 / Dynamic Size Calculation
 
@@ -115,20 +184,37 @@ if new_height > target_height:
 
 ```
 ┌──────────────────────────────────────────────┐
-│         SnapPDFUnifiedApp                    │
+│         SnapPDFTabbedApp                     │
+│         (Main Application)                   │
 ├──────────────────────────────────────────────┤
 │ Attributes:                                  │
+│  - root: Tk                                  │
+│  - notebook: ttk.Notebook                    │
+│  - snap_pdf: SnapPDFTab                      │
+│  - pdf_search: PDFSearchTab                  │
+├──────────────────────────────────────────────┤
+│ Methods:                                     │
+│  + __init__()                                │
+│  + run()                                     │
+└──────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────┐
+│         SnapPDFTab                           │
+│         (PDF Creation)                       │
+├──────────────────────────────────────────────┤
+│ Attributes:                                  │
+│  - parent: Frame                             │
 │  - image_paths: List[str]                    │
 │  - photo_images: List[PhotoImage]            │
 │  - entries: List[Entry]                      │
 │  - excel_data: List[List]                    │
 │  - excel_headers: List[str]                  │
 │  - selected_layout: StringVar                │
-│  - root: Tk                                  │
-│  - thumbnail_frame: Frame                    │
+│  - thumbnail_canvas: Canvas                  │
+│  - thumbnail_inner_frame: Frame              │
 ├──────────────────────────────────────────────┤
 │ Methods:                                     │
-│  + __init__()                                │
+│  + __init__(parent)                          │
 │  + _build_gui()                              │
 │  + select_excel_file()                       │
 │  + select_images()                           │
@@ -136,52 +222,103 @@ if new_height > target_height:
 │  + display_thumbnails()                      │
 │  + process_image_for_pdf(path, config)       │
 │  + create_pdf()                              │
-│  + run()                                     │
+└──────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────┐
+│         PDFSearchTab                         │
+│         (PDF Search)                         │
+├──────────────────────────────────────────────┤
+│ Attributes:                                  │
+│  - parent: Frame                             │
+│  - folder_path: str                          │
+│  - keyword_entries: List[Entry]              │
+├──────────────────────────────────────────────┤
+│ Methods:                                     │
+│  + __init__(parent)                          │
+│  + _build_gui()                              │
+│  + select_folder()                           │
+│  + search_pdfs()                             │
+│  + extract_text_from_pdf(path)               │
+│  + save_to_csv(results)                      │
+│  + show_results(results)                     │
 └──────────────────────────────────────────────┘
 ```
 
 ## 🔧 主要コンポーネント / Key Components
 
-### 1. GUI コンポーネント / GUI Components
+### 1. タブインターフェース / Tabbed Interface
 
 ```
 Root Window (Tk)
+│
+└── Notebook (ttk.Notebook)
+    ├── PDF Creation Tab
+    │   └── SnapPDFTab Components
+    └── PDF Search Tab
+        └── PDFSearchTab Components
+```
+
+### 2. PDF Creation Tab GUI Components
+
+```
+PDF Creation Tab (Frame)
 │
 ├── Input Frame
 │   ├── Title Entry
 │   └── Remarks Entry
 │
 ├── Layout Frame (LabelFrame)
-│   └── Radio Buttons (2/4/5/6/15)
+│   └── Radio Buttons (2/4/6/15)
 │
 ├── Control Buttons
 │   ├── Select Excel Button
 │   ├── Select Images Button
 │   └── Output to PDF Button
 │
-└── Thumbnail Frame
+└── Thumbnail Frame (Scrollable Canvas)
     └── Image Grid (10 columns)
+        └── Mousewheel Support
 ```
 
-### 2. 並列処理 / Parallel Processing
+### 3. PDF Search Tab GUI Components
+
+```
+PDF Search Tab (Frame)
+│
+├── Folder Selection
+│   ├── Folder Path Label
+│   └── Select Folder Button
+│
+├── Keyword Input Frame
+│   └── Multiple Entry Fields (4 keywords)
+│
+├── Search Button
+│
+└── Results Display
+    ├── Results Window (Toplevel)
+    │   └── Scrollable Text Widget
+    └── CSV Export Option
+```
+
+### 4. 並列処理 / Parallel Processing
 
 ```python
-# サムネイル生成の並列バッチ処理
+# サムネイル生成の並列バッチ処理 / Parallel thumbnail generation
 with ThreadPoolExecutor() as executor:
     batch_size = 10
     for start in range(0, num_images, batch_size):
         executor.submit(update_thumbnails, start, start + batch_size)
 
-# PDF用画像処理の並列処理（順序保持）
+# PDF用画像処理の並列処理（順序保持） / Parallel image processing (order preserved)
 with ThreadPoolExecutor() as executor:
     futures = [
         executor.submit(process_image_for_pdf, path, layout_config)
         for path in image_paths
     ]
-    results = [f.result() for f in futures]  # 順序保持
+    results = [f.result() for f in futures]  # 順序保持 / Order preserved
 ```
 
-### 3. キャッシュシステム / Cache System
+### 5. キャッシュシステム / Cache System
 
 ```python
 @lru_cache(maxsize=None)
@@ -191,12 +328,73 @@ def generate_thumbnail(self, file_path):
     return ImageTk.PhotoImage(image=image)
 ```
 
-## 🌐 クロスプラットフォーム対応 / Cross-Platform Support
+### 6. PDF 検索機能 / PDF Search Functionality
 
 ```python
-# PDF自動オープン
+def extract_text_from_pdf(self, pdf_path):
+    """Extract text from all pages of a PDF file"""
+    reader = PdfReader(pdf_path)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text()
+    return text
+
+def search_pdfs(self):
+    """Search for keywords in PDF files"""
+    # Scan folder for PDFs
+    # Extract text from each PDF
+    # Match keywords (case-insensitive)
+    # Display results
+```
+
+## 🌐 クロスプラットフォーム対応 / Cross-Platform Support
+
+### マルチプラットフォームフォント選択 / Multi-Platform Font Selection
+
+```python
+def select_font_for_pdf():
+    """Select appropriate font for PDF generation based on OS"""
+    system = platform.system()
+    
+    if system == "Windows":
+        font_candidates = [
+            ("MS-Gothic", "msgothic.ttc"),
+            ("Yu-Gothic", "YuGothR.ttc"),
+            ("BIZ-UDGothicR", "BIZ-UDGothicR.ttc"),
+        ]
+    elif system == "Darwin":  # macOS
+        font_candidates = [
+            ("Hiragino-Sans", "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc"),
+            ("Hiragino-Kaku", "/System/Library/Fonts/Hiragino Sans GB.ttc"),
+            ("Arial-Unicode", "/Library/Fonts/Arial Unicode.ttf"),
+        ]
+    else:  # Linux
+        font_candidates = [
+            ("NotoSansCJK", "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
+            ("TakaoPGothic", "/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf"),
+            ("IPAGothic", "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"),
+            ("DejaVu", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+        ]
+    # Returns font_name (fallback: "Helvetica")
+
+def select_font_for_gui():
+    """Select appropriate font for GUI based on OS"""
+    system = platform.system()
+    
+    if system == "Windows":
+        return ("Yu Gothic UI", 11)
+    elif system == "Darwin":  # macOS
+        return ("Hiragino Sans", 13)
+    else:  # Linux
+        return ("Noto Sans CJK JP", 11)
+```
+
+### PDF自動オープン / Automatic PDF Opening
+
+```python
+# PDF自動オープン / Open PDF automatically
 if os.name == "nt":  # Windows
-    subprocess.Popen(["start", pdf_file_path], shell=True)
+    os.startfile(pdf_file_path)
 elif platform.system() == "Darwin":  # macOS
     subprocess.Popen(["open", pdf_file_path])
 else:  # Linux
@@ -214,33 +412,53 @@ Python 3.x
 │   ├── subprocess
 │   ├── threading
 │   ├── datetime
+│   ├── csv
 │   ├── functools (lru_cache)
+│   ├── tkinter (GUI)
+│   │   ├── ttk (Notebook/Tabs)
+│   │   └── filedialog, messagebox
 │   └── concurrent.futures (ThreadPoolExecutor)
 │
 └── Third-Party Libraries
-    ├── tkinter (GUI)
-    ├── pandas (Excel読み込み)
-    ├── PIL/Pillow (画像処理)
-    └── reportlab (PDF生成)
+    ├── pandas (Excel読み込み / Excel import)
+    ├── PIL/Pillow (画像処理 / Image processing)
+    ├── PyPDF2 (PDF検索・テキスト抽出 / PDF search & text extraction)
+    ├── reportlab (PDF生成 / PDF generation)
+    └── tkinterdnd2 (ドラッグ&ドロップ対応 / Drag & drop support - optional)
 ```
 
 ## 🎯 設計原則 / Design Principles
 
-### 1. DRY (Don't Repeat Yourself)
-- 重複コードを排除
-- 設定駆動のレイアウトシステム
+### 1. タブによる機能分離 / Functional Separation with Tabs
+- PDF作成とPDF検索を1つのアプリケーションに統合
+- タブインターフェースで機能を分離し、ユーザビリティ向上
+- Unified PDF creation and search in one application
+- Functional separation with tabs for improved usability
 
-### 2. 単一責任の原則 (Single Responsibility)
-- `SnapPDFUnifiedApp`が全機能を統括
-- 各メソッドは特定の責任のみを持つ
+### 2. DRY (Don't Repeat Yourself)
+- 重複コードを排除 / Eliminate code duplication
+- 設定駆動のレイアウトシステム / Configuration-driven layout system
 
-### 3. 拡張性 (Extensibility)
+### 3. 単一責任の原則 (Single Responsibility)
+- `SnapPDFTabbedApp`: アプリケーション全体の管理
+- `SnapPDFTab`: PDF作成機能
+- `PDFSearchTab`: PDF検索機能
+- Each class has a specific responsibility
+
+### 4. 拡張性 (Extensibility)
 - 新しいレイアウトプリセットを簡単に追加可能
-- プラグイン可能なアーキテクチャ
+- Easy to add new layout presets
+- プラグイン可能なアーキテクチャ / Pluggable architecture
 
-### 4. パフォーマンス (Performance)
-- 並列処理による高速化
-- LRUキャッシュによる最適化
+### 5. パフォーマンス (Performance)
+- 並列処理による高速化 / Parallel processing for speed
+- LRUキャッシュによる最適化 / LRU cache optimization
+
+### 6. クロスプラットフォーム対応 (Cross-Platform)
+- OS自動検出によるフォント選択
+- プラットフォーム固有の機能を適切に処理
+- Automatic font selection based on OS detection
+- Proper handling of platform-specific features
 
 ## 🔍 コード品質指標 / Code Quality Metrics
 
@@ -248,9 +466,12 @@ Python 3.x
 ┌─────────────────────────────────────────┐
 │ Metric              │ Value             │
 ├─────────────────────┼───────────────────┤
-│ Lines of Code       │ 407               │
-│ Classes             │ 1                 │
-│ Methods             │ 9                 │
+│ Lines of Code       │ 684               │
+│ Classes             │ 3                 │
+│ - SnapPDFTabbedApp  │ (Main App)        │
+│ - SnapPDFTab        │ (PDF Creation)    │
+│ - PDFSearchTab      │ (PDF Search)      │
+│ Methods             │ 17+               │
 │ Cyclomatic          │ Low               │
 │ Complexity          │                   │
 │ Code Duplication    │ 0%                │
@@ -286,13 +507,29 @@ Image5 ┘
 
 ## 📖 参考資料 / References
 
+### 主要技術 / Core Technologies
+
 - **ReportLab Documentation**: https://www.reportlab.com/docs/
+  - PDF生成ライブラリ / PDF generation library
 - **PIL/Pillow Documentation**: https://pillow.readthedocs.io/
+  - 画像処理ライブラリ / Image processing library
+- **PyPDF2 Documentation**: https://pypdf2.readthedocs.io/
+  - PDF読み取り・テキスト抽出 / PDF reading and text extraction
 - **Python ThreadPoolExecutor**: https://docs.python.org/3/library/concurrent.futures.html
+  - 並列処理 / Parallel processing
 - **Tkinter Documentation**: https://docs.python.org/3/library/tkinter.html
+  - GUI フレームワーク / GUI framework
+- **ttk (Themed Tkinter)**: https://docs.python.org/3/library/tkinter.ttk.html
+  - タブインターフェース / Tab interface
+
+### 関連ドキュメント / Related Documentation
+
+- [QUICKSTART.md](../QUICKSTART.md) - クイックスタートガイド
+- [TABBED_VERSION_GUIDE.md](../guides/TABBED_VERSION_GUIDE.md) - タブ版完全ガイド
+- [REFACTORING_SUMMARY.md](./REFACTORING_SUMMARY.md) - リファクタリング概要
 
 ---
 
-**Last Updated**: 2026-02-12  
-**Version**: 1.0  
-**Author**: AI Refactoring Tool with NAGATA Mizuho
+**Last Updated**: 2026-02-13  
+**Version**: 2.0 (Tabbed Interface)  
+**Author**: NAGATA Mizuho with AI Assistant
