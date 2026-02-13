@@ -178,12 +178,7 @@ SnapPDF v2.0.0 は以下の Python ライブラリを使用しています。
 ## 📥 インストール
 
 ```bash
-pip install Pillow
-pip install reportlab
-pip install tk
-pip install pandas
-pip install tkinterdnd2
-pip install PyPDF2
+pip install Pillow reportlab tk pandas tkinterdnd2 PyPDF2
 ```
 
 ---
