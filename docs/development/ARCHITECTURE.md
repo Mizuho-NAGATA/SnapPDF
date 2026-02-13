@@ -531,5 +531,5 @@ Image5 ┘
 ---
 
 **Last Updated**: 2026-02-13  
-**Version**: 2.0 (Tabbed Interface)  
+**Version**: 3.0 (Tabbed Interface)  
 **Author**: NAGATA Mizuho with AI Assistant
