@@ -165,13 +165,13 @@ sudo apt-get install fonts-noto-cjk fonts-takao-gothic
 
 ## 🎯 よくある質問 / FAQ
 
-### Q: SnapPDF_tabbed.pyは他のバージョンと何が違いますか？
+### Q: SnapPDF 3.0 は他のバージョンと何が違いますか？
 
-A: SnapPDF_tabbed.pyはPDF作成とPDF検索を1つのGUIで統合し、タブで簡単に切り替えられます。また、Windows、macOS、Linuxの各プラットフォームで適切なフォントを自動的に選択します。
+A: SnapPDF 3.0 はPDF作成とPDF検索を1つのGUIで統合し、タブで簡単に切り替えられます。また、Windows、macOS、Linuxの各プラットフォームで適切なフォントを自動的に選択します。
 
-### Q: How is SnapPDF_tabbed.py different from other versions?
+### Q: How is SnapPDF 3.0 different from other versions?
 
-A: SnapPDF_tabbed.py integrates PDF creation and search in one GUI with easy tab switching. It also automatically selects appropriate fonts for Windows, macOS, and Linux platforms.
+A: SnapPDF 3.0 integrates PDF creation and search in one GUI with easy tab switching. It also automatically selects appropriate fonts for Windows, macOS, and Linux platforms.
 
 ### Q: 画像の順序は保持されますか？
 
