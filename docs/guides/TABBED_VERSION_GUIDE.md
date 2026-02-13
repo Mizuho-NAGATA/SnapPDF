@@ -3,9 +3,9 @@
 
 ## 🆕 概要 / Overview
 
-SnapPDF Tabbed (`SnapPDF_tabbed.py`) は、PDF作成とPDF検索を1つのGUIで統合し、マルチプラットフォーム対応を実現した最新バージョンです。
+SnapPDF (`SnapPDF.py`) は、PDF作成とPDF検索を1つのGUIで統合し、マルチプラットフォーム対応を実現した最新バージョンです。
 
-SnapPDF Tabbed (`SnapPDF_tabbed.py`) is the latest version that integrates PDF creation and search in one GUI with multi-platform support.
+SnapPDF (`SnapPDF.py`) is the latest version that integrates PDF creation and search in one GUI with multi-platform support.
 
 ---
 
@@ -74,7 +74,7 @@ pip install Pillow reportlab pandas PyPDF2
 ### 起動 / Launch
 
 ```bash
-python SnapPDF_tabbed.py
+python SnapPDF.py
 ```
 
 ---
@@ -338,10 +338,10 @@ A: 従来版のファイルは引き続き利用可能です。データ形式�
 A: Previous version files remain usable. Data formats are the same.
 
 **Q: どのバージョンを使うべきですか？**
-A: 新規ユーザーには `SnapPDF_tabbed.py` を推奨します。
+A: 新規ユーザーには `SnapPDF.py` を推奨します。
 
 **Q: Which version should I use?**
-A: We recommend `SnapPDF_tabbed.py` for new users.
+A: We recommend `SnapPDF.py` for new users.
 
 ---
 
