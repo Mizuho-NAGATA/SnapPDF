@@ -1,5 +1,6 @@
 Pillow
 reportlab
-PyPDF2
+tk
 pandas
 tkinterdnd2
+PyPDF2
