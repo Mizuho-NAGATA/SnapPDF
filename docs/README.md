@@ -10,7 +10,6 @@ SnapPDF ドキュメントへようこそ！このディレクトリには詳細
 - **[QUICKSTART.md](QUICKSTART.md)** - 5分で始めるクイックスタートガイド / Get started in 5 minutes
 
 ### User Guides / ユーザーガイド
-- **[guides/UNIFIED_VERSION_GUIDE.md](guides/UNIFIED_VERSION_GUIDE.md)** - SnapPDF_unified.py の完全ガイド / Complete guide for SnapPDF_unified.py
 - **[guides/TABBED_VERSION_GUIDE.md](guides/TABBED_VERSION_GUIDE.md)** - SnapPDF_tabbed.py の完全ガイド（最新・推奨）/ Complete guide for SnapPDF_tabbed.py (Latest & Recommended)
 
 ### Development Documentation / 開発者向けドキュメント
