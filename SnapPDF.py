@@ -396,13 +396,13 @@ class SnapPDFApp:
                             image_width,
                             image_spacing,
                         ]
-                        * images_per_page,
+                        * len(image_table_data),
                     )
                 )
                 content.append(
                     Table(
                         [file_name_table_data],
-                        colWidths=[image_width] * images_per_page,
+                        colWidths=[image_width] * len(file_name_table_data),
                     )
                 )
                 image_table_data = []
