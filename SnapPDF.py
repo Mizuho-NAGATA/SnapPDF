@@ -9,6 +9,7 @@
 # -------------------------------------------------------------
 import os
 import subprocess
+import sys
 import tkinter as tk
 from datetime import datetime
 from pathlib import Path
@@ -62,28 +63,53 @@ class SnapPDFApp:
         # GUI構築
         self._build_gui()
 
+    def _open_output_folder(self):
+        """
+        Open the output folder in the system's file explorer.
+        Works on Windows, macOS, and Linux.
+        """
+        script_dir = Path(__file__).parent.resolve()
+        output_dir = script_dir / "output"
+        
+        if not output_dir.exists():
+            return
+        
+        try:
+            if os.name == 'nt':  # Windows
+                os.startfile(output_dir)
+            elif sys.platform == 'darwin':  # macOS
+                subprocess.Popen(['open', str(output_dir)], stderr=subprocess.DEVNULL)
+            else:  # Linux and other Unix-like systems
+                subprocess.Popen(['xdg-open', str(output_dir)], stderr=subprocess.DEVNULL)
+        except Exception as e:
+            # Don't raise error if opening folder fails - it's not critical
+            print(f"Could not open output folder: {str(e)}")
+    
     def _get_safe_pdf_path(self, base_name):
         """
         Get a safe path for PDF file with collision detection.
-        Tries Desktop first, then Documents, then Home directory.
+        Saves PDFs to 'output/' folder in the script's directory.
+        Creates the output folder if it doesn't exist.
         """
-        home_dir = Path.home()
+        # Get the directory where the script is located
+        script_dir = Path(__file__).parent.resolve()
+        save_dir = script_dir / "output"
         
-        # Try Desktop first
-        possible_dirs = [
-            home_dir / "Desktop",
-            home_dir / "Documents", 
-            home_dir
-        ]
+        # Create output directory if it doesn't exist
+        try:
+            save_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            raise PermissionError(
+                f"Could not create output folder: {str(e)}\n"
+                f"Please check write permissions for: {script_dir}"
+            )
         
-        save_dir = None
-        for directory in possible_dirs:
-            if directory.exists() and os.access(directory, os.W_OK):
-                save_dir = directory
-                break
-        
-        if save_dir is None:
-            raise PermissionError("No writable directory found for saving PDF")
+        # Verify directory is writable
+        if not os.access(save_dir, os.W_OK):
+            raise PermissionError(
+                f"Output folder is not writable: {save_dir}\n"
+                "Please check folder permissions."
+            )
         
         # Generate unique filename with counter if file exists or is locked
         # This prevents overwriting existing files and handles locked file scenarios
@@ -105,7 +131,10 @@ class SnapPDFApp:
             
             # Safety limit to prevent infinite loop
             if counter > 100:
-                raise RuntimeError("Could not find available filename for PDF")
+                raise RuntimeError(
+                    f"Could not find available filename for PDF after 100 attempts.\n"
+                    f"Please clean up the output folder: {save_dir}"
+                )
 
     # =========================
     # GUI 構築
@@ -512,15 +541,26 @@ class SnapPDFApp:
             )
 
             # PDFを開く
-            if os.name == "nt":
-                os.startfile(pdf_file_path)
-            else:
-                subprocess.Popen(["open", pdf_file_path])
+            try:
+                if os.name == "nt":  # Windows
+                    os.startfile(pdf_file_path)
+                elif sys.platform == 'darwin':  # macOS
+                    subprocess.Popen(["open", pdf_file_path], stderr=subprocess.DEVNULL)
+                else:  # Linux and other Unix-like systems
+                    subprocess.Popen(["xdg-open", pdf_file_path], stderr=subprocess.DEVNULL)
+            except Exception as e:
+                print(f"Could not open PDF file: {str(e)}")
+
+            # 出力フォルダを開く
+            self._open_output_folder()
 
             # Show success message with file location
             messagebox.showinfo(
                 "Completed", 
-                f"PDF creation is complete\nSaved to: {pdf_file_path}"
+                f"PDF creation is complete!\n\n"
+                f"File: {Path(pdf_file_path).name}\n"
+                f"Location: {Path(pdf_file_path).parent}\n\n"
+                f"The output folder has been opened."
             )
 
             # 状態リセット
@@ -530,13 +570,20 @@ class SnapPDFApp:
         except PermissionError as e:
             messagebox.showerror(
                 "Permission Error",
-                f"Could not save PDF file: {str(e)}\n\n"
-                "Please ensure you have write permissions to your Desktop or Documents folder."
+                f"Could not save PDF file.\n\n"
+                f"Error: {str(e)}\n\n"
+                f"PDFs are saved to the 'output' folder in the script directory.\n"
+                f"Please ensure you have write permissions to create and write to this folder."
             )
         except Exception as e:
             messagebox.showerror(
                 "Error",
-                f"An error occurred while creating PDF: {str(e)}"
+                f"An error occurred while creating PDF.\n\n"
+                f"Error details: {str(e)}\n\n"
+                f"Please check that:\n"
+                f"- All image files are accessible\n"
+                f"- The output folder is not write-protected\n"
+                f"- No PDF files are currently open"
             )
 
     # =========================
