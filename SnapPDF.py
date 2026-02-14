@@ -86,6 +86,7 @@ class SnapPDFApp:
             raise PermissionError("No writable directory found for saving PDF")
         
         # Generate unique filename with counter if file exists or is locked
+        # This prevents overwriting existing files and handles locked file scenarios
         counter = 0
         while True:
             if counter == 0:
@@ -95,14 +96,14 @@ class SnapPDFApp:
             
             pdf_path = save_dir / filename
             
-            # Check if file exists and can be written
+            # Check if file exists - return immediately if available
             if not pdf_path.exists():
                 return str(pdf_path)
             
             # Try next counter if file exists (might be locked)
             counter += 1
             
-            # Safety limit
+            # Safety limit to prevent infinite loop
             if counter > 100:
                 raise RuntimeError("Could not find available filename for PDF")
 
@@ -517,7 +518,6 @@ class SnapPDFApp:
                 subprocess.Popen(["open", pdf_file_path])
 
             # Show success message with file location
-            pdf_dir = os.path.dirname(pdf_file_path)
             messagebox.showinfo(
                 "Completed", 
                 f"PDF creation is complete\nSaved to: {pdf_file_path}"
