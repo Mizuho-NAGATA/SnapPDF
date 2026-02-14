@@ -357,7 +357,7 @@ class SnapPDFApp:
         images_per_page = 5
         image_width = 150
         image_height = 150
-        image_spacing = 4
+        image_spacing = 10  # Spacing between images
 
         for file_path in self.image_paths:
             image = Image.open(file_path)
@@ -382,54 +382,76 @@ class SnapPDFApp:
             )
 
             if len(image_table_data) == images_per_page:
+                # Build row with images separated by empty cells for spacing
                 row_data_with_spacing = []
-                for img in image_table_data:
-                    row_data_with_spacing.append(Spacer(1, image_spacing))
+                for i, img in enumerate(image_table_data):
+                    if i > 0:
+                        row_data_with_spacing.append('')  # Empty cell for spacing
                     row_data_with_spacing.append(img)
-                    row_data_with_spacing.append(Spacer(1, image_spacing))
+
+                # Calculate column widths: alternating image and spacing widths
+                colWidths = []
+                for i in range(len(image_table_data)):
+                    if i > 0:
+                        colWidths.append(image_spacing)
+                    colWidths.append(image_width)
 
                 content.append(
                     Table(
                         [row_data_with_spacing],
-                        colWidths=[
-                            image_spacing,
-                            image_width,
-                            image_spacing,
-                        ]
-                        * len(image_table_data),
+                        colWidths=colWidths,
                     )
                 )
+                
+                # Build filename row with same structure
+                filename_row = []
+                for i, name in enumerate(file_name_table_data):
+                    if i > 0:
+                        filename_row.append('')  # Empty cell for spacing
+                    filename_row.append(name)
+                
                 content.append(
                     Table(
-                        [file_name_table_data],
-                        colWidths=[image_width] * len(file_name_table_data),
+                        [filename_row],
+                        colWidths=colWidths,
                     )
                 )
                 image_table_data = []
                 file_name_table_data = []
 
         if image_table_data:
+            # Build row with images separated by empty cells for spacing
             row_data_with_spacing = []
-            for img in image_table_data:
-                row_data_with_spacing.append(Spacer(1, image_spacing))
+            for i, img in enumerate(image_table_data):
+                if i > 0:
+                    row_data_with_spacing.append('')  # Empty cell for spacing
                 row_data_with_spacing.append(img)
-                row_data_with_spacing.append(Spacer(1, image_spacing))
+
+            # Calculate column widths: alternating image and spacing widths
+            colWidths = []
+            for i in range(len(image_table_data)):
+                if i > 0:
+                    colWidths.append(image_spacing)
+                colWidths.append(image_width)
 
             content.append(
                 Table(
                     [row_data_with_spacing],
-                    colWidths=[
-                        image_spacing,
-                        image_width,
-                        image_spacing,
-                    ]
-                    * len(image_table_data),
+                    colWidths=colWidths,
                 )
             )
+            
+            # Build filename row with same structure
+            filename_row = []
+            for i, name in enumerate(file_name_table_data):
+                if i > 0:
+                    filename_row.append('')  # Empty cell for spacing
+                filename_row.append(name)
+            
             content.append(
                 Table(
-                    [file_name_table_data],
-                    colWidths=[image_width] * len(file_name_table_data),
+                    [filename_row],
+                    colWidths=colWidths,
                 )
             )
 
