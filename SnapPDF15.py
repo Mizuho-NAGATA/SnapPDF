@@ -13,6 +13,7 @@ import tkinter as tk
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from functools import lru_cache
+from pathlib import Path
 from tkinter import Frame, Label, filedialog, messagebox
 
 from PIL import Image, ImageTk
@@ -45,6 +46,51 @@ class SnapPDF15App:
         self.thumbnail_frame = None
 
         self._build_gui()
+
+    def _get_safe_pdf_path(self, base_name):
+        """
+        Get a safe path for PDF file with collision detection.
+        Tries Desktop first, then Documents, then Home directory.
+        """
+        home_dir = Path.home()
+        
+        # Try Desktop first
+        possible_dirs = [
+            home_dir / "Desktop",
+            home_dir / "Documents", 
+            home_dir
+        ]
+        
+        save_dir = None
+        for directory in possible_dirs:
+            if directory.exists() and os.access(directory, os.W_OK):
+                save_dir = directory
+                break
+        
+        if save_dir is None:
+            raise PermissionError("No writable directory found for saving PDF")
+        
+        # Generate unique filename with counter if file exists or is locked
+        # This prevents overwriting existing files and handles locked file scenarios
+        counter = 0
+        while True:
+            if counter == 0:
+                filename = f"{base_name}.pdf"
+            else:
+                filename = f"{base_name}_{counter}.pdf"
+            
+            pdf_path = save_dir / filename
+            
+            # Check if file exists - return immediately if available
+            if not pdf_path.exists():
+                return str(pdf_path)
+            
+            # Try next counter if file exists (might be locked)
+            counter += 1
+            
+            # Safety limit to prevent infinite loop
+            if counter > 100:
+                raise RuntimeError("Could not find available filename for PDF")
 
     # -------------------------------------------------------------
     # GUI構築
@@ -183,76 +229,96 @@ class SnapPDF15App:
             messagebox.showerror("Error", "Please select images")
             return
 
-        now = datetime.now()
-        pdf_file_path = now.strftime("%y%m%d_%H%M%S") + ".pdf"
+        try:
+            now = datetime.now()
+            timestamp = now.strftime("%y%m%d_%H%M%S")
+            
+            # Get safe path for PDF file
+            pdf_file_path = self._get_safe_pdf_path(timestamp)
 
-        doc = SimpleDocTemplate(
-            pdf_file_path,
-            pagesize=landscape(A4),
-            topMargin=1.5 * inch,
-            bottomMargin=0.1 * inch,
-        )
-        content = []
-
-        title_text = self.entries[0].get()
-        remarks_text = self.entries[1].get()
-
-        def add_header(canvas, doc):
-            title = Paragraph(title_text, styles["Title"])
-            title.wrapOn(canvas, A4[1], A4[0])
-            x = (A4[1] - title.width) / 2
-            y = A4[0] - inch * 1
-            title.drawOn(canvas, x, y)
-
-            page_num = canvas.getPageNumber()
-            canvas.setFont("BIZ-UDGothicR", 10)
-            canvas.drawCentredString(
-                landscape(A4)[0] / 2, inch * 0.1, f"Page {page_num}"
+            doc = SimpleDocTemplate(
+                pdf_file_path,
+                pagesize=landscape(A4),
+                topMargin=1.5 * inch,
+                bottomMargin=0.1 * inch,
             )
+            content = []
 
-            remarks = Paragraph(remarks_text, styles["Normal"])
-            remarks.wrapOn(canvas, A4[1], A4[0])
-            remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
+            title_text = self.entries[0].get()
+            remarks_text = self.entries[1].get()
 
-        image_spacing = 10
-        col_widths = [150 + image_spacing] * 5
+            def add_header(canvas, doc):
+                title = Paragraph(title_text, styles["Title"])
+                title.wrapOn(canvas, A4[1], A4[0])
+                x = (A4[1] - title.width) / 2
+                y = A4[0] - inch * 1
+                title.drawOn(canvas, x, y)
 
-        with ThreadPoolExecutor() as executor:
-            futures = [
-                executor.submit(self.process_image_for_pdf, path)
-                for path in self.image_paths
-            ]
-            results = [f.result() for f in as_completed(futures)]
+                page_num = canvas.getPageNumber()
+                canvas.setFont("BIZ-UDGothicR", 10)
+                canvas.drawCentredString(
+                    landscape(A4)[0] / 2, inch * 0.1, f"Page {page_num}"
+                )
 
-        image_row = []
-        name_row = []
+                remarks = Paragraph(remarks_text, styles["Normal"])
+                remarks.wrapOn(canvas, A4[1], A4[0])
+                remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
 
-        for image, name in results:
-            image_row.append(image)
-            name_row.append(name)
+            image_spacing = 10
+            col_widths = [150 + image_spacing] * 5
 
-            if len(image_row) == 5:
-                content.append(Table([image_row], colWidths=col_widths))
-                content.append(Spacer(1, 0.1))
-                content.append(Table([name_row], colWidths=col_widths))
-                content.append(Spacer(1, 0.1))
-                image_row, name_row = [], []
+            with ThreadPoolExecutor() as executor:
+                futures = [
+                    executor.submit(self.process_image_for_pdf, path)
+                    for path in self.image_paths
+                ]
+                results = [f.result() for f in as_completed(futures)]
 
-        if image_row:
-            last_col_widths = [150 + image_spacing] * len(image_row)
-            content.append(Table([image_row], colWidths=last_col_widths))
-            content.append(Spacer(1, 12))
-            content.append(Table([name_row], colWidths=last_col_widths))
-            content.append(Spacer(1, 20))
+            image_row = []
+            name_row = []
 
-        doc.build(content, onFirstPage=add_header, onLaterPages=add_header)
+            for image, name in results:
+                image_row.append(image)
+                name_row.append(name)
 
-        if os.name == "nt":
-            subprocess.Popen(["start", pdf_file_path], shell=True)
-        else:
-            subprocess.Popen(["open", pdf_file_path])
+                if len(image_row) == 5:
+                    content.append(Table([image_row], colWidths=col_widths))
+                    content.append(Spacer(1, 0.1))
+                    content.append(Table([name_row], colWidths=col_widths))
+                    content.append(Spacer(1, 0.1))
+                    image_row, name_row = [], []
 
-        messagebox.showinfo("Completed", "PDF creation is complete")
+            if image_row:
+                last_col_widths = [150 + image_spacing] * len(image_row)
+                content.append(Table([image_row], colWidths=last_col_widths))
+                content.append(Spacer(1, 12))
+                content.append(Table([name_row], colWidths=last_col_widths))
+                content.append(Spacer(1, 20))
+
+            doc.build(content, onFirstPage=add_header, onLaterPages=add_header)
+
+            if os.name == "nt":
+                subprocess.Popen(["start", pdf_file_path], shell=True)
+            else:
+                subprocess.Popen(["open", pdf_file_path])
+
+            # Show success message with file location
+            messagebox.showinfo(
+                "Completed", 
+                f"PDF creation is complete\nSaved to: {pdf_file_path}"
+            )
+            
+        except PermissionError as e:
+            messagebox.showerror(
+                "Permission Error",
+                f"Could not save PDF file: {str(e)}\n\n"
+                "Please ensure you have write permissions to your Desktop or Documents folder."
+            )
+        except Exception as e:
+            messagebox.showerror(
+                "Error",
+                f"An error occurred while creating PDF: {str(e)}"
+            )
 
     # -------------------------------------------------------------
     # 実行

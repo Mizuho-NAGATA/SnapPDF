@@ -11,6 +11,7 @@ import os
 import subprocess
 import tkinter as tk
 from datetime import datetime
+from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 import pandas as pd
@@ -60,6 +61,51 @@ class SnapPDFApp:
 
         # GUI構築
         self._build_gui()
+
+    def _get_safe_pdf_path(self, base_name):
+        """
+        Get a safe path for PDF file with collision detection.
+        Tries Desktop first, then Documents, then Home directory.
+        """
+        home_dir = Path.home()
+        
+        # Try Desktop first
+        possible_dirs = [
+            home_dir / "Desktop",
+            home_dir / "Documents", 
+            home_dir
+        ]
+        
+        save_dir = None
+        for directory in possible_dirs:
+            if directory.exists() and os.access(directory, os.W_OK):
+                save_dir = directory
+                break
+        
+        if save_dir is None:
+            raise PermissionError("No writable directory found for saving PDF")
+        
+        # Generate unique filename with counter if file exists or is locked
+        # This prevents overwriting existing files and handles locked file scenarios
+        counter = 0
+        while True:
+            if counter == 0:
+                filename = f"{base_name}.pdf"
+            else:
+                filename = f"{base_name}_{counter}.pdf"
+            
+            pdf_path = save_dir / filename
+            
+            # Check if file exists - return immediately if available
+            if not pdf_path.exists():
+                return str(pdf_path)
+            
+            # Try next counter if file exists (might be locked)
+            counter += 1
+            
+            # Safety limit to prevent infinite loop
+            if counter > 100:
+                raise RuntimeError("Could not find available filename for PDF")
 
     # =========================
     # GUI 構築
@@ -289,99 +335,140 @@ class SnapPDFApp:
             messagebox.showerror("Error", "Please select images")
             return
 
-        now = datetime.now()
-        timestamp = now.strftime("%y%m%d_%H%M%S")
-        pdf_file_path = timestamp + ".pdf"
+        try:
+            now = datetime.now()
+            timestamp = now.strftime("%y%m%d_%H%M%S")
+            
+            # Get safe path for PDF file
+            pdf_file_path = self._get_safe_pdf_path(timestamp)
 
-        doc = SimpleDocTemplate(
-            pdf_file_path,
-            pagesize=landscape(A4),
-            topMargin=1.5 * inch,
-            bottomMargin=0.1 * inch,
-        )
-        content = []
-
-        # タイトル・ページ番号・備考の描画関数
-        def add_title_and_page_number(c, doc_obj):
-            # Title
-            title_text = self.entries[0].get()
-            title_style = styles["Title"]
-            title = Paragraph(title_text, title_style)
-            title.wrapOn(c, A4[1], A4[0])
-            x = (A4[1] - title.width) / 2
-            y = A4[0] - inch * 1
-            title.wrapOn(c, A4[1], A4[0])
-            title.drawOn(c, x, y)
-
-            # Page number
-            page_num = c.getPageNumber()
-            c.setFont("BIZ-UDGothicR", 10)
-            c.setFillColor(colors.black)
-            page_width, page_height = landscape(A4)
-            text = f"Page {page_num}"
-            c.drawCentredString(page_width / 2, inch * 0.1, text)
-
-            # Remarks
-            remarks_text = self.entries[1].get()
-            remarks = Paragraph(remarks_text, styles["Normal"])
-            remarks.wrapOn(c, A4[1], A4[0])
-            remarks.drawOn(c, inch, A4[0] - inch * 1.5)
-
-        # Excelデータがあれば先頭に表として追加
-        if self.excel_headers:
-            # 先頭行にヘッダを追加
-            data_with_header = [self.excel_headers] + self.excel_data
-
-            data_table = Table(data_with_header, colWidths=None)
-            data_table._width = A4[0] - doc.leftMargin - doc.rightMargin
-
-            table_style = [
-                ("BACKGROUND", (0, 0), (-1, 0), (0.8, 0.9, 1.0)),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ("FONT", (0, 0), (-1, -1), "BIZ-UDGothicR", 10),
-            ]
-
-            for row in range(2, data_table._nrows, 2):
-                table_style.append(("BACKGROUND", (0, row), (-1, row), (0.8, 0.9, 1.0)))
-
-            data_table.setStyle(TableStyle(table_style))
-            content.append(data_table)
-
-        # 画像配置
-        image_table_data = []
-        file_name_table_data = []
-
-        max_width = 200
-        max_height = 200
-        images_per_page = 5
-        image_width = 150
-        image_height = 150
-        image_spacing = 10  # Spacing between images
-
-        for file_path in self.image_paths:
-            image = Image.open(file_path)
-            original_width, original_height = image.size
-
-            if original_width > max_width or original_height > max_height:
-                image.thumbnail((max_width, max_height), Image.LANCZOS)
-
-            image_ratio = original_width / original_height
-            if image_ratio > 1:
-                new_width = image_width
-                new_height = int(new_width / image_ratio)
-            else:
-                new_height = image_height
-                new_width = int(new_height * image_ratio)
-
-            image_table_data.append(
-                PlatypusImage(file_path, width=new_width, height=new_height)
+            doc = SimpleDocTemplate(
+                pdf_file_path,
+                pagesize=landscape(A4),
+                topMargin=1.5 * inch,
+                bottomMargin=0.1 * inch,
             )
-            file_name_table_data.append(
-                Paragraph(os.path.basename(file_path), styles["Normal"])
-            )
+            content = []
 
-            if len(image_table_data) == images_per_page:
+            # タイトル・ページ番号・備考の描画関数
+            def add_title_and_page_number(c, doc_obj):
+                # Title
+                title_text = self.entries[0].get()
+                title_style = styles["Title"]
+                title = Paragraph(title_text, title_style)
+                title.wrapOn(c, A4[1], A4[0])
+                x = (A4[1] - title.width) / 2
+                y = A4[0] - inch * 1
+                title.wrapOn(c, A4[1], A4[0])
+                title.drawOn(c, x, y)
+
+                # Page number
+                page_num = c.getPageNumber()
+                c.setFont("BIZ-UDGothicR", 10)
+                c.setFillColor(colors.black)
+                page_width, page_height = landscape(A4)
+                text = f"Page {page_num}"
+                c.drawCentredString(page_width / 2, inch * 0.1, text)
+
+                # Remarks
+                remarks_text = self.entries[1].get()
+                remarks = Paragraph(remarks_text, styles["Normal"])
+                remarks.wrapOn(c, A4[1], A4[0])
+                remarks.drawOn(c, inch, A4[0] - inch * 1.5)
+
+            # Excelデータがあれば先頭に表として追加
+            if self.excel_headers:
+                # 先頭行にヘッダを追加
+                data_with_header = [self.excel_headers] + self.excel_data
+
+                data_table = Table(data_with_header, colWidths=None)
+                data_table._width = A4[0] - doc.leftMargin - doc.rightMargin
+
+                table_style = [
+                    ("BACKGROUND", (0, 0), (-1, 0), (0.8, 0.9, 1.0)),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONT", (0, 0), (-1, -1), "BIZ-UDGothicR", 10),
+                ]
+
+                for row in range(2, data_table._nrows, 2):
+                    table_style.append(("BACKGROUND", (0, row), (-1, row), (0.8, 0.9, 1.0)))
+
+                data_table.setStyle(TableStyle(table_style))
+                content.append(data_table)
+
+            # 画像配置
+            image_table_data = []
+            file_name_table_data = []
+
+            max_width = 200
+            max_height = 200
+            images_per_page = 5
+            image_width = 150
+            image_height = 150
+            image_spacing = 10  # Spacing between images
+
+            for file_path in self.image_paths:
+                image = Image.open(file_path)
+                original_width, original_height = image.size
+
+                if original_width > max_width or original_height > max_height:
+                    image.thumbnail((max_width, max_height), Image.LANCZOS)
+
+                image_ratio = original_width / original_height
+                if image_ratio > 1:
+                    new_width = image_width
+                    new_height = int(new_width / image_ratio)
+                else:
+                    new_height = image_height
+                    new_width = int(new_height * image_ratio)
+
+                image_table_data.append(
+                    PlatypusImage(file_path, width=new_width, height=new_height)
+                )
+                file_name_table_data.append(
+                    Paragraph(os.path.basename(file_path), styles["Normal"])
+                )
+
+                if len(image_table_data) == images_per_page:
+                    # Build row with images separated by empty cells for spacing
+                    row_data_with_spacing = []
+                    for i, img in enumerate(image_table_data):
+                        if i > 0:
+                            row_data_with_spacing.append('')  # Empty cell for spacing
+                        row_data_with_spacing.append(img)
+
+                    # Calculate column widths: alternating image and spacing widths
+                    colWidths = []
+                    for i in range(len(image_table_data)):
+                        if i > 0:
+                            colWidths.append(image_spacing)
+                        colWidths.append(image_width)
+
+                    content.append(
+                        Table(
+                            [row_data_with_spacing],
+                            colWidths=colWidths,
+                        )
+                    )
+                    
+                    # Build filename row with same structure
+                    filename_row = []
+                    for i, name in enumerate(file_name_table_data):
+                        if i > 0:
+                            filename_row.append('')  # Empty cell for spacing
+                        filename_row.append(name)
+                    
+                    content.append(
+                        Table(
+                            [filename_row],
+                            colWidths=colWidths,
+                        )
+                    )
+                    image_table_data = []
+                    file_name_table_data = []
+
+            if image_table_data:
                 # Build row with images separated by empty cells for spacing
                 row_data_with_spacing = []
                 for i, img in enumerate(image_table_data):
@@ -416,63 +503,41 @@ class SnapPDFApp:
                         colWidths=colWidths,
                     )
                 )
-                image_table_data = []
-                file_name_table_data = []
 
-        if image_table_data:
-            # Build row with images separated by empty cells for spacing
-            row_data_with_spacing = []
-            for i, img in enumerate(image_table_data):
-                if i > 0:
-                    row_data_with_spacing.append('')  # Empty cell for spacing
-                row_data_with_spacing.append(img)
-
-            # Calculate column widths: alternating image and spacing widths
-            colWidths = []
-            for i in range(len(image_table_data)):
-                if i > 0:
-                    colWidths.append(image_spacing)
-                colWidths.append(image_width)
-
-            content.append(
-                Table(
-                    [row_data_with_spacing],
-                    colWidths=colWidths,
-                )
-            )
-            
-            # Build filename row with same structure
-            filename_row = []
-            for i, name in enumerate(file_name_table_data):
-                if i > 0:
-                    filename_row.append('')  # Empty cell for spacing
-                filename_row.append(name)
-            
-            content.append(
-                Table(
-                    [filename_row],
-                    colWidths=colWidths,
-                )
+            # PDF生成
+            doc.build(
+                content,
+                onFirstPage=add_title_and_page_number,
+                onLaterPages=add_title_and_page_number,
             )
 
-        # PDF生成
-        doc.build(
-            content,
-            onFirstPage=add_title_and_page_number,
-            onLaterPages=add_title_and_page_number,
-        )
+            # PDFを開く
+            if os.name == "nt":
+                os.startfile(pdf_file_path)
+            else:
+                subprocess.Popen(["open", pdf_file_path])
 
-        # PDFを開く
-        if os.name == "nt":
-            os.startfile(pdf_file_path)
-        else:
-            subprocess.Popen(["open", pdf_file_path])
+            # Show success message with file location
+            messagebox.showinfo(
+                "Completed", 
+                f"PDF creation is complete\nSaved to: {pdf_file_path}"
+            )
 
-        messagebox.showinfo("Completed", "PDF creation is complete")
-
-        # 状態リセット
-        self.image_paths.clear()
-        self.update_image_list()
+            # 状態リセット
+            self.image_paths.clear()
+            self.update_image_list()
+            
+        except PermissionError as e:
+            messagebox.showerror(
+                "Permission Error",
+                f"Could not save PDF file: {str(e)}\n\n"
+                "Please ensure you have write permissions to your Desktop or Documents folder."
+            )
+        except Exception as e:
+            messagebox.showerror(
+                "Error",
+                f"An error occurred while creating PDF: {str(e)}"
+            )
 
     # =========================
     # アプリ起動
