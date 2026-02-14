@@ -9,6 +9,7 @@
 # -------------------------------------------------------------
 import os
 import subprocess
+import sys
 import tkinter as tk
 from datetime import datetime
 from pathlib import Path
@@ -76,7 +77,7 @@ class SnapPDFApp:
         try:
             if os.name == 'nt':  # Windows
                 os.startfile(output_dir)
-            elif os.uname().sysname == 'Darwin':  # macOS
+            elif sys.platform == 'darwin':  # macOS
                 subprocess.Popen(['open', str(output_dir)])
             else:  # Linux and other Unix-like systems
                 subprocess.Popen(['xdg-open', str(output_dir)])
