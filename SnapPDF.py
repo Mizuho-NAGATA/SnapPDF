@@ -78,9 +78,9 @@ class SnapPDFApp:
             if os.name == 'nt':  # Windows
                 os.startfile(output_dir)
             elif sys.platform == 'darwin':  # macOS
-                subprocess.Popen(['open', str(output_dir)])
+                subprocess.Popen(['open', str(output_dir)], stderr=subprocess.DEVNULL)
             else:  # Linux and other Unix-like systems
-                subprocess.Popen(['xdg-open', str(output_dir)])
+                subprocess.Popen(['xdg-open', str(output_dir)], stderr=subprocess.DEVNULL)
         except Exception as e:
             # Don't raise error if opening folder fails - it's not critical
             print(f"Could not open output folder: {str(e)}")
@@ -542,10 +542,12 @@ class SnapPDFApp:
 
             # PDFを開く
             try:
-                if os.name == "nt":
+                if os.name == "nt":  # Windows
                     os.startfile(pdf_file_path)
-                else:
-                    subprocess.Popen(["open", pdf_file_path])
+                elif sys.platform == 'darwin':  # macOS
+                    subprocess.Popen(["open", pdf_file_path], stderr=subprocess.DEVNULL)
+                else:  # Linux and other Unix-like systems
+                    subprocess.Popen(["xdg-open", pdf_file_path], stderr=subprocess.DEVNULL)
             except Exception as e:
                 print(f"Could not open PDF file: {str(e)}")
 
@@ -570,8 +572,8 @@ class SnapPDFApp:
                 "Permission Error",
                 f"Could not save PDF file.\n\n"
                 f"Error: {str(e)}\n\n"
-                f"The PDF will be saved to the 'output' folder in the script directory.\n"
-                f"Please ensure you have write permissions."
+                f"PDFs are saved to the 'output' folder in the script directory.\n"
+                f"Please ensure you have write permissions to create and write to this folder."
             )
         except Exception as e:
             messagebox.showerror(
