@@ -56,7 +56,6 @@ python SnapPDF.py
 For detailed guides, see the [docs/](docs/) folder
 
 - [クイックスタートガイド / Quick Start Guide](docs/QUICKSTART.md)
-- [タブ版完全ガイド / Tabbed Version Guide](docs/guides/TABBED_VERSION_GUIDE.md)
 
 ---
 
