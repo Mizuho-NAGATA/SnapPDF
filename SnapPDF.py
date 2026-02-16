@@ -18,7 +18,6 @@ import threading
 import tkinter as tk
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from functools import lru_cache
 from tkinter import Frame, Label, filedialog, messagebox, ttk
 
 import pandas as pd
@@ -198,6 +197,9 @@ class SnapPDFTab:
         # 追加: Treeview（画像一覧）と回転情報
         self.image_list = None
         self.image_rotations = {}  # {file_path: angle_in_degrees}
+        
+        # Instance-level cache for thumbnails
+        self._thumbnail_cache = {}  # {(file_path, angle): PhotoImage}
 
         self._build_gui()
     
@@ -452,19 +454,30 @@ class SnapPDFTab:
             # (creating ImageTk.PhotoImage from other threads can be unsafe)
             self.display_thumbnails()
     
-    @lru_cache(maxsize=None)
     def generate_thumbnail(self, file_path, angle):
         """
         file_path と angle(度) をキーにサムネイルを生成。
         angle は 0, 90, 180, 270 のいずれか（一般的な回転）を想定。
+        Uses instance-level cache to avoid recreating thumbnails.
         """
+        cache_key = (file_path, angle)
+        
+        # Return cached thumbnail if available
+        if cache_key in self._thumbnail_cache:
+            return self._thumbnail_cache[cache_key]
+        
+        # Generate new thumbnail
         image = Image.open(file_path)
         # 回転は先に行い、その後サムネイルで縮小
         if angle:
             # PIL の Image.rotate は、正の角度で反時計回り（counter-clockwise）に回転する
             image = image.rotate(angle, expand=True)
         image.thumbnail((100, 100))
-        return ImageTk.PhotoImage(image=image)
+        photo = ImageTk.PhotoImage(image=image)
+        
+        # Cache the result
+        self._thumbnail_cache[cache_key] = photo
+        return photo
     
     def display_thumbnails(self):
         if not self.image_paths:
@@ -563,12 +576,9 @@ class SnapPDFTab:
             new_angle = (current + delta_angle) % 360
             # 正負に対応して 0/90/180/270 を保持
             self.image_rotations[path] = new_angle
-            # キャッシュしたサムネイルがある場合、generate_thumbnail のキャッシュを壊す必要がある。
-            # lru_cache を用いているため、キャッシュ破棄を簡潔に行うため一旦全部クリアする:
-            try:
-                self.generate_thumbnail.cache_clear()
-            except Exception:
-                pass
+            # キャッシュしたサムネイルがある場合、キャッシュをクリアする
+            # 回転後の新しいサムネイルを生成するため、古いキャッシュを削除
+            self._thumbnail_cache = {k: v for k, v in self._thumbnail_cache.items() if k[0] != path}
         # 表示を更新
         self.update_image_list()
 
