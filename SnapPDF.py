@@ -535,21 +535,29 @@ class SnapPDFTab:
 
     def move_up(self):
         selected_items = self.image_list.selection()
-        # selection の順序に注意（Treeview依存）
-        for item in selected_items:
-            index = self.image_list.index(item)
-            if index > 0:
-                # 同じ index を image_paths の順で扱う
-                self.image_paths.insert(index - 1, self.image_paths.pop(index))
+        # 選択されたアイテムのインデックスを取得し、昇順で処理する
+        indices = sorted(self.image_list.index(item) for item in selected_items)
+        for index in indices:
+            if index > 0 and (index - 1) not in indices:
+                # 直上の要素が選択されていない場合のみ、入れ替えて一つ上へ移動
+                self.image_paths[index - 1], self.image_paths[index] = (
+                    self.image_paths[index],
+                    self.image_paths[index - 1],
+                )
         self.update_image_list()
 
     def move_down(self):
         selected_items = self.image_list.selection()
-        # selection の順序に注意
-        for item in selected_items:
-            index = self.image_list.index(item)
-            if index < len(self.image_paths) - 1:
-                self.image_paths.insert(index + 1, self.image_paths.pop(index))
+        # 選択されたアイテムのインデックスを取得し、降順で処理する
+        indices = sorted((self.image_list.index(item) for item in selected_items), reverse=True)
+        last_index = len(self.image_paths) - 1
+        for index in indices:
+            if index < last_index and (index + 1) not in indices:
+                # 直下の要素が選択されていない場合のみ、入れ替えて一つ下へ移動
+                self.image_paths[index + 1], self.image_paths[index] = (
+                    self.image_paths[index],
+                    self.image_paths[index + 1],
+                )
         self.update_image_list()
 
     def delete_selected_images(self):
