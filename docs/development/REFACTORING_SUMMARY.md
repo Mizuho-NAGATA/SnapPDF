@@ -130,43 +130,16 @@ PDF生成 / PDF Generation
 - **LRU Cache**: サムネイル生成のキャッシュ
 - **順序保持**: 画像の元の順序を保持
 
-## 🚀 今後の展開 / Future Development
-
-### 計画中の機能 / Planned Features
-
-1. **ドラッグ＆ドロップ改善** / Enhanced Drag & Drop
-2. **プレビュー機能** / Preview Feature
-3. **カスタムレイアウト** / Custom Layouts
-4. **バッチ処理** / Batch Processing
-5. **テンプレート保存** / Template Saving
-
 ## 📝 変更ファイル / Changed Files
 
-- ✨ **新規作成 / New**: `SnapPDF_unified.py`
-- ✨ **新規作成 / New**: `UNIFIED_VERSION_GUIDE.md` (後に削除 / later removed)
 - ✨ **新規作成 / New**: [`REFACTORING_SUMMARY.md`](REFACTORING_SUMMARY.md) (このドキュメント)
 - 📝 **更新 / Updated**: [`../../README.md`](../../README.md)
-
-## 🎓 学んだこと / Lessons Learned
-
-### リファクタリングの原則 / Refactoring Principles
-
-1. **DRY (Don't Repeat Yourself)**: コードの重複を排除
-2. **単一責任の原則**: 1つのクラスで全機能を管理
-3. **設定駆動**: レイアウトをデータとして定義
-4. **後方互換性**: 既存ファイルを保持
 
 ### AIリファクタリング / AI Refactoring
 
 このプロジェクトは、AIツール（picoclaw風）を使用したリファクタリングの成功例です。
 
 This project is a successful example of AI-assisted refactoring (picoclaw-style).
-
-**成功要因 / Success Factors:**
-- 明確な要件定義
-- 既存コードの徹底的な分析
-- 段階的な実装
-- 包括的なドキュメント作成
 
 ## 📞 サポート / Support
 
