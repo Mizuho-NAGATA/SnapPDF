@@ -47,9 +47,11 @@ SnapPDF is a tool that combines multiple images into a single PDF file. The incl
 ### 必要環境
 - Python 3.x
 
-### 基本パッケージ
+### pip を最新化して一括インストール
+macOS / Linux / Windows:  
 ```bash
-pip install Pillow reportlab PyPDF2 pandas tkinterdnd2 xlrd
+python -m pip install --upgrade pip
+python -m pip install pandas pillow PyPDF2 reportlab openpyxl xlrd
 python SnapPDF.py
 ```
 
@@ -66,26 +68,26 @@ sudo yum install xdg-utils
 
 ## 使用ライブラリとその役割 / Dependencies and their roles
 
-- Pillow  
-  - 画像の読み込み、リサイズ、回転、保存などの基本的な画像処理を行います（JPEG/PNG 等の取り扱い）。
+- **Pillow**  
+  画像の読み込み、リサイズ、回転、保存などの基本的な画像処理を行う（JPEG/PNG 等の取り扱い）。
 
-- reportlab  
-  - PDF ページの生成とレイアウト描画を担当します。画像を PDF に配置してページを作成します。
+- **reportlab**  
+  PDF ページの生成とレイアウト描画を担当。画像を PDF に配置してページを作成。
 
-- PyPDF2  
-  - 既存 PDF の結合、分割、メタデータ操作や簡易なテキスト抽出に使用します（PDFSearch の本文読み取りで補助的に利用）。
+- **PyPDF2**  
+  既存 PDF の結合、分割、メタデータ操作や簡易なテキスト抽出に使用（PDFSearch の本文読み取りで補助的に利用）。
 
-- pandas  
-  - Excel（表形式）のデータ取り込みとデータ操作に使用します。インポートしたデータをアプリ内で扱いやすく変換します。
+- **pandas**  
+  Excel（表形式）のデータ取り込みとデータ操作に使用。インポートしたデータをアプリ内で扱いやすく変換。
 
-- xlrd  
-  - 古い Excel ファイル（特に .xls）を読み込むために用います（pandas の Excel 読み込みのサポートとして）。
+- **xlrd**
+  古い Excel ファイル（特に .xls）を読み込むために用いる（pandas の Excel 読み込みのサポートとして）。
 
-- tkinterdnd2  
-  - Tkinter のドラッグ＆ドロップ機能を拡張し、ファイルのドラッグ＆ドロップによる画像追加を可能にします。
+- **tkinterdnd2**
+  Tkinter のドラッグ＆ドロップ機能を拡張し、ファイルのドラッグ＆ドロップによる画像追加を可能にする。
 
-- xdg-utils (Linux)  
-  - Linux 環境で外部プログラムからファイルを開く等のユーティリティ（例: xdg-open）として必要になる場合があります。
+- **xdg-utils (Linux)**
+  Linux 環境で外部プログラムからファイルを開く等のユーティリティ（例: xdg-open）として必要になる場合がある。  
 
 注意: ライブラリのバージョンによっては挙動や互換性が異なるため、特定の環境で問題が発生した場合はバージョン固定や代替ライブラリの検討を推奨します。OCR 機能は本プロジェクトに含まれていないため、PDF 内の画像から直接テキストを抽出したい場合は別途 OCR（Tesseract 等）の導入が必要です。
 
