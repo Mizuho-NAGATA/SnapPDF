@@ -515,7 +515,7 @@ class SnapPDFTab:
         for path in self.image_paths:
             filename = os.path.basename(path)
             angle = self.image_rotations.get(path, 0)
-            display_name = f"{filename} {'(rot:{}°)'.format(angle) if angle else ''}"
+            display_name = f"{filename} (rot:{angle}°)" if angle else f"{filename} "
             self.image_list.insert("", "end", values=(display_name, path))
         # サムネイルも更新
         self.display_thumbnails()
