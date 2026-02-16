@@ -10,7 +10,8 @@
 
 ![SnapPDF-3 0](https://github.com/user-attachments/assets/158fc541-e4b9-4d77-9bde-990a42a2f883)
 
-複数の画像を一つの PDF にまとめます。PDF の生成と PDF 本文検索をひとつの GUI に統合。タブ切り替えで両機能を行き来でき、作業を一つのアプリケーションで完結できます。日常的な資料作成から研究用途まで幅広く活用できます。  
+複数の画像を一つの PDF にまとめます。PDF の生成と PDF 本文検索をひとつの GUI に統合。  
+タブ切り替えで両機能を行き来でき、作業を一つのアプリケーションで完結できます。  
 たくさんの写真をひとまとめにしたい、特定の単語を含む PDF を検索したい、という思いから作りました。  
 SnapPDF is a tool that combines multiple images into a single PDF file. The included PDFSearch allows you to search PDF content.
 
