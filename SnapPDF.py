@@ -461,7 +461,7 @@ class SnapPDFTab:
         image = Image.open(file_path)
         # 回転は先に行い、その後サムネイルで縮小
         if angle:
-            # PIL の rotate は左回転（90 で左回転）。ここでは角度の正負に合わせる
+            # PIL の Image.rotate は、正の角度で反時計回り（counter-clockwise）に回転する
             image = image.rotate(angle, expand=True)
         image.thumbnail((100, 100))
         return ImageTk.PhotoImage(image=image)
