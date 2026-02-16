@@ -42,23 +42,6 @@ SnapPDF is a tool that combines multiple images into a single PDF file. The incl
 
 ---
 
-## クイックスタート
-
-### SnapPDF.py  
-PDF 作成と検索を統合した GUI 版です。
-
-```bash
-pip install Pillow reportlab PyPDF2 pandas tkinterdnd2 xlrd
-python SnapPDF.py
-```
-
-詳細な手順やガイドは **docs/** フォルダにまとめています。
-For detailed guides, see the [docs/](docs/) folder
-
-- [クイックスタートガイド / Quick Start Guide](docs/QUICKSTART.md)
-
----
-
 ## インストール
 
 ### 必要環境
@@ -67,6 +50,7 @@ For detailed guides, see the [docs/](docs/) folder
 ### 基本パッケージ
 ```bash
 pip install Pillow reportlab PyPDF2 pandas tkinterdnd2 xlrd
+python SnapPDF.py
 ```
 
 ### Linux での追加設定
@@ -108,10 +92,9 @@ sudo yum install xdg-utils
 ---
 
 ## ドキュメント  
-より詳しい説明や開発者向け情報は [docs/](docs/) フォルダをご覧ください。
+開発者向け情報は [docs/](docs/) フォルダをご覧ください。
 For detailed documentation, see the [docs/](docs/) folder.
 
-- [クイックスタート / Quick Start](docs/QUICKSTART.md)
 - [開発者向け / Development](docs/development/) - アーキテクチャと技術詳細
 
 ---
