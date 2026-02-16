@@ -1,6 +1,6 @@
-Pillow
-reportlab
-tk
-pandas
-tkinterdnd2
-PyPDF2
+pandas>=1.5.3
+Pillow>=9.5.0
+PyPDF2>=3.0.0
+reportlab>=3.6.12
+openpyxl>=3.1.2
+xlrd>=2.0.1
