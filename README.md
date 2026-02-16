@@ -9,7 +9,6 @@
 </p>
 
 ![Image](https://github.com/user-attachments/assets/3b692d8d-6bf5-4989-85f0-98c94426b4bc)
-![SnapPDF-3 0](https://github.com/user-attachments/assets/158fc541-e4b9-4d77-9bde-990a42a2f883)
 
 複数の画像を一つの PDF にまとめます。PDF の生成と PDF 本文検索をひとつの GUI に統合。  
 タブ切り替えで両機能を行き来でき、作業を一つのアプリケーションで完結できます。  
@@ -117,3 +116,4 @@ This project is released under the MIT License. See [LICENSE](LICENSE) for detai
 ## 謝辞  
 - このプログラムは ChatGPT と Copilot の助力により開発されました
 - 本開発は文部科学省先端研究基盤共用促進事業（JPMXS0450300021）[パワーレーザーDXプラットフォーム](https://powerlaser.jp/)の成果です
+![SnapPDF-3 0](https://github.com/user-attachments/assets/158fc541-e4b9-4d77-9bde-990a42a2f883)
