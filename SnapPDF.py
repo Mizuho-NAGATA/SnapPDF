@@ -128,6 +128,58 @@ LAYOUT_PRESETS = {
 
 
 # =============================================================================
+# Helper function for safe PDF file path generation
+# =============================================================================
+def _get_safe_pdf_path(base_filename):
+    """
+    Generate a safe PDF file path with collision detection.
+    
+    Args:
+        base_filename: Base filename without extension (e.g., "231225_123456")
+    
+    Returns:
+        Absolute path to a writable PDF file location with collision avoidance
+    """
+    # Try multiple directories in order of preference
+    candidate_dirs = []
+    
+    # 1. Desktop
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+    if os.path.exists(desktop_path) and os.access(desktop_path, os.W_OK):
+        candidate_dirs.append(desktop_path)
+    
+    # 2. Documents
+    documents_path = os.path.join(os.path.expanduser("~"), "Documents")
+    if os.path.exists(documents_path) and os.access(documents_path, os.W_OK):
+        candidate_dirs.append(documents_path)
+    
+    # 3. Home directory (fallback)
+    home_path = os.path.expanduser("~")
+    if os.access(home_path, os.W_OK):
+        candidate_dirs.append(home_path)
+    
+    # Use the first writable directory
+    if not candidate_dirs:
+        # Last resort: use temp directory
+        import tempfile
+        candidate_dirs.append(tempfile.gettempdir())
+    
+    target_dir = candidate_dirs[0]
+    
+    # Check for filename collision and add numeric suffix if needed
+    pdf_filename = f"{base_filename}.pdf"
+    pdf_path = os.path.join(target_dir, pdf_filename)
+    
+    counter = 1
+    while os.path.exists(pdf_path):
+        pdf_filename = f"{base_filename}_{counter}.pdf"
+        pdf_path = os.path.join(target_dir, pdf_filename)
+        counter += 1
+    
+    return os.path.abspath(pdf_path)
+
+
+# =============================================================================
 # SnapPDF Tab - PDF Creation
 # =============================================================================
 class SnapPDFTab:
@@ -573,120 +625,158 @@ class SnapPDFTab:
             messagebox.showerror("Error", "Please select images")
             return
         
-        now = datetime.now()
-        pdf_file_path = now.strftime("%y%m%d_%H%M%S") + ".pdf"
-        
-        doc = SimpleDocTemplate(
-            pdf_file_path,
-            pagesize=landscape(A4),
-            topMargin=1.5 * inch,
-            bottomMargin=0.1 * inch,
-        )
-        content = []
-        
-        title_text = self.entries[0].get()
-        remarks_text = self.entries[1].get()
-        
-        def add_header(canvas, doc_obj):
-            title = Paragraph(title_text, styles["Title"])
-            title.wrapOn(canvas, A4[1], A4[0])
-            x = (A4[1] - title.width) / 2
-            y = A4[0] - inch * 1
-            title.drawOn(canvas, x, y)
+        try:
+            # Generate safe PDF file path with collision detection
+            now = datetime.now()
+            base_filename = now.strftime("%y%m%d_%H%M%S")
+            pdf_file_path = _get_safe_pdf_path(base_filename)
             
-            page_num = canvas.getPageNumber()
-            canvas.setFont(PDF_FONT_NAME, 10)
-            canvas.drawCentredString(
-                landscape(A4)[0] / 2, inch * 0.1, f"Page {page_num}"
+            doc = SimpleDocTemplate(
+                pdf_file_path,
+                pagesize=landscape(A4),
+                topMargin=1.5 * inch,
+                bottomMargin=0.1 * inch,
             )
+            content = []
             
-            remarks = Paragraph(remarks_text, styles["Normal"])
-            remarks.wrapOn(canvas, A4[1], A4[0])
-            remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
-        
-        # Add Excel data if available
-        if self.excel_headers:
-            data_with_header = [self.excel_headers] + self.excel_data
+            title_text = self.entries[0].get()
+            remarks_text = self.entries[1].get()
             
-            data_table = Table(data_with_header, colWidths=None)
-            data_table._width = A4[0] - doc.leftMargin - doc.rightMargin
+            def add_header(canvas, doc_obj):
+                title = Paragraph(title_text, styles["Title"])
+                title.wrapOn(canvas, A4[1], A4[0])
+                x = (A4[1] - title.width) / 2
+                y = A4[0] - inch * 1
+                title.drawOn(canvas, x, y)
+                
+                page_num = canvas.getPageNumber()
+                canvas.setFont(PDF_FONT_NAME, 10)
+                canvas.drawCentredString(
+                    landscape(A4)[0] / 2, inch * 0.1, f"Page {page_num}"
+                )
+                
+                remarks = Paragraph(remarks_text, styles["Normal"])
+                remarks.wrapOn(canvas, A4[1], A4[0])
+                remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
             
-            table_style = [
-                ("BACKGROUND", (0, 0), (-1, 0), (0.8, 0.9, 1.0)),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ("FONT", (0, 0), (-1, -1), PDF_FONT_NAME, 10),
-            ]
+            # Add Excel data if available
+            if self.excel_headers:
+                data_with_header = [self.excel_headers] + self.excel_data
+                
+                data_table = Table(data_with_header, colWidths=None)
+                data_table._width = A4[0] - doc.leftMargin - doc.rightMargin
+                
+                table_style = [
+                    ("BACKGROUND", (0, 0), (-1, 0), (0.8, 0.9, 1.0)),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONT", (0, 0), (-1, -1), PDF_FONT_NAME, 10),
+                ]
+                
+                for row in range(2, len(data_with_header), 2):
+                    table_style.append(("BACKGROUND", (0, row), (-1, row), (0.8, 0.9, 1.0)))
+                
+                data_table.setStyle(TableStyle(table_style))
+                content.append(data_table)
             
-            for row in range(2, len(data_with_header), 2):
-                table_style.append(("BACKGROUND", (0, row), (-1, row), (0.8, 0.9, 1.0)))
+            # Get layout configuration
+            layout_key = self.selected_layout.get()
+            layout_config = LAYOUT_PRESETS[layout_key]
+            cols = layout_config["cols"]
+            rows = layout_config["rows"]
             
-            data_table.setStyle(TableStyle(table_style))
-            content.append(data_table)
-        
-        # Get layout configuration
-        layout_key = self.selected_layout.get()
-        layout_config = LAYOUT_PRESETS[layout_key]
-        cols = layout_config["cols"]
-        rows = layout_config["rows"]
-        
-        # Process images in parallel (preserve order)
-        with ThreadPoolExecutor() as executor:
-            futures = [
-                executor.submit(self.process_image_for_pdf, path, layout_config)
-                for path in self.image_paths
-            ]
-            results = [f.result() for f in futures]
-        
-        available_width = A4[1] - 2 * inch
-        
-        # Build page layout
-        table_data = []
-        row_data = []
-        
-        for image, name in results:
-            cell_content = [[image], [name]]
-            cell_table = Table(cell_content)
-            row_data.append(cell_table)
+            # Process images in parallel (preserve order)
+            with ThreadPoolExecutor() as executor:
+                futures = [
+                    executor.submit(self.process_image_for_pdf, path, layout_config)
+                    for path in self.image_paths
+                ]
+                results = [f.result() for f in futures]
             
-            # When a row is complete
-            if len(row_data) == cols:
+            available_width = A4[1] - 2 * inch
+            
+            # Build page layout
+            table_data = []
+            row_data = []
+            
+            for image, name in results:
+                cell_content = [[image], [name]]
+                cell_table = Table(cell_content)
+                row_data.append(cell_table)
+                
+                # When a row is complete
+                if len(row_data) == cols:
+                    table_data.append(row_data)
+                    row_data = []
+                
+                # When a page is complete
+                if len(table_data) == rows:
+                    # Fix: Use actual number of columns in table_data
+                    content.append(
+                        Table(table_data, colWidths=[available_width / cols] * cols)
+                    )
+                    content.append(Spacer(1, 0.1))
+                    table_data = []
+            
+            # Add remaining images
+            if row_data:
                 table_data.append(row_data)
-                row_data = []
             
-            # When a page is complete
-            if len(table_data) == rows:
+            if table_data:
+                # Fix: Calculate colWidths based on actual row lengths to avoid mismatch
+                # For full pages, max(len(row)) will equal cols; for partial pages, it will be less
+                actual_cols = max(len(row) for row in table_data)
                 content.append(
-                    Table(table_data, colWidths=[available_width / cols] * cols)
+                    Table(
+                        table_data,
+                        colWidths=[available_width / cols] * actual_cols,
+                    )
                 )
-                content.append(Spacer(1, 0.1))
-                table_data = []
-        
-        # Add remaining images
-        if row_data:
-            table_data.append(row_data)
-        
-        if table_data:
-            content.append(
-                Table(
-                    table_data,
-                    colWidths=[available_width / cols]
-                    * max(len(row) for row in table_data),
-                )
+            
+            # Build PDF
+            doc.build(content, onFirstPage=add_header, onLaterPages=add_header)
+            
+            # Open PDF with proper error suppression
+            try:
+                if os.name == "nt":
+                    # Windows: empty string "" is used as the window title to handle paths with spaces
+                    subprocess.Popen(
+                        ["start", "", pdf_file_path],
+                        shell=True,
+                        stderr=subprocess.DEVNULL
+                    )
+                elif platform.system() == "Darwin":
+                    subprocess.Popen(
+                        ["open", pdf_file_path],
+                        stderr=subprocess.DEVNULL
+                    )
+                else:
+                    subprocess.Popen(
+                        ["xdg-open", pdf_file_path],
+                        stderr=subprocess.DEVNULL
+                    )
+            except Exception:
+                # If opening fails, just continue - file was created successfully
+                # This can happen if the default PDF viewer is not configured or unavailable
+                pass
+            
+            messagebox.showinfo(
+                "Completed",
+                f"PDF creation is complete\nSaved to: {pdf_file_path}"
             )
-        
-        # Build PDF
-        doc.build(content, onFirstPage=add_header, onLaterPages=add_header)
-        
-        # Open PDF
-        if os.name == "nt":
-            subprocess.Popen(["start", pdf_file_path], shell=True)
-        elif platform.system() == "Darwin":
-            subprocess.Popen(["open", pdf_file_path])
-        else:
-            subprocess.Popen(["xdg-open", pdf_file_path])
-        
-        messagebox.showinfo("Completed", "PDF creation is complete")
+            
+        except PermissionError as e:
+            messagebox.showerror(
+                "Permission Error",
+                f"Unable to create PDF file due to permission issues.\n"
+                f"Please check that you have write permissions.\n\n"
+                f"Error: {str(e)}"
+            )
+        except Exception as e:
+            messagebox.showerror(
+                "Error",
+                f"An error occurred while creating the PDF:\n{str(e)}"
+            )
 
 
 # =============================================================================
