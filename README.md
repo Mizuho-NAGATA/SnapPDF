@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License">
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg" alt="Multi-platform">
 </p>
+![SnapPDF3 0-ezgif com-video-to-gif-converter]0(https://github.com/user-attachments/assets/b82a6740-aaf6-494e-852b-d000ffd89b5f)
 
 ![SnapPDF-3 0](https://github.com/user-attachments/assets/158fc541-e4b9-4d77-9bde-990a42a2f883)
 
