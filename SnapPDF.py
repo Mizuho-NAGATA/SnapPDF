@@ -724,6 +724,7 @@ class SnapPDFTab:
             
             if table_data:
                 # Fix: Calculate colWidths based on actual row lengths to avoid mismatch
+                # table_data is guaranteed to be non-empty here due to the if guard above
                 # For full pages, max(len(row)) will equal cols; for partial pages, it will be less
                 actual_cols = max(len(row) for row in table_data)
                 content.append(
