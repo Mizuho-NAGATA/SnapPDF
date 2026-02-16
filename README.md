@@ -1,6 +1,6 @@
-# 📘 **SnapPDF v2.0.0 – README**
+# 📘 **SnapPDF v2.0 – README**
 
-> ** SnapPDF v2.0.0 は、v1 系から内部構造を全面的に再設計したメジャーアップデートです**  
+> ** SnapPDF v2.0 は、v1 系から内部構造を全面的に再設計したメジャーアップデートです**  
 > 全バージョン（2/4/6/15/Excel版）および PDFSearch をクラス化し、処理速度・安定性・保守性が大幅に向上しました。  
 > 見た目や使用方法に大きな変更はありませんが、内部機能は v1.2.2 から大幅に改善されています。
 
@@ -17,7 +17,7 @@ The included "PDFSearch" allows you to search the text inside saved PDF files.
 
 ---
 
-# 🆕 **v2.0.0 での主な変更点**
+# 🆕 **v2.0 での主な変更点**
 
 > **main（v1.2.2）からの大幅アップデート内容**
 
@@ -111,7 +111,7 @@ python SnapPDF.py
 
 PDFSearchは、PDFファイルの中身をキーワードで検索し、一致する内容を持つファイルを見つけ出すツールです。指定されたディレクトリ内のPDFファイルを対象に、入力されたキーワードでAND検索を行い、検索結果をCSVファイルに出力します。日本語も検索できます。
 PDFSearch is a powerful tool that searches the contents of PDF files by keywords to find files with matching contents. It performs AND searches on PDF files in a specified directory using entered keywords and outputs the search results to a CSV file. Japanese can also be searched.  
-v2.0.0 では以下を改善：
+v2.0 では以下を改善：
 
 - クラス化  
 - AND/OR 検索のバグ修正  
@@ -152,9 +152,9 @@ SnapPDFとPDFSearchはPython 3.xを必要とします。まだインストール
 3. ダウンロードしたインストーラーを実行し、画面の指示に従ってインストールを完了させます。
 4. インストールが完了したら、コマンドプロンプトまたはターミナルを開き、`python --version`を実行して、Pythonが正しくインストールされていることを確認します。
 
-## 📦 **依存関係（v2.0.0）**
+## 📦 **依存関係（v2.0）**
 
-SnapPDF v2.0.0 は以下の Python ライブラリを使用しています。
+SnapPDF ｖ2.0 は以下の Python ライブラリを使用しています。
 
 ### **共通（SnapPDF / 2 / 4 / 6 / 15）**
 - `datetime`：日付・時刻の取得  
@@ -163,8 +163,8 @@ SnapPDF v2.0.0 は以下の Python ライブラリを使用しています。
 - `tkinter`：GUI  
 - `PIL (Pillow)`：画像処理・サムネイル生成  
 - `reportlab`：PDF 生成  
-- `concurrent.futures`：画像処理の並列化（v2.0.0 で重要）  
-- `functools.lru_cache`：サムネイルキャッシュ（v2.0.0 新要素）
+- `concurrent.futures`：画像処理の並列化（ｖ2.0 で重要）  
+- `functools.lru_cache`：サムネイルキャッシュ（ｖ2.0 新要素）
 
 ### **SnapPDF（Excel版のみ）**
 - `pandas`：Excel 読み込み  
