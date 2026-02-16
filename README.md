@@ -1,4 +1,4 @@
-# SnapPDF
+# SnapPDF v3.0.0
 
 ## 複数の画像を一つのPDFファイルに統合 | Combine Multiple Images into One PDF File
 
