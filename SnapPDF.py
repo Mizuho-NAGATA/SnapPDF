@@ -724,6 +724,7 @@ class SnapPDFTab:
             
             if table_data:
                 # Fix: Calculate colWidths based on actual row lengths to avoid mismatch
+                # For full pages, max(len(row)) will equal cols; for partial pages, it will be less
                 actual_cols = max(len(row) for row in table_data)
                 content.append(
                     Table(
@@ -738,6 +739,7 @@ class SnapPDFTab:
             # Open PDF with proper error suppression
             try:
                 if os.name == "nt":
+                    # Windows: empty string "" is used as the window title to handle paths with spaces
                     subprocess.Popen(
                         ["start", "", pdf_file_path],
                         shell=True,
@@ -755,6 +757,7 @@ class SnapPDFTab:
                     )
             except Exception:
                 # If opening fails, just continue - file was created successfully
+                # This can happen if the default PDF viewer is not configured or unavailable
                 pass
             
             messagebox.showinfo(
