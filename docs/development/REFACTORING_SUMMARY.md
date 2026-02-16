@@ -88,40 +88,6 @@ LAYOUT_PRESETS = {
 PDF生成 / PDF Generation
 ```
 
-## 🔄 移行ガイド / Migration Guide
-
-### 従来版ユーザー向け / For Traditional Version Users
-
-| 従来の使い方 / Traditional | 統合版での使い方 / Unified Version |
-|------------------------|--------------------------------|
-| `python SnapPDF2.py`   | `python SnapPDF_unified.py` → 「2 images」を選択 |
-| `python SnapPDF4.py`   | `python SnapPDF_unified.py` → 「4 images」を選択 |
-| `python SnapPDF6.py`   | `python SnapPDF_unified.py` → 「6 images」を選択 |
-| `python SnapPDF15.py`  | `python SnapPDF_unified.py` → 「15 images」を選択 |
-
-## 🎨 GUI改善 / GUI Improvements
-
-### 新しいレイアウト選択UI / New Layout Selection UI
-
-```
-┌─────────────────────────────────────────┐
-│  Select Layout (Images per Page)       │
-│  ○ 2 images (1×2)                      │
-│  ○ 4 images (2×2)                      │
-│  ● 6 images (3×2)  [Default]           │
-│  ○ 15 images (5×3)                     │
-└─────────────────────────────────────────┘
-```
-
-## 🔍 品質保証 / Quality Assurance
-
-### テスト結果 / Test Results
-
-✅ **構文チェック / Syntax Check**: PASSED  
-✅ **コードレビュー / Code Review**: 0 issues found  
-✅ **セキュリティスキャン / Security Scan**: 0 vulnerabilities  
-✅ **後方互換性 / Backward Compatibility**: Maintained  
-
 ## 📈 パフォーマンス / Performance
 
 ### 並列処理の最適化 / Parallel Processing Optimization
@@ -137,9 +103,9 @@ PDF生成 / PDF Generation
 
 ### AIリファクタリング / AI Refactoring
 
-このプロジェクトは、AIツール（picoclaw風）を使用したリファクタリングの成功例です。
+このプロジェクトは、AIツール（Copilot）を使用したリファクタリングの成功例です。
 
-This project is a successful example of AI-assisted refactoring (picoclaw-style).
+This project is a successful example of AI-assisted refactoring (Copilot).
 
 ## 📞 サポート / Support
 
