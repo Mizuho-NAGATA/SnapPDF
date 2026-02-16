@@ -578,9 +578,7 @@ class SnapPDFTab:
             self.image_rotations[path] = new_angle
             # キャッシュしたサムネイルがある場合、キャッシュをクリアする
             # 回転後の新しいサムネイルを生成するため、古いキャッシュを削除
-            cache_keys_to_remove = [key for key in self._thumbnail_cache if key[0] == path]
-            for key in cache_keys_to_remove:
-                del self._thumbnail_cache[key]
+            self._thumbnail_cache = {k: v for k, v in self._thumbnail_cache.items() if k[0] != path}
         # 表示を更新
         self.update_image_list()
 
