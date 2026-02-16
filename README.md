@@ -1,6 +1,6 @@
 # SnapPDF v3.0.0
 
-## 複数の画像を一つのPDFファイルに統合 | Combine Multiple Images into One PDF File
+## 複数の画像を PDF ファイルにひとまとめ | Combine Multiple Images into One PDF File
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.x-blue.svg" alt="Python 3.x">
