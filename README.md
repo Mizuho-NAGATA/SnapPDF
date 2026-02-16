@@ -48,14 +48,7 @@ SnapPDF is a tool that combines multiple images into a single PDF file. The incl
 ### Pythonをインストール  
 公式サイト： <a href="https://www.python.org/" target="blank">https://www.python.org/</a>  
 
-### pip を最新化して必要ライブラリを一括インストール
-コマンドプロンプトを開いて下記コマンドを入力。
-```bash
-python -m pip install --upgrade pip
-python -m pip install pandas pillow PyPDF2 reportlab openpyxl xlrd
-```
-
-または requirements.txt を使用：
+### 必要ライブラリを一括インストール
 ```cmd
 pip install -r requirements.txt
 ```
