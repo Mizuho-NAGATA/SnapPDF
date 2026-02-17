@@ -1,6 +1,26 @@
-# SnapPDF v3.0.0
+# SnapPDF
 
-## 複数の画像を PDF ファイルにひとまとめ | Combine Multiple Images into One PDF File
+[![CI](https://github.com/Mizuho-NAGATA/SnapPDF/actions/workflows/ci.yml/badge.svg)](https://github.com/Mizuho-NAGATA/SnapPDF/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+複数の写真を選択して高速に PDF 化、Excel の読み込みで画像を結合出力できます。
+
+## Quick install (recommended)
+
+1. Clone or download the repo
+2. Create a virtual environment (recommended)
+   - python -m venv .venv
+   - source .venv/bin/activate  # macOS / Linux
+   - .venv\Scripts\activate     # Windows
+3. Install dependencies
+   - pip install --upgrade pip
+   - pip install -r requirements.txt
+
+---
+
+## SnapPDF v3.0.0
+
+### 複数の画像を PDF ファイルにひとまとめ | Combine Multiple Images into One PDF File
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.x-blue.svg" alt="Python 3.x">
