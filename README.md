@@ -3,8 +3,7 @@
 [![CI](https://github.com/Mizuho-NAGATA/SnapPDF/actions/workflows/ci.yml/badge.svg)](https://github.com/Mizuho-NAGATA/SnapPDF/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-複数の写真を選択して高速に PDF 化、Excel の読み込みで画像を結合出力できます。
-
+複数の写真を選択して高速に PDF 化、Excel の読み込みにも対応、PDF 本文検索付き。
 ## Quick install (recommended)
 
 1. Clone or download the repo
