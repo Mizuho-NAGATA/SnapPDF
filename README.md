@@ -137,4 +137,5 @@ This project is released under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## 謝辞  
 - このプログラムは ChatGPT と Copilot の助力により開発されました
-- 本開発は文部科学省先端研究基盤共用促進事業（JPMXS0450300021）[パワーレーザーDXプラットフォーム](https://powerlaser.jp/)の成果です
+- 本開発は文部科学省先端研究基盤共用促進事業（JPMXS0450300021）[パワーレーザーDXプラットフォーム](https://powerlaser.jp/)の成果です。
+-  This work was the result of using research equipment shared in MEXT Project for promoting public utilization of advanced research infrastructure（Program for advanced research equipment platforms）Grant Number JPMXS04503000.
