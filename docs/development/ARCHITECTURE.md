@@ -1,5 +1,5 @@
 # SnapPDF Tabbed Architecture
-# SnapPDF タブ版アーキテクチャ
+# SnapPDF タブ版構成図
 
 ## 📐 システム構成図 / System Architecture
 
