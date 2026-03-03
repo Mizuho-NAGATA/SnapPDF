@@ -29,10 +29,4 @@
 
 ---
 
-## 📞 サポート / Support
-
-詳細なガイドは [`../guides/TABBED_VERSION_GUIDE.md`](../guides/TABBED_VERSION_GUIDE.md) を参照してください。
-
-For detailed guide, please refer to [`../guides/TABBED_VERSION_GUIDE.md`](../guides/TABBED_VERSION_GUIDE.md).
-
 **GitHub**: https://github.com/Mizuho-NAGATA/SnapPDF
