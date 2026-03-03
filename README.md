@@ -124,7 +124,7 @@ For detailed documentation, see the [docs/](docs/) folder.
 ---
 
 ## 著者  
-**NAGATA Mizuho**  
+**NAGATA Mizuho**, 永田 みず穂  
 Institute of Laser Engineering, The University of Osaka
 
 ---
