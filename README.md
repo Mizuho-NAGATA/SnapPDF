@@ -115,11 +115,9 @@ sudo yum install xdg-utils
 
 ---
 
-## ドキュメント  
-開発者向け情報は [docs/](docs/) フォルダをご覧ください。
-For detailed documentation, see the [docs/](docs/) folder.
-
-- [開発者向け / Development](docs/development/) - アーキテクチャと技術詳細
+## 開発者向け情報  
+ [development/](development/) フォルダをご覧ください。  
+For detailed documentation, see the [development/](development/) folder.
 
 ---
 
