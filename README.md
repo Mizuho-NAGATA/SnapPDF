@@ -54,6 +54,10 @@ SnapPDF is a tool that combines multiple images into a single PDF file. The incl
 ### 必要環境
 - Python 3.x
 
+### リポジトリのダウンロード  
+緑色の "CODE" ボタンをクリック  
+Download ZIP をクリック  
+
 ### pip を最新化して一括インストール
 macOS / Linux / Windows:  
 ```bash
