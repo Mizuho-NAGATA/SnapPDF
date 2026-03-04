@@ -99,7 +99,7 @@ PDF生成 / PDF Generation
 ## 📝 変更ファイル / Changed Files
 
 - ✨ **新規作成 / New**: [`REFACTORING_SUMMARY.md`](REFACTORING_SUMMARY.md) (このドキュメント)
-- 📝 **更新 / Updated**: [`../../README.md`](../../README.md)
+- 📝 **更新 / Updated**: [`../README.md`](../README.md)
 
 ### AIリファクタリング / AI Refactoring
 
