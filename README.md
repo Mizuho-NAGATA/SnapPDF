@@ -3,18 +3,6 @@
 [![CI](https://github.com/Mizuho-NAGATA/SnapPDF/actions/workflows/ci.yml/badge.svg)](https://github.com/Mizuho-NAGATA/SnapPDF/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-複数の写真を選択して高速に PDF 化、Excel の読み込みにも対応、PDF 本文検索付き。
-## Quick install (recommended)
-
-1. Clone or download the repo
-2. Create a virtual environment (recommended)
-   - python -m venv .venv
-   - source .venv/bin/activate  # macOS / Linux
-   - .venv\Scripts\activate     # Windows
-3. Install dependencies
-   - pip install --upgrade pip
-   - pip install -r requirements.txt
-
 ---
 
 ## SnapPDF v3.0.0
@@ -29,7 +17,7 @@
 
 ![Image](https://github.com/user-attachments/assets/3b692d8d-6bf5-4989-85f0-98c94426b4bc)
 
-複数の画像を一つの PDF にまとめます。PDF の生成と PDF 本文検索をひとつの GUI に統合。  
+複数の画像を一つの PDF にまとめます。Excel の読み込みにも対応。PDF の生成と PDF 本文検索をひとつの GUI に統合。  
 タブ切り替えで両機能を行き来でき、作業を一つのアプリケーションで完結できます。  
 たくさんの写真をひとまとめにしたい、特定の単語を含む PDF を検索したい、という思いから作りました。  
 SnapPDF is a tool that combines multiple images into a single PDF file. The included PDFSearch allows you to search PDF content.
