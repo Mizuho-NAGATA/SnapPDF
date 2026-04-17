@@ -945,7 +945,7 @@ class PDFSearchTab:
 class SnapPDFTabbedApp:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("SnapPDF - Unified PDF Tools")
+        self.root.title("SnapPDF v3.0.0 - Unified PDF Tools")
         self.root.geometry("800x700")
         
         # Create notebook (tabbed interface)
