@@ -592,51 +592,56 @@ class SnapPDFTab:
 
     def process_image_for_pdf(self, file_path, layout_config):
         image = Image.open(file_path)
-        original_width, original_height = image.size
         
-        # 回転がある場合は rotated_image を使ってサイズ計算・出力
+        # RGBAなどのモードをJPEGで保存可能なRGBに変換
+        if image.mode in ("RGBA", "P"):
+            image = image.convert("RGB")
+        
+        # 回転処理
         angle = self.image_rotations.get(file_path, 0)
         if angle:
-            rotated = image.rotate(angle, expand=True)
-            original_width, original_height = rotated.size
-        else:
-            rotated = None
+            image = image.rotate(angle, expand=True)
+            
+        original_width, original_height = image.size
         
+        # PDF上の描画サイズ（ポイント単位）を計算
         available_width = A4[1] - 2 * inch
         available_height = A4[0] - 2.5 * inch - 0.5 * inch
         
         cols = layout_config["cols"]
         rows = layout_config["rows"]
         
-        # Calculate target dimensions
         target_width = available_width / cols - 10
         target_height = available_height / rows - 10
         
         image_ratio = original_width / original_height
         
-        # Fit image within target dimensions
         new_width = target_width
         new_height = new_width / image_ratio
         
         if new_height > target_height:
             new_height = target_height
             new_width = new_height * image_ratio
+
+        # --- 軽量化処理 ---
+        # 印刷・閲覧に十分なピクセルサイズにリサイズ（300DPI想定で約3.8倍、または最大1200px程度に収める）
+        # 表示枠に合わせてリサイズ用ピクセル数を算出 (1pt = 1/72inch)
+        scale_factor = 3  # 印刷品質とファイルサイズのバランスが良い倍率 (2〜3推奨)
+        pixel_w = int(new_width * scale_factor)
+        pixel_h = int(new_height * scale_factor)
         
-        # 回転がある場合は BytesIO に回転済み画像を保存して PlatypusImage に渡す
-        if angle and rotated is not None:
-            bio = BytesIO()
-            # 保存フォーマットは PNG を使う（透過はない想定）
-            rotated.save(bio, format="PNG")
-            bio.seek(0)
-            return (
-                PlatypusImage(bio, width=new_width, height=new_height),
-                Paragraph(os.path.basename(file_path), styles["Normal"]),
-            )
-        else:
-            return (
-                PlatypusImage(file_path, width=new_width, height=new_height),
-                Paragraph(os.path.basename(file_path), styles["Normal"]),
-            )
+        # 画像を縮小 (LANCZOSで高品質に縮小)
+        resized_image = image.resize((pixel_w, pixel_h), Image.Resampling.LANCZOS)
+        
+        # メモリ上でJPEG圧縮して保存
+        bio = BytesIO()
+        resized_image.save(bio, format="JPEG", quality=75) # quality=70〜80がおすすめ
+        bio.seek(0)
+        
+        return (
+            PlatypusImage(bio, width=new_width, height=new_height),
+            Paragraph(os.path.basename(file_path), styles["Normal"]),
+        )
     
     def create_pdf(self):
         if not self.image_paths:
