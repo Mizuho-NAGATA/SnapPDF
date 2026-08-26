@@ -543,7 +543,7 @@ class SnapPDFTab:
         resized_image = image.resize((pixel_w, pixel_h), Image.Resampling.LANCZOS)
         
         bio = BytesIO()
-        resized_image.save(bio, format="JPEG", quality=80)
+        resized_image.save(bio, format="JPEG", quality=85)
         bio.seek(0)
         
         return (
