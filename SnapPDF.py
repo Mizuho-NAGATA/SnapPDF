@@ -30,7 +30,7 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
-     as Platypus,
+    Image as PlatypusImage,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -119,9 +119,9 @@ GUI_FONT_FAMILY, GUI_FONT_SIZE = select_font_for_gui()
 # Layout configurations: (columns, rows, description)
 # Using Unicode multiplication sign (U+00D7) instead of ASCII 'x'
 LAYOUT_PRESETS = {
-    "2": {"cols": 2, "rows": 1, "total": 2, "name": "2 s (2\u00D71)"},
-    "4": {"cols": 2, "rows": 2, "total": 4, "name": "4 s (2\u00D72)"},
-    "6": {"cols": 3, "rows": 2, "total": 6, "name": "6 s (3\u00D72)"},
+    "2": {"cols": 2, "rows": 1, "total": 2, "name": "2 images (2\u00D71)"},
+    "4": {"cols": 2, "rows": 2, "total": 4, "name": "4 images (2\u00D72)"},
+    "6": {"cols": 3, "rows": 2, "total": 6, "name": "6 images (3\u00D72)"},
     "15": {"cols": 5, "rows": 3, "total": 15, "name": "15 images (5\u00D73)"},
 }
 
@@ -624,8 +624,6 @@ class SnapPDFTab:
             new_width = new_height * image_ratio
 
         # --- 軽量化処理 ---
-        # 印刷・閲覧に十分なピクセルサイズにリサイズ（300DPI想定で約3.8倍、または最大1200px程度に収める）
-        # 表示枠に合わせてリサイズ用ピクセル数を算出 (1pt = 1/72inch)
         scale_factor = 3  # 印刷品質とファイルサイズのバランスが良い倍率 (2〜3推奨)
         pixel_w = int(new_width * scale_factor)
         pixel_h = int(new_height * scale_factor)
@@ -633,9 +631,9 @@ class SnapPDFTab:
         # 画像を縮小 (LANCZOSで高品質に縮小)
         resized_image = image.resize((pixel_w, pixel_h), Image.Resampling.LANCZOS)
         
-        # メモリ上でJPEG圧縮して保存
+        # メモリ上でJPEG圧縮（品質80%）して保存
         bio = BytesIO()
-        resized_image.save(bio, format="JPEG", quality=80) # quality=70〜80がおすすめ
+        resized_image.save(bio, format="JPEG", quality=80)
         bio.seek(0)
         
         return (
@@ -747,8 +745,6 @@ class SnapPDFTab:
             
             if table_data:
                 # Fix: Calculate colWidths based on actual row lengths to avoid mismatch
-                # table_data is guaranteed to be non-empty here due to the if guard above
-                # For full pages, max(len(row)) will equal cols; for partial pages, it will be less
                 actual_cols = max(len(row) for row in table_data)
                 content.append(
                     Table(
@@ -781,7 +777,6 @@ class SnapPDFTab:
                     )
             except Exception:
                 # If opening fails, just continue - file was created successfully
-                # This can happen if the default PDF viewer is not configured or unavailable
                 pass
             
             messagebox.showinfo(
