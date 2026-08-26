@@ -7,7 +7,7 @@
 # Copyright (c) 2023-2026 NAGATA Mizuho
 # Institute of Laser Engineering, The University of Osaka .
 # Created on: 2023-09-29
-# Last updated on: 2026-08-26
+# Last updated on: 2026-08-26 (v3.1.0 - PDF出力時のファイルサイズ軽量化と画像処理の最適化)
 # -------------------------------------------------------------
 
 import csv
