@@ -14,9 +14,7 @@ import csv
 import os
 import platform
 import subprocess
-import threading
 import tkinter as tk
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from tkinter import Frame, Label, filedialog, messagebox, ttk
 
@@ -38,16 +36,13 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from io import BytesIO  # 回転・リサイズ画像をメモリで渡すため
+from io import BytesIO
+
 
 # =============================================================================
 # Multi-platform font configuration
 # =============================================================================
 def select_font_for_pdf():
-    """
-    Select appropriate font for PDF generation based on OS.
-    Returns (font_name, font_file_path) tuple.
-    """
     system = platform.system()
     
     if system == "Windows":
@@ -84,10 +79,6 @@ def select_font_for_pdf():
 
 
 def select_font_for_gui():
-    """
-    Select appropriate font for GUI based on OS.
-    Returns (font_family, size) tuple.
-    """
     system = platform.system()
     
     if system == "Windows":
@@ -98,20 +89,16 @@ def select_font_for_gui():
         return ("Noto Sans CJK JP", 11)
 
 
-# Initialize PDF font
 PDF_FONT_NAME = select_font_for_pdf()
 styles = getSampleStyleSheet()
 styles["Normal"].fontName = PDF_FONT_NAME
 styles["Normal"].fontSize = 10
 styles["Title"].fontName = PDF_FONT_NAME
 styles["Title"].fontSize = 16
-styles["Title"].alignment = 1  # center
+styles["Title"].alignment = 1
 
-# Initialize GUI font
 GUI_FONT_FAMILY, GUI_FONT_SIZE = select_font_for_gui()
 
-
-# Layout configurations: (columns, rows, description)
 LAYOUT_PRESETS = {
     "2": {"cols": 2, "rows": 1, "total": 2, "name": "2 images (2\u00D71)"},
     "4": {"cols": 2, "rows": 2, "total": 4, "name": "4 images (2\u00D72)"},
@@ -120,9 +107,6 @@ LAYOUT_PRESETS = {
 }
 
 
-# =============================================================================
-# Helper function for safe PDF file path generation
-# =============================================================================
 def _get_safe_pdf_path(base_filename):
     candidate_dirs = []
     
@@ -168,6 +152,8 @@ class SnapPDFTab:
         self.excel_data = []
         self.excel_headers = []
         self.selected_layout = tk.StringVar(value="6")
+        self.quality_var = tk.IntVar(value=85)
+
         self.thumbnail_canvas = None
         self.thumbnail_inner_frame = None
         self.thumbnail_vscroll = None
@@ -183,12 +169,12 @@ class SnapPDFTab:
         main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
         input_frame = tk.Frame(main_frame)
-        input_frame.pack(padx=10, pady=10)
+        input_frame.pack(padx=10, pady=5)
         
         fields = ["Title", "Remarks"]
         for field in fields:
             frame = tk.Frame(input_frame)
-            frame.pack(pady=5)
+            frame.pack(pady=3)
             
             label = tk.Label(frame, text=field, width=15, 
                            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE))
@@ -203,10 +189,10 @@ class SnapPDFTab:
             main_frame, text="Select Layout (Images per Page)", 
             font=(GUI_FONT_FAMILY, GUI_FONT_SIZE)
         )
-        layout_frame.pack(padx=10, pady=10, fill=tk.X)
+        layout_frame.pack(padx=10, pady=5, fill=tk.X)
         
         button_frame = tk.Frame(layout_frame)
-        button_frame.pack(pady=5)
+        button_frame.pack(pady=3)
         
         for key in ["2", "4", "6", "15"]:
             preset = LAYOUT_PRESETS[key]
@@ -218,33 +204,72 @@ class SnapPDFTab:
                 font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
             )
             rb.pack(side=tk.LEFT, padx=10)
-        
+
+        quality_frame = tk.LabelFrame(
+            main_frame, text="Image Quality & Compression Settings", 
+            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE)
+        )
+        quality_frame.pack(padx=10, pady=5, fill=tk.X)
+
+        q_inner_frame = tk.Frame(quality_frame)
+        q_inner_frame.pack(fill=tk.X, padx=15, pady=5)
+
+        q_label_text = tk.StringVar(value=f"Quality: {self.quality_var.get()}%")
+
+        def _update_q_label(val):
+            v = int(float(val))
+            self.quality_var.set(v)
+            q_label_text.set(f"Quality: {v}%")
+
+        val_label = tk.Label(
+            q_inner_frame, textvariable=q_label_text, width=13,
+            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE, "bold"), fg="#1a5276"
+        )
+        val_label.pack(side=tk.LEFT, padx=(0, 10))
+
+        scale = ttk.Scale(
+            q_inner_frame, from_=75, to=100,
+            variable=self.quality_var,
+            command=_update_q_label
+        )
+        scale.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
+        guide_label = tk.Label(
+            q_inner_frame, text="(75%: Small Size  |  85%: Balanced  |  100%: High Quality)",
+            font=(GUI_FONT_FAMILY, 9), fg="#566573"
+        )
+        guide_label.pack(side=tk.LEFT, padx=(10, 0))
+
+        btn_container = tk.Frame(main_frame)
+        btn_container.pack(pady=5)
+
         select_excel_button = tk.Button(
-            main_frame,
+            btn_container,
             text="Select Excel File (Optional)",
             command=self.select_excel_file,
             font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
         )
-        select_excel_button.pack(pady=10)
-        
+        select_excel_button.pack(side=tk.LEFT, padx=5)
+
         select_button = tk.Button(
-            main_frame,
+            btn_container,
             text="Select Images",
             command=self.select_images,
             font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
         )
-        select_button.pack(pady=10)
-        
-        export_button = tk.Button(
-            main_frame,
+        select_button.pack(side=tk.LEFT, padx=5)
+
+        self.export_button = tk.Button(
+            btn_container,
             text="Output to PDF",
             command=self.create_pdf,
-            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE),
+            font=(GUI_FONT_FAMILY, GUI_FONT_SIZE, "bold"),
+            bg="#2e86c1", fg="white", activebackground="#1b4f72", activeforeground="white"
         )
-        export_button.pack(pady=10)
+        self.export_button.pack(side=tk.LEFT, padx=5)
 
         control_frame = tk.Frame(main_frame)
-        control_frame.pack(pady=5)
+        control_frame.pack(pady=3)
 
         move_up_button = tk.Button(
             control_frame,
@@ -287,9 +312,9 @@ class SnapPDFTab:
         delete_button.pack(side=tk.LEFT, padx=4)
 
         image_list_frame = tk.Frame(main_frame)
-        image_list_frame.pack(padx=10, pady=5, fill=tk.X)
+        image_list_frame.pack(padx=10, pady=3, fill=tk.X)
 
-        self.image_list = ttk.Treeview(image_list_frame, columns=("File Name", "Path"), show="headings", height=5)
+        self.image_list = ttk.Treeview(image_list_frame, columns=("File Name", "Path"), show="headings", height=4)
         self.image_list.heading("File Name", text="File Name")
         self.image_list.heading("Path", text="Path")
         self.image_list.pack(side=tk.LEFT, fill=tk.X, expand=True)
@@ -299,9 +324,9 @@ class SnapPDFTab:
         self.image_list.configure(yscrollcommand=list_scrollbar.set)
 
         thumb_container = Frame(main_frame)
-        thumb_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        thumb_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
         
-        canvas = tk.Canvas(thumb_container, height=260)
+        canvas = tk.Canvas(thumb_container, height=200)
         vscroll = tk.Scrollbar(thumb_container, orient=tk.VERTICAL, command=canvas.yview)
         canvas.configure(yscrollcommand=vscroll.set)
         
@@ -407,11 +432,11 @@ class SnapPDFTab:
         if cache_key in self._thumbnail_cache:
             return self._thumbnail_cache[cache_key]
         
-        image = Image.open(file_path)
-        if angle:
-            image = image.rotate(angle, expand=True)
-        image.thumbnail((100, 100))
-        photo = ImageTk.PhotoImage(image=image)
+        with Image.open(file_path) as image:
+            if angle:
+                image = image.rotate(angle, expand=True)
+            image.thumbnail((100, 100))
+            photo = ImageTk.PhotoImage(image=image)
         
         self._thumbnail_cache[cache_key] = photo
         return photo
@@ -507,17 +532,22 @@ class SnapPDFTab:
         self.update_image_list()
 
     def process_image_for_pdf(self, file_path, layout_config):
-        image = Image.open(file_path)
-        
+        # with文を使って確実に画像をクローズし、メモリ領域を解放
+        with Image.open(file_path) as img:
+            image = img.copy()
+
         if image.mode in ("RGBA", "P"):
             image = image.convert("RGB")
-        
+
+        # v3.0.0 ベースの回転処理
         angle = self.image_rotations.get(file_path, 0)
         if angle:
-            image = image.rotate(angle, expand=True)
-            
-        original_width, original_height = image.size
-        
+            rotated = image.rotate(angle, expand=True)
+            original_width, original_height = rotated.size
+        else:
+            rotated = image
+            original_width, original_height = image.size
+
         available_width = A4[1] - 2 * inch
         available_height = A4[0] - 2.5 * inch - 0.5 * inch
         
@@ -536,16 +566,18 @@ class SnapPDFTab:
             new_height = target_height
             new_width = new_height * image_ratio
 
+        # v3.1.0 ベースのリサイズ & JPEG 圧縮処理
         scale_factor = 3
-        pixel_w = int(new_width * scale_factor)
-        pixel_h = int(new_height * scale_factor)
-        
-        resized_image = image.resize((pixel_w, pixel_h), Image.Resampling.LANCZOS)
-        
+        pixel_w = max(1, int(new_width * scale_factor))
+        pixel_h = max(1, int(new_height * scale_factor))
+
+        resized_image = rotated.resize((pixel_w, pixel_h), Image.Resampling.LANCZOS)
+
+        selected_quality = self.quality_var.get()
         bio = BytesIO()
-        resized_image.save(bio, format="JPEG", quality=85)
+        resized_image.save(bio, format="JPEG", quality=selected_quality)
         bio.seek(0)
-        
+
         return (
             PlatypusImage(bio, width=new_width, height=new_height),
             Paragraph(os.path.basename(file_path), styles["Normal"]),
@@ -556,6 +588,11 @@ class SnapPDFTab:
             messagebox.showerror("Error", "Please select images")
             return
         
+        # 処理中のカーソル変更とボタン無効化（誤連打防止）
+        self.parent.winfo_toplevel().config(cursor="watch")
+        self.export_button.config(state=tk.DISABLED)
+        self.parent.update()
+
         try:
             now = datetime.now()
             base_filename = now.strftime("%y%m%d_%H%M%S")
@@ -613,12 +650,11 @@ class SnapPDFTab:
             cols = layout_config["cols"]
             rows = layout_config["rows"]
             
-            with ThreadPoolExecutor() as executor:
-                futures = [
-                    executor.submit(self.process_image_for_pdf, path, layout_config)
-                    for path in self.image_paths
-                ]
-                results = [f.result() for f in futures]
+            # シングルスレッド処理でフリーズ（デッドロック）を完全に防止
+            results = []
+            for path in self.image_paths:
+                results.append(self.process_image_for_pdf(path, layout_config))
+                self.parent.update()  # GUIフリーズを防止
             
             available_width = A4[1] - 2 * inch
             
@@ -692,6 +728,10 @@ class SnapPDFTab:
                 "Error",
                 f"An error occurred while creating the PDF:\n{str(e)}"
             )
+        finally:
+            # カーソルとボタンの状態を復元
+            self.parent.winfo_toplevel().config(cursor="")
+            self.export_button.config(state=tk.NORMAL)
 
 
 # =============================================================================
@@ -838,8 +878,8 @@ class PDFSearchTab:
 class SnapPDFTabbedApp:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("SnapPDF v3.1.0 - Unified PDF Tools")
-        self.root.geometry("800x700")
+        self.root.title("SnapPDF v3.2.1 - Unified PDF Tools")
+        self.root.geometry("820x750")
         
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
