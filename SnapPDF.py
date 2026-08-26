@@ -30,7 +30,7 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
-    Image as PlatypusImage,
+     as Platypus,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -119,9 +119,9 @@ GUI_FONT_FAMILY, GUI_FONT_SIZE = select_font_for_gui()
 # Layout configurations: (columns, rows, description)
 # Using Unicode multiplication sign (U+00D7) instead of ASCII 'x'
 LAYOUT_PRESETS = {
-    "2": {"cols": 2, "rows": 1, "total": 2, "name": "2 images (2\u00D71)"},
-    "4": {"cols": 2, "rows": 2, "total": 4, "name": "4 images (2\u00D72)"},
-    "6": {"cols": 3, "rows": 2, "total": 6, "name": "6 images (3\u00D72)"},
+    "2": {"cols": 2, "rows": 1, "total": 2, "name": "2 s (2\u00D71)"},
+    "4": {"cols": 2, "rows": 2, "total": 4, "name": "4 s (2\u00D72)"},
+    "6": {"cols": 3, "rows": 2, "total": 6, "name": "6 s (3\u00D72)"},
     "15": {"cols": 5, "rows": 3, "total": 15, "name": "15 images (5\u00D73)"},
 }
 
@@ -635,7 +635,7 @@ class SnapPDFTab:
         
         # メモリ上でJPEG圧縮して保存
         bio = BytesIO()
-        resized_image.save(bio, format="JPEG", quality=75) # quality=70〜80がおすすめ
+        resized_image.save(bio, format="JPEG", quality=80) # quality=70〜80がおすすめ
         bio.seek(0)
         
         return (
