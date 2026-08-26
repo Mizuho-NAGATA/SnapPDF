@@ -27,7 +27,7 @@ SnapPDF is a tool that combines multiple images into a single PDF file. The incl
 ## 主な機能
 
 - **PDFファイルサイズの大幅な軽量化**
-  無圧縮のPNG形式埋め込みによる容量増大問題を、描画枠に合わせた画像のピクセル数削減とJPEG形式への変換・圧縮で解決。
+  無圧縮のPNG形式埋め込みによる容量増大問題を、JPEG形式への変換・圧縮で解決。
 
 - **画像品質スライダー新設**
   用途に合わせて画像品質を可変にしました。
