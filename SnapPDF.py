@@ -38,7 +38,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from io import BytesIO  # ← 追加（回転画像をメモリで渡すため）
+from io import BytesIO  # 回転・リサイズ画像をメモリで渡すため
 
 # =============================================================================
 # Multi-platform font configuration
@@ -51,7 +51,6 @@ def select_font_for_pdf():
     system = platform.system()
     
     if system == "Windows":
-        # Windows: Try Japanese fonts
         font_candidates = [
             ("MS-Gothic", "msgothic.ttc"),
             ("Yu-Gothic", "YuGothR.ttc"),
@@ -71,20 +70,16 @@ def select_font_for_pdf():
             ("DejaVu", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
         ]
     
-    # Try to register the first available font
     for font_name, font_path in font_candidates:
         try:
-            # Try with absolute path first
             if os.path.exists(font_path):
                 pdfmetrics.registerFont(TTFont(font_name, font_path))
                 return font_name
-            # Try without path (system fonts)
             pdfmetrics.registerFont(TTFont(font_name, font_path.split("/")[-1]))
             return font_name
         except Exception:
             continue
     
-    # Fallback to Helvetica (built-in)
     return "Helvetica"
 
 
@@ -117,7 +112,6 @@ GUI_FONT_FAMILY, GUI_FONT_SIZE = select_font_for_gui()
 
 
 # Layout configurations: (columns, rows, description)
-# Using Unicode multiplication sign (U+00D7) instead of ASCII 'x'
 LAYOUT_PRESETS = {
     "2": {"cols": 2, "rows": 1, "total": 2, "name": "2 images (2\u00D71)"},
     "4": {"cols": 2, "rows": 2, "total": 4, "name": "4 images (2\u00D72)"},
@@ -130,42 +124,26 @@ LAYOUT_PRESETS = {
 # Helper function for safe PDF file path generation
 # =============================================================================
 def _get_safe_pdf_path(base_filename):
-    """
-    Generate a safe PDF file path with collision detection.
-    
-    Args:
-        base_filename: Base filename without extension (e.g., "231225_123456")
-    
-    Returns:
-        Absolute path to a writable PDF file location with collision avoidance
-    """
-    # Try multiple directories in order of preference
     candidate_dirs = []
     
-    # 1. Desktop
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
     if os.path.exists(desktop_path) and os.access(desktop_path, os.W_OK):
         candidate_dirs.append(desktop_path)
     
-    # 2. Documents
     documents_path = os.path.join(os.path.expanduser("~"), "Documents")
     if os.path.exists(documents_path) and os.access(documents_path, os.W_OK):
         candidate_dirs.append(documents_path)
     
-    # 3. Home directory (fallback)
     home_path = os.path.expanduser("~")
     if os.access(home_path, os.W_OK):
         candidate_dirs.append(home_path)
     
-    # Use the first writable directory
     if not candidate_dirs:
-        # Last resort: use temp directory
         import tempfile
         candidate_dirs.append(tempfile.gettempdir())
     
     target_dir = candidate_dirs[0]
     
-    # Check for filename collision and add numeric suffix if needed
     pdf_filename = f"{base_filename}.pdf"
     pdf_path = os.path.join(target_dir, pdf_filename)
     
@@ -189,26 +167,21 @@ class SnapPDFTab:
         self.entries = []
         self.excel_data = []
         self.excel_headers = []
-        self.selected_layout = tk.StringVar(value="6")  # Default to 6 images
+        self.selected_layout = tk.StringVar(value="6")
         self.thumbnail_canvas = None
         self.thumbnail_inner_frame = None
         self.thumbnail_vscroll = None
 
-        # 追加: Treeview（画像一覧）と回転情報
         self.image_list = None
-        self.image_rotations = {}  # {file_path: angle_in_degrees}
-        
-        # Instance-level cache for thumbnails
-        self._thumbnail_cache = {}  # {(file_path, angle): PhotoImage}
+        self.image_rotations = {}
+        self._thumbnail_cache = {}
 
         self._build_gui()
     
     def _build_gui(self):
-        # Main frame with scrollbar
         main_frame = Frame(self.parent)
         main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
-        # Title and Remarks input
         input_frame = tk.Frame(main_frame)
         input_frame.pack(padx=10, pady=10)
         
@@ -226,18 +199,15 @@ class SnapPDFTab:
             
             self.entries.append(entry)
         
-        # Layout selection frame
         layout_frame = tk.LabelFrame(
             main_frame, text="Select Layout (Images per Page)", 
             font=(GUI_FONT_FAMILY, GUI_FONT_SIZE)
         )
         layout_frame.pack(padx=10, pady=10, fill=tk.X)
         
-        # Create radio buttons for each layout preset
         button_frame = tk.Frame(layout_frame)
         button_frame.pack(pady=5)
         
-        # Note: removed the 5 images option as requested
         for key in ["2", "4", "6", "15"]:
             preset = LAYOUT_PRESETS[key]
             rb = tk.Radiobutton(
@@ -249,7 +219,6 @@ class SnapPDFTab:
             )
             rb.pack(side=tk.LEFT, padx=10)
         
-        # Excel file selection button
         select_excel_button = tk.Button(
             main_frame,
             text="Select Excel File (Optional)",
@@ -258,7 +227,6 @@ class SnapPDFTab:
         )
         select_excel_button.pack(pady=10)
         
-        # Image selection button
         select_button = tk.Button(
             main_frame,
             text="Select Images",
@@ -267,7 +235,6 @@ class SnapPDFTab:
         )
         select_button.pack(pady=10)
         
-        # PDF export button
         export_button = tk.Button(
             main_frame,
             text="Output to PDF",
@@ -276,7 +243,6 @@ class SnapPDFTab:
         )
         export_button.pack(pady=10)
 
-        # 追加: 画像操作ボタン（Move / Rotate / Delete）
         control_frame = tk.Frame(main_frame)
         control_frame.pack(pady=5)
 
@@ -320,7 +286,6 @@ class SnapPDFTab:
         )
         delete_button.pack(side=tk.LEFT, padx=4)
 
-        # 追加: Treeview（画像一覧） — サムネイルとは別に選択・順序操作を行うため
         image_list_frame = tk.Frame(main_frame)
         image_list_frame.pack(padx=10, pady=5, fill=tk.X)
 
@@ -333,11 +298,9 @@ class SnapPDFTab:
         list_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.image_list.configure(yscrollcommand=list_scrollbar.set)
 
-        # Thumbnail display frame with scrollbar (canvas + inner frame)
         thumb_container = Frame(main_frame)
         thumb_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
-        # Canvas for scrolling
         canvas = tk.Canvas(thumb_container, height=260)
         vscroll = tk.Scrollbar(thumb_container, orient=tk.VERTICAL, command=canvas.yview)
         canvas.configure(yscrollcommand=vscroll.set)
@@ -348,17 +311,14 @@ class SnapPDFTab:
         inner_frame = Frame(canvas)
         canvas.create_window((0, 0), window=inner_frame, anchor="nw")
         
-        # Update scroll region when inner_frame changes
         def _on_frame_config(event):
             canvas.configure(scrollregion=canvas.bbox("all"))
         
         inner_frame.bind("<Configure>", _on_frame_config)
         
-        # Mousewheel support when hovering thumbnails
         def _on_enter(event):
-            # bind to the canvas so wheel works when pointer is over the thumbnails area
             canvas.bind_all("<MouseWheel>", self._on_mousewheel)
-            canvas.bind_all("<Button-4>", self._on_mousewheel)  # Linux
+            canvas.bind_all("<Button-4>", self._on_mousewheel)
             canvas.bind_all("<Button-5>", self._on_mousewheel)
         
         def _on_leave(event):
@@ -374,14 +334,11 @@ class SnapPDFTab:
         self.thumbnail_vscroll = vscroll
     
     def _on_mousewheel(self, event):
-        # Cross-platform mousewheel handling
         system = platform.system()
         if system == "Darwin":
             delta = int(-1 * (event.delta))
         else:
-            # On Windows event.delta is multiple of 120; on many Linux setups Button-4/5 used instead
             if hasattr(event, "num"):
-                # Button-4 (up) or Button-5 (down)
                 if event.num == 4:
                     self.thumbnail_canvas.yview_scroll(-1, "units")
                 elif event.num == 5:
@@ -410,22 +367,17 @@ class SnapPDFTab:
                 self.excel_data = data
                 self.excel_headers = df.columns.tolist()
                 
-                # --- ここから追加: 読み込んだ Excel の中身をコマンドラインに表示 ---
                 try:
                     print("\n" + "=" * 60)
                     print(f"Loaded Excel file: {file_path}")
                     print("Headers:", self.excel_headers)
-                    # pandas の表示設定を一時的に拡張して全行・全列を表示
                     with pd.option_context(
                         "display.max_rows", None, "display.max_columns", None, "display.width", None
                     ):
-                        # index を表示したくない場合は index=False を使う
                         print(df.to_string(index=False))
                     print("=" * 60 + "\n")
                 except Exception as e:
-                    # コンソール出力に失敗しても GUI の挙動には影響させない
                     print(f"Failed to print Excel contents to console: {e}")
-                # --- ここまで追加 ---
                 
             except Exception as e:
                 messagebox.showerror(
@@ -441,41 +393,26 @@ class SnapPDFTab:
         )
         if new_paths:
             self.image_paths.extend(new_paths)
-            # 初期回転角は 0 にしておく
             for p in new_paths:
                 if p not in self.image_rotations:
                     self.image_rotations[p] = 0
             messagebox.showinfo(
                 "Image Selection", f"Number of selected images: {len(new_paths)}"
             )
-            # 更新
             self.update_image_list()
-            # Ensure thumbnail generation and GUI updates happen in main thread
-            # (creating ImageTk.PhotoImage from other threads can be unsafe)
             self.display_thumbnails()
     
     def generate_thumbnail(self, file_path, angle):
-        """
-        file_path と angle(度) をキーにサムネイルを生成。
-        angle は 0, 90, 180, 270 のいずれか（一般的な回転）を想定。
-        Uses instance-level cache to avoid recreating thumbnails.
-        """
         cache_key = (file_path, angle)
-        
-        # Return cached thumbnail if available
         if cache_key in self._thumbnail_cache:
             return self._thumbnail_cache[cache_key]
         
-        # Generate new thumbnail
         image = Image.open(file_path)
-        # 回転は先に行い、その後サムネイルで縮小
         if angle:
-            # PIL の Image.rotate は、正の角度で反時計回り（counter-clockwise）に回転する
             image = image.rotate(angle, expand=True)
         image.thumbnail((100, 100))
         photo = ImageTk.PhotoImage(image=image)
         
-        # Cache the result
         self._thumbnail_cache[cache_key] = photo
         return photo
     
@@ -483,7 +420,6 @@ class SnapPDFTab:
         if not self.image_paths:
             return
         
-        # Clear previous thumbnails
         for widget in self.thumbnail_inner_frame.winfo_children():
             widget.destroy()
         
@@ -491,12 +427,10 @@ class SnapPDFTab:
         num_columns = 10
         self.photo_images.clear()
         
-        # Build thumbnails sequentially (safe for Tkinter)
         for i in range(num_images):
             path = self.image_paths[i]
             angle = self.image_rotations.get(path, 0)
             photo = self.generate_thumbnail(path, angle)
-            # Keep reference to prevent GC
             self.photo_images.append(photo)
             
             container = Frame(self.thumbnail_inner_frame)
@@ -514,15 +448,12 @@ class SnapPDFTab:
             )
             name_label.pack()
             
-            # Force redraw occasionally
             if i % 20 == 0:
                 self.thumbnail_inner_frame.update_idletasks()
         
-        # Update scrollregion explicitly
         self.thumbnail_canvas.configure(scrollregion=self.thumbnail_canvas.bbox("all"))
 
     def update_image_list(self):
-        # Treeview をクリアして、現在の self.image_paths に従って再構築
         for item in self.image_list.get_children():
             self.image_list.delete(item)
         for path in self.image_paths:
@@ -530,16 +461,13 @@ class SnapPDFTab:
             angle = self.image_rotations.get(path, 0)
             display_name = f"{filename} (rot:{angle}°)" if angle else f"{filename} "
             self.image_list.insert("", "end", values=(display_name, path))
-        # サムネイルも更新
         self.display_thumbnails()
 
     def move_up(self):
         selected_items = self.image_list.selection()
-        # 選択されたアイテムのインデックスを取得し、昇順で処理する
         indices = sorted(self.image_list.index(item) for item in selected_items)
         for index in indices:
             if index > 0 and (index - 1) not in indices:
-                # 直上の要素が選択されていない場合のみ、入れ替えて一つ上へ移動
                 self.image_paths[index - 1], self.image_paths[index] = (
                     self.image_paths[index],
                     self.image_paths[index - 1],
@@ -548,12 +476,10 @@ class SnapPDFTab:
 
     def move_down(self):
         selected_items = self.image_list.selection()
-        # 選択されたアイテムのインデックスを取得し、降順で処理する
         indices = sorted((self.image_list.index(item) for item in selected_items), reverse=True)
         last_index = len(self.image_paths) - 1
         for index in indices:
             if index < last_index and (index + 1) not in indices:
-                # 直下の要素が選択されていない場合のみ、入れ替えて一つ下へ移動
                 self.image_paths[index + 1], self.image_paths[index] = (
                     self.image_paths[index],
                     self.image_paths[index + 1],
@@ -562,49 +488,36 @@ class SnapPDFTab:
 
     def delete_selected_images(self):
         selected_items = self.image_list.selection()
-        # 選択アイテムを削除（index がずれないように後ろから処理するのが安全）
-        # ただし Treeview の selection() の順序は不定なので、index を取ってソート
         indices = sorted([self.image_list.index(item) for item in selected_items], reverse=True)
         for index in indices:
             path = self.image_paths.pop(index)
-            # 回転情報も消す
             if path in self.image_rotations:
                 del self.image_rotations[path]
         self.update_image_list()
 
     def rotate_selected(self, delta_angle):
-        """
-        選択した画像に対して回転を行う。delta_angle は ±90 等。
-        """
         selected_items = self.image_list.selection()
         for item in selected_items:
             index = self.image_list.index(item)
             path = self.image_paths[index]
             current = self.image_rotations.get(path, 0)
             new_angle = (current + delta_angle) % 360
-            # 正負に対応して 0/90/180/270 を保持
             self.image_rotations[path] = new_angle
-            # キャッシュしたサムネイルがある場合、キャッシュをクリアする
-            # 回転後の新しいサムネイルを生成するため、古いキャッシュを削除
             self._thumbnail_cache = {k: v for k, v in self._thumbnail_cache.items() if k[0] != path}
-        # 表示を更新
         self.update_image_list()
 
     def process_image_for_pdf(self, file_path, layout_config):
         image = Image.open(file_path)
         
-        # RGBAなどのモードをJPEGで保存可能なRGBに変換
         if image.mode in ("RGBA", "P"):
             image = image.convert("RGB")
         
-        # 回転処理
         angle = self.image_rotations.get(file_path, 0)
         if angle:
             image = image.rotate(angle, expand=True)
             
         original_width, original_height = image.size
         
-        # PDF上の描画サイズ（ポイント単位）を計算
         available_width = A4[1] - 2 * inch
         available_height = A4[0] - 2.5 * inch - 0.5 * inch
         
@@ -623,15 +536,12 @@ class SnapPDFTab:
             new_height = target_height
             new_width = new_height * image_ratio
 
-        # --- 軽量化処理 ---
-        scale_factor = 3  # 印刷品質とファイルサイズのバランスが良い倍率 (2〜3推奨)
+        scale_factor = 3
         pixel_w = int(new_width * scale_factor)
         pixel_h = int(new_height * scale_factor)
         
-        # 画像を縮小 (LANCZOSで高品質に縮小)
         resized_image = image.resize((pixel_w, pixel_h), Image.Resampling.LANCZOS)
         
-        # メモリ上でJPEG圧縮（品質80%）して保存
         bio = BytesIO()
         resized_image.save(bio, format="JPEG", quality=80)
         bio.seek(0)
@@ -647,7 +557,6 @@ class SnapPDFTab:
             return
         
         try:
-            # Generate safe PDF file path with collision detection
             now = datetime.now()
             base_filename = now.strftime("%y%m%d_%H%M%S")
             pdf_file_path = _get_safe_pdf_path(base_filename)
@@ -680,7 +589,6 @@ class SnapPDFTab:
                 remarks.wrapOn(canvas, A4[1], A4[0])
                 remarks.drawOn(canvas, inch, A4[0] - inch * 1.5)
             
-            # Add Excel data if available
             if self.excel_headers:
                 data_with_header = [self.excel_headers] + self.excel_data
                 
@@ -700,13 +608,11 @@ class SnapPDFTab:
                 data_table.setStyle(TableStyle(table_style))
                 content.append(data_table)
             
-            # Get layout configuration
             layout_key = self.selected_layout.get()
             layout_config = LAYOUT_PRESETS[layout_key]
             cols = layout_config["cols"]
             rows = layout_config["rows"]
             
-            # Process images in parallel (preserve order)
             with ThreadPoolExecutor() as executor:
                 futures = [
                     executor.submit(self.process_image_for_pdf, path, layout_config)
@@ -716,7 +622,6 @@ class SnapPDFTab:
             
             available_width = A4[1] - 2 * inch
             
-            # Build page layout
             table_data = []
             row_data = []
             
@@ -725,26 +630,21 @@ class SnapPDFTab:
                 cell_table = Table(cell_content)
                 row_data.append(cell_table)
                 
-                # When a row is complete
                 if len(row_data) == cols:
                     table_data.append(row_data)
                     row_data = []
                 
-                # When a page is complete
                 if len(table_data) == rows:
-                    # Fix: Use actual number of columns in table_data
                     content.append(
                         Table(table_data, colWidths=[available_width / cols] * cols)
                     )
                     content.append(Spacer(1, 0.1))
                     table_data = []
             
-            # Add remaining images
             if row_data:
                 table_data.append(row_data)
             
             if table_data:
-                # Fix: Calculate colWidths based on actual row lengths to avoid mismatch
                 actual_cols = max(len(row) for row in table_data)
                 content.append(
                     Table(
@@ -753,13 +653,10 @@ class SnapPDFTab:
                     )
                 )
             
-            # Build PDF
             doc.build(content, onFirstPage=add_header, onLaterPages=add_header)
             
-            # Open PDF with proper error suppression
             try:
                 if os.name == "nt":
-                    # Windows: empty string "" is used as the window title to handle paths with spaces
                     subprocess.Popen(
                         ["start", "", pdf_file_path],
                         shell=True,
@@ -776,7 +673,6 @@ class SnapPDFTab:
                         stderr=subprocess.DEVNULL
                     )
             except Exception:
-                # If opening fails, just continue - file was created successfully
                 pass
             
             messagebox.showinfo(
@@ -887,7 +783,6 @@ class PDFSearchTab:
         csv_path = f"search_results_{timestamp}.csv"
 
         try:
-            # Excel に渡す場合に文字化けを防ぐため BOM 付き UTF-8 ('utf-8-sig') で書き出す
             with open(csv_path, "w", newline="", encoding="utf-8-sig") as f:
                 writer = csv.writer(f)
                 writer.writerow(["File name", "Location", "Keywords"])
@@ -901,7 +796,6 @@ class PDFSearchTab:
 
         messagebox.showinfo("CSV Saved", f"Search results saved to:\n{csv_path}")
 
-    
     def show_results(self, results):
         win = tk.Toplevel(self.parent)
         win.title("PDF Search Results")
@@ -918,7 +812,6 @@ class PDFSearchTab:
         )
         header.pack()
         
-        # Add scrollbar for results
         frame = Frame(win)
         frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
@@ -945,21 +838,18 @@ class PDFSearchTab:
 class SnapPDFTabbedApp:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("SnapPDF v3.0.0 - Unified PDF Tools")
+        self.root.title("SnapPDF v3.1.0 - Unified PDF Tools")
         self.root.geometry("800x700")
         
-        # Create notebook (tabbed interface)
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
-        # Create tabs
         pdf_creation_tab = Frame(self.notebook)
         pdf_search_tab = Frame(self.notebook)
         
         self.notebook.add(pdf_creation_tab, text="  PDF Creation  ")
         self.notebook.add(pdf_search_tab, text="  PDF Search  ")
         
-        # Initialize tab contents
         self.snap_pdf = SnapPDFTab(pdf_creation_tab)
         self.pdf_search = PDFSearchTab(pdf_search_tab)
     
